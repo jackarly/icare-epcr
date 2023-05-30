@@ -83,9 +83,7 @@ class PatientController extends Controller
             
         ]);
         
-        // dd("okay");
-        // return back();
-        return redirect()->route('pcr.show', $patient->id);
+        return redirect()->route('pcr.show', $patient->id)->with('success', 'Patient information added successfully');
 
     }
 
@@ -100,17 +98,46 @@ class PatientController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Patient $patient)
     {
-        //
+        return view('patient.edit', [
+            'patient' => $patient,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Patient $patient)
     {
-        //
+        $this->validate($request, [
+            'ppcr_color'=> 'required|string',
+            'patient_first_name'=> 'required|string',
+            'patient_mid_name'=> 'nullable|string',
+            'patient_last_name'=> 'required|string',
+            'age'=> 'required|numeric',
+            'birthday'=> 'nullable|date',
+            'sex'=> 'required|string',
+            'contact_no'=> 'nullable|numeric',
+            'address'=> 'nullable|string',
+        ]);
+
+        $patient->update([
+            'ppcr_color'=> $request->ppcr_color,
+            'patient_first_name'=> $request->patient_first_name,
+            'patient_mid_name'=> $request->patient_mid_name,
+            'patient_last_name'=> $request->patient_last_name,
+            'age'=> $request->age,
+            'birthday'=> $request->birthday,
+            'sex'=> $request->sex,
+            'contact_no'=> $request->contact_no,
+            'address'=> $request->address,
+            
+        ]);
+        
+        // dd("okay");
+        // return back();
+        return redirect()->route('pcr.show', $patient->id)->with('success', 'Patient information updated successfully');
     }
 
     /**

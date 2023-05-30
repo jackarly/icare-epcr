@@ -22,7 +22,7 @@ class PatientManagement extends Model
         'receiving_facility',
         'narrative',
         'receiving_provider',
-        'provider_positions',
+        'provider_position',
         'timings_arrival',
         'timings_handover',
         'timings_clear',

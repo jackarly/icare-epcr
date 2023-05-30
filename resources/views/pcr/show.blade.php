@@ -9,7 +9,7 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-bold mb-3">Pre-Hospital Patient Care Report
-                                <a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                <a href="{{ route('patient.edit', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                             </h5>
                             
                             <div class="col-md-12">
@@ -35,7 +35,7 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-semibold mb-3">Incident Information
-                                <a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                <a href="{{ route('incident.edit', $incident->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                             </h5>
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -107,7 +107,7 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-semibold mb-3">Patient Information
-                                <a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                <a href="{{ route('patient.edit', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                             </h5>
                             <div class="row">
                                 <div class="col-md-6">
@@ -145,7 +145,7 @@
                         <div class="row">
                             @isset($patient_assessment)
                                 <h5 class="fw-semibold mb-3">Patient Assessment
-                                    <a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                    <a href="{{ route('assessment.edit', $patient_assessment->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                 </h5>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -291,7 +291,7 @@
                         <div class="row">
                         @isset($patient_observation)
                             <h5 class="fw-semibold mb-3">Patient Observation
-                                    <a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                    <a href="{{ route('observation.edit', $patient_observation->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                 </h5>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -355,7 +355,7 @@
                         <div class="row">
                             @isset($patient_management)
                                 <h5 class="fw-semibold mb-3">Patient Management
-                                    <a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                    <a href="{{ route('management.edit', $patient_management->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                 </h5>
                                 <div class="row mb-3">
                                     <div class="col-md-6">

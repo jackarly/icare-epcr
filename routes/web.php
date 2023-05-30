@@ -38,21 +38,31 @@ Route::get('/incident', [IncidentController::class, 'index'])->name('incident');
 Route::get('/incident/{incident}', [IncidentController::class, 'show'])->name('incident.show');
 Route::put('/incident/asign/{incident}', [IncidentController::class, 'assign'])->name('incident.assign');
 Route::put('/incident/timings/{patient}', [IncidentController::class, 'updateTimings'])->name('incident.timings');
+Route::get('/incident/{incident}/edit', [IncidentController::class, 'edit'])->name('incident.edit');
+Route::put('/incident/{incident}/update', [IncidentController::class, 'update'])->name('incident.update');
 
 Route::get('/patient/create/{incident}', [PatientController::class, 'create'])->name('patient.create');
 Route::post('/patient/store/{incident}', [PatientController::class, 'store'])->name('patient.store');
 Route::get('/patient/{status?}', [PatientController::class, 'index'])->name('patient');
+Route::get('/patient/{patient}/edit', [PatientController::class, 'edit'])->name('patient.edit');
+Route::put('/patient/{patient}/update', [PatientController::class, 'update'])->name('patient.update');
 
 Route::get('/pcr/{patient}', [PcrController::class, 'show'])->name('pcr.show');
 
 Route::get('/assessment/create/{patient}', [PatientAssessmentController::class, 'create'])->name('assessment.create');
 Route::post('/assessment/store/{patient}', [PatientAssessmentController::class, 'store'])->name('assessment.store');
+Route::get('/assessment/{patientAssessment}/edit', [PatientAssessmentController::class, 'edit'])->name('assessment.edit');
+Route::put('/assessment/{patientAssessment}/update', [PatientAssessmentController::class, 'update'])->name('assessment.update');
 
 Route::get('/management/create/{patient}', [PatientManagementController::class, 'create'])->name('management.create');
 Route::post('/management/store/{patient}', [PatientManagementController::class, 'store'])->name('management.store');
+Route::get('/management/{patientManagement}/edit', [PatientManagementController::class, 'edit'])->name('management.edit');
+Route::put('/management/{patientManagement}/update', [PatientManagementController::class, 'update'])->name('management.update');
 
 Route::get('/observation/create/{patient}', [PatientObservationController::class, 'create'])->name('observation.create');
 Route::post('/observation/store/{patient}', [PatientObservationController::class, 'store'])->name('observation.store');
+Route::get('/observation/{patientObservation}/edit', [PatientObservationController::class, 'edit'])->name('observation.edit');
+Route::put('/observation/{patientObservation}/update', [PatientObservationController::class, 'update'])->name('observation.update');
 
 Route::get('/personnel/create', [PersonnelController::class, 'create'])->name('personnel.create');
 Route::post('/personnel/store', [PersonnelController::class, 'store'])->name('personnel.store');

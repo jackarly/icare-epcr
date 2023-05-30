@@ -48,10 +48,6 @@ class IncidentController extends Controller
             'no_of_persons_involved'=> 'required|numeric',
             'incident_details'=> 'required|string',
             'injuries_details'=> 'required|string',
-            'timing_dispatch'=> 'nullable|string',
-            'timing_enroute'=> 'nullable|string',
-            'timing_arrival'=> 'nullable|string',
-            'timing_depart'=> 'nullable|string',
         ]);
 
         Incident::create([
@@ -66,10 +62,6 @@ class IncidentController extends Controller
             'no_of_persons_involved'=> $request->no_of_persons_involved,
             'incident_details'=> $request->incident_details,
             'injuries_details'=> $request->injuries_details,
-            'timing_dispatch'=> $request->timing_dispatch,
-            'timing_enroute'=> $request->timing_enroute,
-            'timing_arrival'=> $request->timing_arrival,
-            'timing_depart'=> $request->timing_depart,
         ]);
 
         // dd("okay");
@@ -114,17 +106,46 @@ class IncidentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Incident $incident)
     {
-        //
+        return view('incident.edit', [
+            'incident' => $incident,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Incident $incident)
     {
-        //
+        $this->validate($request, [
+            'nature_of_call'=> 'required|string',
+            'incident_type'=> 'required|string',
+            'incident_location'=> 'required|string',
+            'area_type'=> 'required|string',
+            'caller_first_name'=> 'required|string',
+            'caller_mid_name'=> 'nullable|string',
+            'caller_last_name'=> 'required|string',
+            'caller_number'=> 'required|numeric',
+            'no_of_persons_involved'=> 'required|numeric',
+            'incident_details'=> 'required|string',
+            'injuries_details'=> 'required|string',
+        ]);
+
+        $incident->update([
+            'nature_of_call'=> $request->nature_of_call,
+            'incident_type'=> $request->incident_type,
+            'incident_location'=> $request->incident_location,
+            'area_type'=> $request->area_type,
+            'caller_first_name'=> $request->caller_first_name,
+            'caller_mid_name'=> $request->caller_mid_name,
+            'caller_last_name'=> $request->caller_last_name,
+            'caller_number'=> $request->caller_number,
+            'no_of_persons_involved'=> $request->no_of_persons_involved,
+            'incident_details'=> $request->incident_details,
+            'injuries_details'=> $request->injuries_details,
+        ]);
+        return redirect()->route('incident.show', $incident->id)->with('success', 'Incident updated successfully');
     }
 
     /**
@@ -135,7 +156,7 @@ class IncidentController extends Controller
         //
     }
 
-    public function assign(Request $request,Incident $incident, )
+    public function assign(Request $request,Incident $incident)
     {
         $this->validate($request, [
             'response_team'=> 'required',

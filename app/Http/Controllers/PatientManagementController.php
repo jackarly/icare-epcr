@@ -93,17 +93,62 @@ class PatientManagementController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(PatientManagement $patientManagement)
     {
-        //
+        $hospitals = UserHospital::all();
+
+        return view('patient-management.edit', [
+            'patient_management' => $patientManagement,
+            'hospitals' => $hospitals,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, PatientManagement $patientManagement)
     {
-        //
+        // dd($request->provider_position);
+
+        $this->validate($request, [
+            'airway_breathing'=> 'required|string',
+            'circulation'=> 'required|string',
+            'wound_burn_care'=> 'required|string',
+            'immobilization'=> 'required|string',
+            'others1'=> 'required|string',
+            'others2'=> 'nullable|string',
+            'receiving_facility'=> 'required|string',
+            'facility_assigned'=> 'required|integer',
+            'narrative'=> 'nullable|string',
+            'arrival'=> 'nullable|string',
+            'handover'=> 'nullable|string',
+            'clear'=> 'nullable|string',
+            'receiving_provider'=> 'required|string',
+            'provider_position'=> 'nullable|string',
+        ]);
+
+        
+
+        $patientManagement->update([
+            'airway_breathing' => $request->airway_breathing,
+            'circulation' => $request->circulation,
+            'wound_burn_care' => $request->wound_burn_care,
+            'immobilization' => $request->immobilization,
+            'others1' => $request->others1,
+            'others2' => $request->others2,
+            'receiving_facility' => $request->receiving_facility,
+            'timings_arrival' => $request->arrival,
+            'timings_handover' => $request->handover,
+            'timings_clear' => $request->clear,
+            'narrative' => $request->narrative,
+            'receiving_provider' => $request->receiving_provider,
+            'provider_position'=> $request->provider_position,
+            'user_hospital_id' => $request->facility_assigned,
+        ]);
+
+        // dd($patientManagement->provider_position);
+
+        return redirect()->route('pcr.show', $patientManagement->patient_id)->with('success', 'Patient management updated successfully');
     }
 
     /**

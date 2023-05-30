@@ -104,23 +104,31 @@ class ResponseTeamController extends Controller
      */
     public function edit(ResponseTeam $responseTeam)
     {
-        // $sample = ['1','4', '2', '3'];
-
-        // if(($key = array_search(1, $sample)) !== false) {
-        //     unset($sample[$key]);
-        // }
-
+        // Get all active medics
         $medics_active = DB::table('personnels')
             ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
             ->whereDate('response_personnels.created_at', Carbon::today())
-            ->pluck('personnels.id');
+            ->pluck('personnels.id')->toArray();
 
+        // Remove current medics
+        $oldMedics = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->pluck('personnel_id')->toArray();
+
+        if(($key = array_search($oldMedics[0], $medics_active)) !== false) {
+            unset($medics_active[$key]);
+        }
+
+        if(($key = array_search($oldMedics[1], $medics_active)) !== false) {
+            unset($medics_active[$key]);
+        }
+
+        // Get active ambulance except current ambulance
         $ambulance_active = DB::table('user_ambulances')
             ->join('response_teams', 'user_ambulances.id', '=', 'response_teams.user_ambulance_id')
             ->whereNot('response_teams.user_ambulance_id', '=' , $responseTeam->user_ambulance_id)
             ->whereDate('response_teams.created_at', Carbon::today())
             ->pluck('user_ambulances.id');
 
+        // Assign medics and ambulance for input:option
         $ambulances = UserAmbulance::whereNotIn('id', $ambulance_active)->get();
         $medics = Personnel::whereNotIn('id', $medics_active)->get();
 

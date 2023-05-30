@@ -9,7 +9,7 @@
                     <div class="card-body">
                         <div class="row mb-3">
                             <h5 class="fw-semibold">Incident Information
-                                <a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                <a href="{{ route('incident.edit', $incident->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                             </h5>
                             <div class="row">
                                 <div class="col-md-6">
