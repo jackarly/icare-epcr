@@ -294,9 +294,6 @@
                                 </button>
                             </div>
                         </div>
-                        
-                        
-                        <small class="text-danger">Reminder:Add Observations & Canvas</small>
                     </form>
                 </div>
             </div>

@@ -13,7 +13,7 @@
                             </div>
                             <div class="col-md-8">
                                 <ul class="list-group list-group-flush custom-list">
-                                    <li class="text-center"><span class="fs-5 fw-bold">{{$personnel->personnel_first_name}} {{$personnel->personnel_mid_name}} {{$personnel->personnel_last_name}}</span><a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a></li>
+                                    <li class="text-center"><span class="fs-5 fw-bold">{{$personnel->personnel_first_name}} {{$personnel->personnel_mid_name}} {{$personnel->personnel_last_name}}</span><a href="{{ route('personnel.edit', $personnel->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a></li>
                                     <li class="text-capitalize">ID{{ $personnel->id }} <span class="fs-5">|</span><span class="text-success fw-semibold">Assigned</span></li>
                                     <li class="text-capitalize"><span class="fw-semibold text-secondary">Sex: </span> {{$personnel->sex}} </li>
                                     <li class="text-capitalize"><span class="fw-semibold text-secondary">Age: </span> <span>{{\Carbon\Carbon::parse($personnel->birthday)->diff(\Carbon\Carbon::now())->format('%y')}}</span> </li>

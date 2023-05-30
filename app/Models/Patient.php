@@ -8,6 +8,7 @@ use App\Models\Incident;
 use App\Models\PatientAssessment;
 use App\Models\PatientManagement;
 use App\Models\PatientObservation;
+use Carbon\Carbon;
 
 class Patient extends Model
 {
@@ -44,5 +45,15 @@ class Patient extends Model
     public function incident()
     {
         return $this->belongsTo(Incident::class);
+    }
+
+    public static function getCompletedToday() 
+    {
+        return Patient::whereDate('completed_at', Carbon::today())->count();
+    }
+
+    public static function getCompletedPatients() 
+    {
+        return Patient::whereNotNull('completed_at')->count();
     }
 }

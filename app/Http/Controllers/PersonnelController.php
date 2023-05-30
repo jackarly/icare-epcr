@@ -74,17 +74,39 @@ class PersonnelController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Personnel $personnel)
     {
-        //
+        return view('personnel.edit', [
+            'personnel' => $personnel,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Personnel $personnel)
     {
-        //
+        $this->validate($request, [
+            'personnel_first_name'=> 'required|string',
+            'personnel_mid_name'=> 'required|string',
+            'personnel_last_name'=> 'required|string',
+            'personnel_other'=> 'nullable|string',
+            'contact'=> 'required|string',
+            'birthday'=> 'required|string',
+            'sex'=> 'required|string',
+            'personnel_img' => 'image|nullable'
+        ]);
+
+        $personnel->personnel_first_name = $request->personnel_first_name;
+        $personnel->personnel_mid_name = $request->personnel_mid_name;
+        $personnel->personnel_last_name = $request->personnel_last_name;
+        $personnel->personnel_other = $request->personnel_other;
+        $personnel->contact = $request->contact;
+        $personnel->birthday = $request->birthday;
+        $personnel->sex = $request->sex;
+        $personnel->save();
+
+        return redirect()->route('personnel.show', $personnel->id )->with('success', 'Medic updated successfully');
     }
 
     /**

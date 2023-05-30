@@ -58,11 +58,15 @@ Route::get('/personnel/create', [PersonnelController::class, 'create'])->name('p
 Route::post('/personnel/store', [PersonnelController::class, 'store'])->name('personnel.store');
 Route::get('/personnel', [PersonnelController::class, 'index'])->name('personnel');
 Route::get('/personnel/{personnel}', [PersonnelController::class, 'show'])->name('personnel.show');
+Route::get('/personnel/{personnel}/edit', [PersonnelController::class, 'edit'])->name('personnel.edit');
+Route::put('/personnel/{personnel}/update', [PersonnelController::class, 'update'])->name('personnel.update');
 
 Route::get('/response/create', [ResponseTeamController::class, 'create'])->name('response.create');
 Route::post('/response/store', [ResponseTeamController::class, 'store'])->name('response.store');
 Route::get('/response', [ResponseTeamController::class, 'index'])->name('response');
 Route::get('/response/{responseTeam}', [ResponseTeamController::class, 'show'])->name('response.show');
+Route::get('/response/{responseTeam}/edit', [ResponseTeamController::class, 'edit'])->name('response.edit');
+Route::put('/response/{responseTeam}/update', [ResponseTeamController::class, 'update'])->name('response.update');
 
 
 

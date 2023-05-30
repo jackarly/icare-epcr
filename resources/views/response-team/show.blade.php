@@ -15,7 +15,7 @@
                         </div> -->
                         <div class="row mb-3">
                             <h5 class="fw-semibold">Response Team Details
-                                <a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                <a href="{{ route('response.edit', $response->id ) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                             </h5>
                             <div class="col-md-12">
                                 <ul class="list-group list-group-flush custom-list">

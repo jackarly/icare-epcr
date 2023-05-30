@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Patient;
 use App\Models\ResponseTeam;
+use Carbon\Carbon;
 
 class Incident extends Model
 {
@@ -39,5 +40,30 @@ class Incident extends Model
     public function response_team()
     {
         return $this->belongsTo(ResponseTeam::class);
+    }
+
+    public static function getActiveToday() 
+    {
+        // $incidentCount = Incident::whereNull('reponse_team_id')->whereDate('created_at', Carbon::today())->count();
+        // return $incidentCount;
+
+        return Incident::whereNull('response_team_id')->whereDate('created_at', Carbon::today())->count();
+    }
+
+    public static function getOngoingToday() 
+    {
+        return Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->count();
+    }
+
+    public static function getDeployedToday() 
+    {
+        return Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->distinct()->count('response_team_id');
+    }
+
+    public static function getAvailableToday() 
+    {
+        $teamsDeployed = Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->pluck('response_team_id');
+
+        return ResponseTeam::whereNotIn('id', $teamsDeployed)->whereDate('created_at', Carbon::today())->count();
     }
 }
