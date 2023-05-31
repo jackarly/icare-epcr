@@ -32,7 +32,7 @@
                             <div class="col-md-8">
                                 <ul class="list-group list-group-flush custom-list">
                                     <li>Incidents Assigned Today: {{$response->incidentsToday}}</li>
-                                    <li>Incidents Completed Today: {{$response->incidentsTotal}}</li>
+                                    <li>Incidents Completed Today: {{$response->incidentsCompletedToday}}</li>
                                 </ul>
                             </div>
                         </div>

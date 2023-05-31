@@ -51,11 +51,11 @@
                                 <div class="col-md-12">
                                     <ul class="list-group list-group-flush custom-list">
                                         <li class="text-center"><span class="fs-5 fw-bold">{{ $account->username }}</span></li>
-                                        <!-- <li class="text-capitalize fst-italic text-center">ID{{ $account->id }} <span class="fs-5">|</span> {{ $account->user_type }}</li> -->
-                                        <li class="text-capitalize">USER{{ $account->id }} <span class="fs-5">|</span> 
-                                            {{ $account->user_type }} <span class="fs-5">|</span> 
-                                            <span class="text-{{ ($account->status === 'active')? 'success' : 'danger' }} fw-semibold">{{ $account->status }}</span></li>
-                                        <!-- <span class="fs-5">&middot;</span> -->
+                                        <li class="text-capitalize">USER{{ $account->id }} 
+                                            <span class="fs-5">|</span> 
+                                            <span class="text-success fw-semibold">{{ $account->user_type }}</span>
+                                            <!-- <span class="fs-5">|</span> 
+                                            <span class="text-{{ ($account->status === 'active')? 'success' : 'danger' }} fw-semibold">{{ $account->status }}</span></li> -->
                                         <li class="account-name">
                                             @switch($account->user_type)
                                                 @case('ambulance')
@@ -137,8 +137,9 @@
                 {{ $accounts->links('pagination::simple-bootstrap-5') }}
             </div>
         @else
+            <hr>
             <div class="col-md-8">
-                Nothing
+                <span class="fst-italic text-secondary">Nothing to show</span>
             </div>
         @endif        
     </div>

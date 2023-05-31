@@ -47,7 +47,13 @@
                                 </div>
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Status: </span></li>
+                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Status: </span>
+                                            @isset($incident->response_team_id)
+                                                <span class="text-success fw-semibold">Assigned</span>
+                                            @else
+                                                <span class="text-danger fw-semibold">Unassigned</span>
+                                            @endisset 
+                                        </li>
                                         <li class="text-capitalize"><span class="fw-semibold text-secondary">Reported at: </span>{{ $incident->created_at->diffForHumans() }}</li>
                                         
                                     </ul>
@@ -453,14 +459,49 @@
                 <div class="card mb-2">
                     <div class="card-body">
                         <div class="row">
+                            <div class="col-md-6">
                             <h5 class="fw-semibold mb-3">Patient Provider</h5>
-                            <div class="col-md-12">
                                 <ul class="list-group list-group-flush text-start custom-list">
                                     <li class="text-capitalize"><span class="fw-semibold text-secondary">Ambulance: </span> {{$incident->response_team->user_ambulance->plate_no}}</li>
                                     @foreach ($medics as $medic)
                                         <li class="text-capitalize"><span class="fw-semibold text-secondary">Medic: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
                                     @endforeach
                                     <li class="text-capitalize"><span class="fw-semibold text-secondary"></span> </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                            <h5 class="fw-semibold mb-3">Patient Progress</h5>
+                                <ul class="row list-group list-group-flush text-start custom-list">
+                                    @if ($patient->completed_at)
+                                        <span class="col-10 mx-auto btn btn-outline-success btn-sm rounded-pill">Completed {{ \Carbon\Carbon::parse($patient->completed_at)->diffForHumans() }}</span>
+                                    @else
+                                        @if ($patient_assessment && $patient_management)
+                                            @if ($patient_management->timings_handover && $patient_management->timings_clear)
+                                                <li class="col-10 mx-auto mb-1">
+                                                    <form method="POST" action="{{route('patient.complete',  $patient->id)}}">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="d-grid">
+                                                            <button type="submit" class="btn btn-success btn-sm rounded-pill fw-semibold">
+                                                                PCR Complete
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </li>
+                                            @else
+                                            <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Update Patient Management Timings</li>
+                                            @endif
+                                            
+                                        @else
+                                            @if (!$patient_assessment)
+                                                <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Add Patient Assessment</li>
+                                            @endif
+                                            @if (!$patient_management)
+                                                <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Add Patient Management</li>
+                                            @endif
+                                        @endif
+                                    @endif
+                                    
                                 </ul>
                             </div>
                         </div>

@@ -25,7 +25,29 @@
                             </div>
                             <div class="col-md-8">
                                 <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-center"><span class="fs-5 fw-bold">{{ $account->username }}</span><a href="" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a></li>
+                                        <li class="text-center"><span class="fs-5 fw-bold">{{ $account->username }}</span>
+                                            @switch($account->user_type)
+                                                @case('ambulance')
+                                                    <a href="{{ route('ambulance.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @break
+                                                
+                                                @case('hospital')
+                                                    <a href="{{ route('hospital.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @break
+                                                    
+                                                @case('comcen')
+                                                    <a href="{{ route('comcen.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @break
+                                                    
+                                                @case('admin')
+                                                    <a href="{{ route('admin.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @break
+                                            
+                                                @default
+                                                    <small class="text-danger">Error</small>
+                                            @endswitch
+                                            
+                                        </li>
                                         <!-- <li class="text-capitalize fst-italic text-center">ID{{ $account->id }} <span class="fs-5">|</span> {{ $account->user_type }}</li> -->
                                         <li class="text-capitalize">ID{{ $account->id }} <span class="fs-5">|</span> {{ $account->user_type }}</li>
                                         <!-- <span class="fs-5">&middot;</span> -->

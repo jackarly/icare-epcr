@@ -11,15 +11,36 @@ use Carbon\Carbon;
 
 class IncidentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($status = null)
     {
-        $incidents = Incident::latest()->paginate(12);
+        switch($status) {
+            case('unassigned today'):
+                $incidents = Incident::where('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                break;
+
+            case('assigned today'):
+                $incidents = Incident::whereNot('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                break;
+
+            case('all incidents'):
+                $incidents = Incident::latest()->paginate(12);
+                break;
+
+            default:
+                $incidents = Incident::whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                $status = 'incidents today';
+        }
 
         return view('incident.index', [
             'incidents' => $incidents,
+            'status' => $status,
         ]);
     }
 
@@ -173,10 +194,10 @@ class IncidentController extends Controller
     {
 
         $this->validate($request, [
-            'timing_dispatch'=> 'required|string',
-            'timing_enroute'=> 'required|string',
-            'timing_arrival'=> 'required|string',
-            'timing_depart'=> 'required|string',
+            'timing_dispatch'=> 'nullable|string',
+            'timing_enroute'=> 'nullable|string',
+            'timing_arrival'=> 'nullable|string',
+            'timing_depart'=> 'nullable|string',
         ]);
         // $incident = $patient->incident();
 

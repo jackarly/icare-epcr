@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ResponseTeam;
+use App\Models\ResponsePersonnel;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Personnel extends Model
 {
@@ -21,16 +24,59 @@ class Personnel extends Model
         'personnel_img',
     ];
 
-    public function response_teams()
+    protected $appends = ['medicStatus', 'incidentsToday', 'incidentsCompletedToday', 'incidentsCompletedOverall'];
+
+    public function response_personnels()
     {
-        return $this->hasMany(ResponseTeam::class);
+        return $this->belongsTo(ResponsePersonnel::class);
     }
 
-    public function medicStatus()
+    public function getMedicStatusAttribute()
     {
-        $id = 1;
+        $teamsAssignedToday =  DB::table('personnels')
+            ->join('response_personnels', 'response_personnels.personnel_id', '=', 'personnels.id')
+            ->where('personnels.id', '=', $this->id)
+            ->whereDate('response_personnels.created_at', Carbon::today())
+            ->get();
 
-    
-        return $this->hasOne(UserHospital::class);
+        if ($teamsAssignedToday->count() > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function getIncidentsTodayAttribute() 
+    {
+        return $incident_count =  DB::table('incidents')
+        ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+        ->join('response_personnels', 'response_teams.id', '=', 'response_personnels.response_team_id')
+        ->join('personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
+        ->where('personnels.id', '=', $this->id)
+        ->whereDate('incidents.created_at', Carbon::today())
+        ->count();
+    }
+
+    public function getIncidentsCompletedTodayAttribute() 
+    {   
+        return $incident_count =  DB::table('patients')
+        ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
+        ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+        ->join('response_personnels', 'response_teams.id', '=', 'response_personnels.response_team_id')
+        ->join('personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
+        ->where('personnels.id', '=', $this->id)
+        ->whereDate('patients.completed_at', Carbon::today())
+        ->count();
+    }
+
+    public function getIncidentsCompletedOverallAttribute() 
+    {   
+        return $incident_count =  DB::table('patients')
+        ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
+        ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+        ->join('response_personnels', 'response_teams.id', '=', 'response_personnels.response_team_id')
+        ->join('personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
+        ->where('personnels.id', '=', $this->id)
+        ->count();
     }
 }

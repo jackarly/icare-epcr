@@ -21,7 +21,13 @@
                                 </div>
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold">Status: </span></li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Status:</span>
+                                            @isset($incident->response_team_id)
+                                                <span class="text-success fw-semibold">Assigned</span>
+                                            @else
+                                                <span class="text-danger fw-semibold">Unassigned</span>
+                                            @endisset 
+                                        </li>
                                         <li class="text-capitalize"><span class="fw-semibold">Reported at: </span>{{ $incident->created_at->diffForHumans() }}</li>
                                         
                                     </ul>

@@ -8,31 +8,31 @@ use App\Models\Patient;
 use App\Models\PatientAssessment;
 use App\Models\PatientManagement;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PatientController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
     public function index($status = null)
     {
-        // $patients_complete = DB::table('patient_managements')
-        //     ->join('patients', 'patient_managements.patient_id', '=', 'patients.id')
-        //     ->whereNotNull('patient_managements.timings_clear')
-        //     ->pluck('patient_managements.patient_id');
-        $patients_complete = PatientManagement::whereNot('timings_clear', null)->pluck('patient_id');
-
         switch($status) {
             case('ongoing'):
-                $patients = Patient::whereNotIn('id', $patients_complete)->latest()->with(['patient_management'])->paginate(12);
+                $patients = Patient::where('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
                 break;
 
             case('completed'):
-                $patients = Patient::whereIn('id', $patients_complete)->latest()->with(['patient_management'])->paginate(12);
+                $patients = Patient::whereNot('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
                 break;
 
             default:
                 $patients = Patient::latest()->with(['patient_management'])->paginate(12);
+                $status = 'all patients';
         }
 
         return view('patient.index', [
@@ -146,5 +146,13 @@ class PatientController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function completePatient(Patient $patient)
+    {
+        $patient->update([
+            'completed_at'=> Carbon::now(),
+        ]);
+        return redirect()->route('pcr.show', $patient->id)->with('success', 'Patient information updated successfully');
     }
 }

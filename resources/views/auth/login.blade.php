@@ -23,7 +23,6 @@
 <body class="login-bg">
     <div id="app">
         <main class="py-4">
-            @include('inc.messages')
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-md-8 col-lg-6 custom-login-form">

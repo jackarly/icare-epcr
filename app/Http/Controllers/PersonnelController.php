@@ -4,18 +4,46 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Personnel;
+use App\Models\ResponsePersonnel;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PersonnelController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($status = null)
     {
-        $personnels = Personnel::latest()->paginate(12);
+        // $responsePersonnels = ResponsePersonnel::whereDate('created_at', Carbon::today())->pluck('personnel_id');
+        // dd($responsePersonnels);
+
+        // $personnels = Personnel::whereIn('id', $responsePersonnels)->latest()->paginate(12);
+        // dd($personnels);
+
+        switch($status) {
+            case('available'):
+                $responsePersonnels = ResponsePersonnel::whereDate('created_at', Carbon::today())->pluck('personnel_id');
+                $personnels = Personnel::whereNotIn('id', $responsePersonnels)->latest()->paginate(12);
+                break;
+
+            case('assigned'):
+                $responsePersonnels = ResponsePersonnel::whereDate('created_at', Carbon::today())->pluck('personnel_id');
+                $personnels = Personnel::whereIn('id', $responsePersonnels)->latest()->paginate(12);
+                break;
+
+            default:
+                $personnels = Personnel::latest()->paginate(12);
+                $status = 'all medics';
+        }
 
         return view('personnel.index', [
             'personnels' => $personnels,
+            'status' => $status,
         ]);
     }
 

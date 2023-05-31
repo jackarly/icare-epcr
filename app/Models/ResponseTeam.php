@@ -9,6 +9,7 @@ use App\Models\ResponsePersonnel;
 use App\Models\UserAmbulance;
 use App\Models\Incident;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ResponseTeam extends Model
 {
@@ -19,7 +20,7 @@ class ResponseTeam extends Model
         'status', 
     ];
 
-    protected $appends = ['incidentsToday', 'incidentsTotal'];
+    protected $appends = ['incidentsToday', 'incidentsTotal', 'incidentsCompletedToday'];
 
     public function incidents()
     {
@@ -49,5 +50,17 @@ class ResponseTeam extends Model
     public function getIncidentsTotalAttribute() 
     {
         return $this->incidents()->count();
+    }
+
+    public function getIncidentsCompletedTodayAttribute() 
+    {   
+        // $response = $this;
+
+        return $incident_count =  DB::table('response_teams')
+        ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
+        ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+        ->where('response_teams.id', '=', $this->id)
+        ->whereDate('patients.completed_at', Carbon::today())
+        ->count();
     }
 }

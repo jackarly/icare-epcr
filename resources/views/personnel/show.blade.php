@@ -44,8 +44,9 @@
                             <h5 class="fw-semibold">Account Overview</h5>
                             <div class="col-md-8">
                                 <ul class="list-group list-group-flush custom-list">
-                                    <li><span class="text-secondary fw-semibold">Active Incidents: </span></li>
-                                    <li><span class="text-secondary fw-semibold">Completed Incidents: </span></li>
+                                    <li><span class="text-secondary ">Assigned Incidents Today: </span>{{$personnel->incidentsToday}}</li>
+                                    <li><span class="text-secondary ">Incidents Completed Today: </span>{{$personnel->incidentsCompletedToday}}</li>
+                                    <li><span class="text-secondary ">Overall Incidents Completed: </span>{{$personnel->incidentsCompletedOverall}}</li>
                                 </ul>
                             </div>
                         </div>

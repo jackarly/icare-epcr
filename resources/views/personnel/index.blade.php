@@ -8,12 +8,12 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        All Medics
+                            <span class="text-capitalize">{{ ($status) ?? 'all medics'}}</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">All Medics</a></li>
-                        <li><a class="dropdown-item" href="#">Availalbe</a></li>
-                        <li><a class="dropdown-item" href="#">Assigned</a></li>
+                        <li><a class="dropdown-item" href="{{ route('personnel') }}">All Medics</a></li>
+                        <li><a class="dropdown-item" href="{{ route('personnel', 'available') }}">Availalbe</a></li>
+                        <li><a class="dropdown-item" href="{{ route('personnel', 'assigned') }}">Assigned</a></li>
                         <!-- <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#">Something else here</a></li> -->
                     </ul>
@@ -46,7 +46,14 @@
                                 <div class="col-md-12">
                                     <ul class="list-group list-group-flush custom-list">
                                         <li class="text-center"><span class="text-capitalize fs-5 fw-semibold">{{$personnel->personnel_first_name}} {{$personnel->personnel_last_name}}</span></li>
-                                        <li class="">MEDIC{{$personnel->id}}<span class="fs-5">|</span> <span class="text-success fw-semibold">Assigned</span></li>
+                                        <li class="">MEDIC{{$personnel->id}}<span class="fs-5">|</span>
+                                            @if ($personnel->medicStatus)
+                                                <span class="text-warning fw-semibold">Assigned</span>
+                                            @else
+                                                <span class="text-success fw-semibold">Available</span>
+                                            @endif
+                                            
+                                        </li>
                                         <li class="name-space"><span>{{$personnel->contact}}</span></li>
                                         <li class="mt-2"><a href="{{route('personnel.show', $personnel->id)}}" class="btn btn-outline-primary btn-sm d-block">View Medic</a></li>
                                     </ul>
@@ -69,8 +76,9 @@
             @endforeach
             
         @else
+            <hr>
             <div class="col-md-8">
-                Nothing
+                <span class="fst-italic text-secondary">Nothing to show</span>
             </div>
         @endif        
     </div>

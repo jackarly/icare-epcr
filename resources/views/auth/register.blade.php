@@ -53,9 +53,9 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6" id="defaultUsernameContainer" style="display:none">
+                            <!-- <div class="col-md-6" id="defaultUsernameContainer" style="display:none">
                                 <span>Default Username</span>
-                            </div>
+                            </div> -->
 
                         </div>
 
@@ -87,20 +87,20 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6 offset-md-4">
-                                <input class="form-check-input" type="checkbox" name="default_user" onchange='defaultUser(this);' value="false" id="id_default_user">
+                                <input class="form-check-input" type="checkbox" name="default_user" onchange='defaultUser(this);' value="true" id="id_default_user">
                                 <label class="form-check-label" for="flexCheckDefault">
-                                Set default Username & Password
+                                Set Username as password
                                 </label>
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <!-- <div class="row mb-3">
                             <div class="col-md-6 offset-md-4">
                                 <div style="display:none" id="defaultDetails">
                                     Default: 
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <hr>
 
@@ -370,14 +370,14 @@
     <script type="text/javascript">
         function defaultUser(x) {
             if(x.checked == true){
-                document.getElementById('username').disabled = true;
+                // document.getElementById('username').disabled = true;
                 document.getElementById('password').disabled = true;
                 document.getElementById('password-confirm').disabled = true;
                 document.getElementById('defaultDetails').style.display = "block";
                 document.getElementById('defaultUsernameContainer').style.display = "block";
                 document.getElementById('usernameContainer').style.display = "none";
             }else{
-                document.getElementById('username').disabled = false;
+                // document.getElementById('username').disabled = false;
                 document.getElementById('password').disabled = false;
                 document.getElementById('password-confirm').disabled = false;
                 document.getElementById('defaultDetails').style.display = "none";

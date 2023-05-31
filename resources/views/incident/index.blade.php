@@ -8,13 +8,13 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        All Incidents
+                        <span class="text-capitalize">{{ ($status) ?? 'incidents today'}}</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">All Incidents</a></li>
-                        <li><a class="dropdown-item" href="#">Unassigned</a></li>
-                        <li><a class="dropdown-item" href="#">Assigned</a></li>
-                        <li><a class="dropdown-item" href="#">Completed</a></li>
+                        <li><a class="dropdown-item" href="{{ route('incident',) }}">Incidents Today</a></li>
+                        <li><a class="dropdown-item" href="{{ route('incident', 'unassigned today') }}">Unassigned Today</a></li>
+                        <li><a class="dropdown-item" href="{{ route('incident', 'assigned today') }}">Assigned Today</a></li>
+                        <li><a class="dropdown-item" href="{{ route('incident', 'all incidents') }}">All Incidents</a></li>
                         <!-- <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#">Something else here</a></li> -->
                     </ul>
@@ -58,10 +58,14 @@
                     </div>
                 </div>
             @endforeach
+            <div class="d-flex">
+                {{ $incidents->links('pagination::simple-bootstrap-5') }}
+            </div>
             
         @else
+            <hr>
             <div class="col-md-8">
-                Nothing
+                <span class="fst-italic text-secondary">Nothing to show</span>
             </div>
         @endif        
     </div>

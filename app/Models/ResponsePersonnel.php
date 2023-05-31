@@ -18,7 +18,7 @@ class ResponsePersonnel extends Model
 
     public function personnel()
     {
-        return $this->belongsTo(Personnel::class);
+        return $this->hasMany(Personnel::class);
     }
 
     public function response_teams()

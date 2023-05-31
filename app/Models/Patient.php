@@ -13,6 +13,12 @@ use Carbon\Carbon;
 class Patient extends Model
 {
     use HasFactory;
+
+    // protected $dates = [
+    //     'created_at',
+    //     'updated_at',
+    //     'completed_at',
+    // ];
     
     protected $fillable = [
         'ppcr_color',
@@ -24,6 +30,7 @@ class Patient extends Model
         'sex',
         'contact_no',
         'address',
+        'completed_at',
         'incident_id',
     ];
 

@@ -46,8 +46,8 @@
                                         </li>
                                         <li class="">PATIENT{{$patient->id}}
                                             <span class="fs-5">|</span> 
-                                            @isset ($patient->patient_management->timings_clear)
-                                                <span class="text-success text-capitalize fw-semibold">Complete</span>
+                                            @isset ($patient->completed_at)
+                                                <span class="text-success text-capitalize fw-semibold">Completed</span>
                                             @else
                                                 <span class="text-warning text-capitalize fw-semibold">Ongoing</span>
                                             @endisset
@@ -85,8 +85,9 @@
             </div>
             
         @else
+            <hr>
             <div class="col-md-8">
-                Nothing
+                <span class="fst-italic text-secondary">Nothing to show</span>
             </div>
         @endif        
     </div>

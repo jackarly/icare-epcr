@@ -13,18 +13,12 @@ use App\Http\Controllers\PatientObservationController;
 use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\ResponseTeamController;
 
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-// Auth::routes();
+Auth::routes();
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-
-Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/account/create/{userType?}', [AccountController::class, 'create'])->name('account.create');
 Route::post('/account/store', [AccountController::class, 'store'])->name('account.store');
@@ -32,9 +26,18 @@ Route::get('/account', [AccountController::class, 'showMyAccount'])->name('accou
 Route::get('/account/overview/{userType?}', [AccountController::class, 'index'])->name('account.overview');
 Route::get('/account/{id}', [AccountController::class, 'show'])->name('account.show');
 
+Route::get('/ambulance/{user}/edit', [AccountController::class, 'editAmbulance'])->name('ambulance.edit');
+Route::put('/ambulance/{user}/update', [AccountController::class, 'updateAmbulance'])->name('ambulance.update');
+Route::get('/hospital/{user}/edit', [AccountController::class, 'editHospital'])->name('hospital.edit');
+Route::put('/hospital/{user}/update', [AccountController::class, 'updateHospital'])->name('hospital.update');
+Route::get('/comcen/{user}/edit', [AccountController::class, 'editComcen'])->name('comcen.edit');
+Route::put('/comcen/{user}/update', [AccountController::class, 'updateComcen'])->name('comcen.update');
+Route::get('/admin/{user}/edit', [AccountController::class, 'editAdmin'])->name('admin.edit');
+Route::put('/admin/{user}/update', [AccountController::class, 'updateAdmin'])->name('admin.update');
+
 Route::get('/incident/create', [IncidentController::class, 'create'])->name('incident.create');
 Route::post('/incident/store', [IncidentController::class, 'store'])->name('incident.store');
-Route::get('/incident', [IncidentController::class, 'index'])->name('incident');
+Route::get('/incident/overview/{status?}', [IncidentController::class, 'index'])->name('incident');
 Route::get('/incident/{incident}', [IncidentController::class, 'show'])->name('incident.show');
 Route::put('/incident/asign/{incident}', [IncidentController::class, 'assign'])->name('incident.assign');
 Route::put('/incident/timings/{patient}', [IncidentController::class, 'updateTimings'])->name('incident.timings');
@@ -43,9 +46,10 @@ Route::put('/incident/{incident}/update', [IncidentController::class, 'update'])
 
 Route::get('/patient/create/{incident}', [PatientController::class, 'create'])->name('patient.create');
 Route::post('/patient/store/{incident}', [PatientController::class, 'store'])->name('patient.store');
-Route::get('/patient/{status?}', [PatientController::class, 'index'])->name('patient');
+Route::get('/patient/overview/{status?}', [PatientController::class, 'index'])->name('patient');
 Route::get('/patient/{patient}/edit', [PatientController::class, 'edit'])->name('patient.edit');
 Route::put('/patient/{patient}/update', [PatientController::class, 'update'])->name('patient.update');
+Route::put('/patient/{patient}/complete', [PatientController::class, 'completePatient'])->name('patient.complete');
 
 Route::get('/pcr/{patient}', [PcrController::class, 'show'])->name('pcr.show');
 
@@ -66,7 +70,7 @@ Route::put('/observation/{patientObservation}/update', [PatientObservationContro
 
 Route::get('/personnel/create', [PersonnelController::class, 'create'])->name('personnel.create');
 Route::post('/personnel/store', [PersonnelController::class, 'store'])->name('personnel.store');
-Route::get('/personnel', [PersonnelController::class, 'index'])->name('personnel');
+Route::get('/personnel/overview/{status?}', [PersonnelController::class, 'index'])->name('personnel');
 Route::get('/personnel/{personnel}', [PersonnelController::class, 'show'])->name('personnel.show');
 Route::get('/personnel/{personnel}/edit', [PersonnelController::class, 'edit'])->name('personnel.edit');
 Route::put('/personnel/{personnel}/update', [PersonnelController::class, 'update'])->name('personnel.update');
@@ -77,6 +81,13 @@ Route::get('/response', [ResponseTeamController::class, 'index'])->name('respons
 Route::get('/response/{responseTeam}', [ResponseTeamController::class, 'show'])->name('response.show');
 Route::get('/response/{responseTeam}/edit', [ResponseTeamController::class, 'edit'])->name('response.edit');
 Route::put('/response/{responseTeam}/update', [ResponseTeamController::class, 'update'])->name('response.update');
+
+// Route::fallback(function () {
+//     dd('welp');
+// });
+
+// Route::fallback('/');
+
 
 
 

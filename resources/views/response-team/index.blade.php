@@ -42,7 +42,7 @@
                                         <!-- <li><span class="text-capitalize fs-5 fw-semibold">{{ $response->user_ambulance->plate_no }}</span><span class="fs-5"> &#183; </span>{{$response->id}}</li> -->
                                         <li class="text-center name-space"><span class="text-capitalize fs-5 fw-semibold">{{ $response->user_ambulance->plate_no }}</span></li>
                                         <li class="">RT{{$response->id}}</li>
-                                        <li class="text-capitalize name-space"><span class="">Incidents Assigned Today: {{ $response->incidents->count() }}</span>
+                                        <li class="text-capitalize fw-semibold name-space"><span class="">Incidents Today: {{ $response->incidents->count() }}</span>
                                         <li class=""><a href="{{ route('response.show', $response->id) }}" class="btn btn-outline-primary btn-sm d-block">View Team</a></li>
                                     </ul>
                                 </div>
