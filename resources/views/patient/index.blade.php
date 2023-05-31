@@ -14,12 +14,9 @@
                             <li><a class="dropdown-item" href="{{ route('patient') }}">All Patients</a></li>
                             <li><a class="dropdown-item" href="{{ route('patient', 'ongoing') }}">Ongoing</a></li>
                             <li><a class="dropdown-item" href="{{ route('patient', 'completed') }}">Completed</a></li>
-                            <!-- <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li> -->
                         </ul>
                     </ul>
-
-                <!-- <a href="" class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Create Incident</a> -->
+                    
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Search</button>

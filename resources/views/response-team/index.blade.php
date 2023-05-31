@@ -12,11 +12,6 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#">Available Teams</a></li>
-                        <!-- <li><a class="dropdown-item" href="#">All Teams</a></li>
-                        <li><a class="dropdown-item" href="#">Available</a></li>
-                        <li><a class="dropdown-item" href="#">Assigned</a></li> -->
-                        <!-- <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li> -->
                     </ul>
                 </ul>
 
@@ -39,7 +34,6 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <ul class="list-group list-group-flush custom-list">
-                                        <!-- <li><span class="text-capitalize fs-5 fw-semibold">{{ $response->user_ambulance->plate_no }}</span><span class="fs-5"> &#183; </span>{{$response->id}}</li> -->
                                         <li class="text-center name-space"><span class="text-capitalize fs-5 fw-semibold">{{ $response->user_ambulance->plate_no }}</span></li>
                                         <li class="">RT{{$response->id}}</li>
                                         <li class="text-capitalize fw-semibold name-space"><span class="">Incidents Today: {{ $response->incidents->count() }}</span>

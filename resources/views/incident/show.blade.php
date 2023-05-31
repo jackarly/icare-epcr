@@ -9,7 +9,9 @@
                     <div class="card-body">
                         <div class="row mb-3">
                             <h5 class="fw-semibold">Incident Information
-                                <a href="{{ route('incident.edit', $incident->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                    <a href="{{ route('incident.edit', $incident->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @endif
                             </h5>
                             <div class="row">
                                 <div class="col-md-6">
@@ -72,10 +74,12 @@
                         <div class="row mb-3">
                             @isset( $incident->response_team_id)
                                 <h5 class="fw-semibold">Response Team
-                                    <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-outline-success btn-sm custom-rounded-btn float-end" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                        <small>Update</small>
-                                    </button>
+                                    @if ( (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                        <button type="button" class="btn btn-outline-success btn-sm custom-rounded-btn float-end" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                            <small>Update</small>
+                                        </button>
+                                    @endif
+                                    
                                 </h5>
                                 <div class="col-md-12 text-center">
                                     <ul class="list-group list-group-flush text-start custom-list">
@@ -135,8 +139,13 @@
                                             @endforeach
                                         </div>
                                     @else
+                                        
                                         <div class="col-md-12 text-center">
-                                            <a class="btn btn-primary btn-sm" href=" {{route('patient.create', $incident->id)}} "> Create Patient Info</a> 
+                                            @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                                <a class="btn btn-primary btn-sm" href=" {{route('patient.create', $incident->id)}} "> Create Patient Info</a> 
+                                            @else
+                                                <small class="fst-italic text-secondary">Nothing to show</small>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>
@@ -152,55 +161,56 @@
         </div>
     </div>
     
-    <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Assign Response Team</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <form method="POST" action="{{ route('incident.assign', $incident->id)}}">
-                    <div class="modal-body">
-                            @csrf
-                            @method('PUT')
-                            <div class="row">
-                                <div class="col-4">
-                                    <label for="ambulance" class="col-form-label">Response Team</label>
+    @if ( (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Assign Response Team</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <form method="POST" action="{{ route('incident.assign', $incident->id)}}">
+                        <div class="modal-body">
+                                @csrf
+                                @method('PUT')
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label for="ambulance" class="col-form-label">Response Team</label>
+                                    </div>
+                                    @if ($responses->count())
+                                        <div class="col-8 text-center">
+                                            <select class="form-select" aria-label="Default select example" name="response_team" class="form-control @error('response_team') is-invalid @enderror" required>
+                                                <option class="text-center" value="" selected disabled>--- Available Teams ---</option>
+                                                @foreach ($responses as $response)
+                                                    <option class="text-capitalize" value="{{$response->id}}">Ambulance: {{$response->user_ambulance->plate_no}}
+                                                @endforeach
+                                            </select>
+                                            @error('response_team')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    @else
+                                        <div class="col-8 text-center">
+                                            <select class="form-select" aria-label="Default select example" name="response_team" class="form-control">
+                                                <option disabled selected>No response team available</option>
+                                            </select>
+                                        </div>
+                                    @endif
                                 </div>
-                                @if ($responses->count())
-                                    <div class="col-8 text-center">
-                                        <select class="form-select" aria-label="Default select example" name="response_team" class="form-control @error('response_team') is-invalid @enderror" required>
-                                            <option class="text-center" value="" selected disabled>--- Available Teams ---</option>
-                                            @foreach ($responses as $response)
-                                                <option class="text-capitalize" value="{{$response->id}}">Ambulance: {{$response->user_ambulance->plate_no}}
-                                            @endforeach
-                                        </select>
-                                        @error('response_team')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                @else
-                                    <div class="col-8 text-center">
-                                        <select class="form-select" aria-label="Default select example" name="response_team" class="form-control">
-                                            <option disabled selected>No response team available</option>
-                                        </select>
-                                    </div>
-                                @endif
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
-                        @if ($responses->count())
-                            <button type="submit" class="btn btn-primary">{{ __('Assign') }}</button>
-                        @endif
-                        
-                    </div>
-                </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+                            @if ($responses->count())
+                                <button type="submit" class="btn btn-primary">{{ __('Assign') }}</button>
+                            @endif
+                            
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 @endsection

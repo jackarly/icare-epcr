@@ -22,9 +22,12 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/account/create/{userType?}', [AccountController::class, 'create'])->name('account.create');
 Route::post('/account/store', [AccountController::class, 'store'])->name('account.store');
-Route::get('/account', [AccountController::class, 'showMyAccount'])->name('account.own');
 Route::get('/account/overview/{userType?}', [AccountController::class, 'index'])->name('account.overview');
 Route::get('/account/{id}', [AccountController::class, 'show'])->name('account.show');
+
+Route::get('/account', [AccountController::class, 'showMyAccount'])->name('account.own');
+Route::get('/account-edit', [AccountController::class, 'editMyAccount'])->name('account.edit');
+Route::put('/account-update', [AccountController::class, 'updateMyAccount'])->name('account.update');
 
 Route::get('/ambulance/{user}/edit', [AccountController::class, 'editAmbulance'])->name('ambulance.edit');
 Route::put('/ambulance/{user}/update', [AccountController::class, 'updateAmbulance'])->name('ambulance.update');

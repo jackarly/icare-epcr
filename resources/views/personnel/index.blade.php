@@ -12,7 +12,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('personnel') }}">All Medics</a></li>
-                        <li><a class="dropdown-item" href="{{ route('personnel', 'available') }}">Availalbe</a></li>
+                        <li><a class="dropdown-item" href="{{ route('personnel', 'available') }}">Available</a></li>
                         <li><a class="dropdown-item" href="{{ route('personnel', 'assigned') }}">Assigned</a></li>
                         <!-- <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#">Something else here</a></li> -->

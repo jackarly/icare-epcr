@@ -15,12 +15,12 @@
                         <li><a class="dropdown-item" href="{{ route('incident', 'unassigned today') }}">Unassigned Today</a></li>
                         <li><a class="dropdown-item" href="{{ route('incident', 'assigned today') }}">Assigned Today</a></li>
                         <li><a class="dropdown-item" href="{{ route('incident', 'all incidents') }}">All Incidents</a></li>
-                        <!-- <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li> -->
                     </ul>
                 </ul>
 
-                <a href=" {{route('incident.create')}} " class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Create Incident</a>
+                @if ( (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                    <a href=" {{route('incident.create')}} " class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Create Incident</a>
+                @endif
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Search</button>

@@ -7,28 +7,45 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- Left Side Of Navbar -->
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('home') }}">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('incident') }}">Incident</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('patient') }}">Patient</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('response') }}">Response Team</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('personnel') }}">Medic</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('account.overview') }}">Accounts</a>
-                </li>
-            </ul>
+            @if ((Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance'))
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('home') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('incident') }}">Incident</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('patient') }}">Patient</a>
+                    </li>
+                </ul>
+            @elseif (((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')))
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('home') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('incident') }}">Incident</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('patient') }}">Patient</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('response') }}">Response Team</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('personnel') }}">Medic</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('account.overview') }}">Accounts</a>
+                    </li>
+                </ul>
+            @endif
+            
+            <hr class="mt-0">
 
             <!-- Right Side Of Navbar -->
             <ul class="navbar-nav ms-auto">
@@ -53,6 +70,9 @@
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ route('account.own') }}">
+                                My Account
+                            </a>
                             <a class="dropdown-item" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();">

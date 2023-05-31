@@ -13,12 +13,6 @@
                 </h4>
                 <div class="card">
                     <div class="card-body">
-                        <!-- <div class="row mb-3">
-                            <h4>Personnel List</h4>
-                            <div class="col-md-12">
-                                <img src="{{ asset('storage/default/avatar-default.png') }}" class="rounded-circle mx-auto d-block thumbnail" alt="default-avatar" height="100px" width="100px">
-                            </div>
-                        </div> -->
                         <div class="row mb-3">
                             <div class="col-md-4 mt-3">
                                 <img src="{{ asset('storage/default/avatar-default.png') }}" class="rounded-circle mx-auto d-block thumbnail" alt="default-avatar" height="100px" width="100px">
@@ -28,15 +22,28 @@
                                         <li class="text-center"><span class="fs-5 fw-bold">{{ $account->username }}</span>
                                             @switch($account->user_type)
                                                 @case('ambulance')
-                                                    <a href="{{ route('ambulance.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @if (auth()->user()->id === $account->id )
+                                                        <a href="{{ route('account.edit') }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @else
+                                                        <a href="{{ route('ambulance.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @endif
                                                     @break
                                                 
                                                 @case('hospital')
-                                                    <a href="{{ route('hospital.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @if (auth()->user()->id === $account->id )
+                                                        <a href="{{ route('account.edit') }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @else
+                                                        <a href="{{ route('hospital.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @endif
+                                                    
                                                     @break
                                                     
                                                 @case('comcen')
-                                                    <a href="{{ route('comcen.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @if (auth()->user()->id === $account->id )
+                                                        <a href="{{ route('account.edit') }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @else
+                                                        <a href="{{ route('comcen.edit', $account->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                    @endif
                                                     @break
                                                     
                                                 @case('admin')

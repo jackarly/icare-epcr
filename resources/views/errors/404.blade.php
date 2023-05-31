@@ -30,13 +30,18 @@
                             <img src="{{ asset('images/icare-logo.jpg') }}" class="rounded-circle mx-auto d-block thumbnail" alt="default-avatar" height="200px" width="200px">
                         </div>
                         <div class="card">
-                            <div class="card-header fw-semibold text-center fs-5">Page not found</div>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between my-2">
-                                    <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Go Back</a>
-                                    <span class="text-secondary fst-italic mt-1">or</span>
-                                    <a href="{{ route('home') }}" class="btn btn-primary">Go Home</a>
+                            <div class="card-header fw-semibold text-center text-secondary py-3 fs-5"><i class="fa-solid fa-triangle-exclamation fa-2xl"></i></div>
+                            <div class="card-body text-center">
+                                <h5 class="mx-auto mt-1 mb-3">Page not found</h4>
+                                <div class="row">
+                                    <div class="d-flex justify-content-between my-2">
+                                        <a href="{{ url()->previous() }}" class="btn btn-outline-primary">
+                                        <i class="fa-solid fa-arrow-left"></i> Go Back</a>
+                                        
+                                        <a href="{{ route('home') }}" class="btn btn-primary"><i class="fa-solid fa-house"></i> Go Home </a>
+                                    </div>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>

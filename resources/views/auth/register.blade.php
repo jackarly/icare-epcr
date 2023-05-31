@@ -52,17 +52,7 @@
                                     </span>
                                 @enderror
                             </div>
-
-                            <!-- <div class="col-md-6" id="defaultUsernameContainer" style="display:none">
-                                <span>Default Username</span>
-                            </div> -->
-
                         </div>
-
-                        <!-- <div>
-                            <img src="{{ asset('storage/default/avatar-default.png') }}" height="30px" width="30px">
-                            <img src="{{ asset('storage/default/avatar-default.png') }}">
-                        </div> -->
 
                         <div class="row mb-3">
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
@@ -258,7 +248,7 @@
                                 @break
                                 
                             @case('admin')
-                            <div class="row mb-3">
+                                <div class="row mb-3">
                                     <label for="Name" class="col-md-4 col-form-label text-md-end">{{ __('Admin') }}</label>
 
                                     <div class="col-md-2">

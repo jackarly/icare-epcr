@@ -9,7 +9,9 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-bold mb-3">Pre-Hospital Patient Care Report
-                                <a href="{{ route('patient.edit', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                    <a href="{{ route('patient.edit', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @endif
                             </h5>
                             
                             <div class="col-md-12">
@@ -35,7 +37,9 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-semibold mb-3">Incident Information
-                                <a href="{{ route('incident.edit', $incident->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                    <a href="{{ route('incident.edit', $incident->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @endif
                             </h5>
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -101,9 +105,11 @@
                                     </table>
                                 </div>
                                 <div class="col-md-6 text-center my-auto">
-                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                        Update Incident Timings
-                                    </button>
+                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                            Update Incident Timings
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -113,7 +119,9 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-semibold mb-3">Patient Information
-                                <a href="{{ route('patient.edit', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                    <a href="{{ route('patient.edit', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @endif
                             </h5>
                             <div class="row">
                                 <div class="col-md-6">
@@ -151,7 +159,9 @@
                         <div class="row">
                             @isset($patient_assessment)
                                 <h5 class="fw-semibold mb-3">Patient Assessment
+                                @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                                     <a href="{{ route('assessment.edit', $patient_assessment->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @endif
                                 </h5>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -286,7 +296,11 @@
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Assessment</h5>
                                 <div class="col-md-12 text-center mb-3">
-                                    <a class="btn btn-primary btn-sm" href=" {{route('assessment.create', $patient->id)}} ">Create Patient Assessment</a>
+                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                        <a class="btn btn-primary btn-sm" href=" {{route('assessment.create', $patient->id)}} ">Create Patient Assessment</a>
+                                    @else
+                                        <small class="fst-italic text-secondary">Nothing to show</small>
+                                    @endif
                                 </div>
                             @endisset
                         </div>
@@ -297,7 +311,9 @@
                         <div class="row">
                         @isset($patient_observation)
                             <h5 class="fw-semibold mb-3">Patient Observation
+                                @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                                     <a href="{{ route('observation.edit', $patient_observation->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                @endif
                                 </h5>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -337,7 +353,7 @@
                                                 @elseif ($patient_observation->age_group === "pedia")
                                                     <img src="{{ asset('/images/rule-9-pedia.png') }}" alt="Rule 9 Pedia" style="height: auto; width: 75%; object-fit: contain">
                                                 @else
-                                                    <small class="">Error: Update patiend observation</small>
+                                                    <small class="">Error: Update patient observation</small>
                                                 @endif
                                                 
                                                 
@@ -350,7 +366,11 @@
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Observation</h5>
                                 <div class="col-md-12 text-center mb-3">
-                                    <a class="btn btn-primary btn-sm" href=" {{route('observation.create', $patient->id)}} ">Create Patient Observation</a>
+                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                        <a class="btn btn-primary btn-sm" href=" {{route('observation.create', $patient->id)}} ">Create Patient Observation</a>
+                                    @else
+                                        <small class="fst-italic text-secondary">Nothing to show</small>
+                                    @endif
                                 </div>
                             @endisset
                         </div>
@@ -361,7 +381,9 @@
                         <div class="row">
                             @isset($patient_management)
                                 <h5 class="fw-semibold mb-3">Patient Management
-                                    <a href="{{ route('management.edit', $patient_management->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                        <a href="{{ route('management.edit', $patient_management->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                    @endif
                                 </h5>
                                 <div class="row mb-3">
                                     <div class="col-md-6">
@@ -450,7 +472,11 @@
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Management</h5>
                                 <div class="col-md-12 text-center mb-3">
-                                    <a class="btn btn-primary btn-sm" href=" {{route('management.create', $patient->id)}} ">Create Patient Management</a>
+                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                        <a class="btn btn-primary btn-sm" href=" {{route('management.create', $patient->id)}} ">Create Patient Management</a>
+                                    @else
+                                        <small class="fst-italic text-secondary">Nothing to show</small>
+                                    @endif
                                 </div>
                             @endisset
                         </div>
@@ -478,15 +504,20 @@
                                         @if ($patient_assessment && $patient_management)
                                             @if ($patient_management->timings_handover && $patient_management->timings_clear)
                                                 <li class="col-10 mx-auto mb-1">
-                                                    <form method="POST" action="{{route('patient.complete',  $patient->id)}}">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <div class="d-grid">
-                                                            <button type="submit" class="btn btn-success btn-sm rounded-pill fw-semibold">
-                                                                PCR Complete
-                                                            </button>
-                                                        </div>
-                                                    </form>
+                                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                                        <form method="POST" action="{{route('patient.complete',  $patient->id)}}">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="d-grid">
+                                                                <button type="submit" class="btn btn-success btn-sm rounded-pill fw-semibold">
+                                                                    PCR Complete
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    @else
+                                                        <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">To be cleared by facility</li>
+                                                    @endif
+                                                    
                                                 </li>
                                             @else
                                             <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Update Patient Management Timings</li>
