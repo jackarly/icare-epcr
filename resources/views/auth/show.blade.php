@@ -55,9 +55,7 @@
                                             @endswitch
                                             
                                         </li>
-                                        <!-- <li class="text-capitalize fst-italic text-center">ID{{ $account->id }} <span class="fs-5">|</span> {{ $account->user_type }}</li> -->
                                         <li class="text-capitalize">ID{{ $account->id }} <span class="fs-5">|</span> {{ $account->user_type }}</li>
-                                        <!-- <span class="fs-5">&middot;</span> -->
                                         <li class="account-name">
                                             @switch($account->user_type)
                                                 @case('ambulance')

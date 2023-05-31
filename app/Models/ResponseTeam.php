@@ -37,11 +37,6 @@ class ResponseTeam extends Model
         return $this->belongsTo(UserAmbulance::class);
     }
 
-    // public function incidentsToday()
-    // {
-    //     return $this->incidents()->whereDate('created_at', Carbon::today())->count();
-    // }
-
     public function getIncidentsTodayAttribute() 
     {
         return $this->incidents()->whereDate('created_at', Carbon::today())->count();
@@ -54,8 +49,6 @@ class ResponseTeam extends Model
 
     public function getIncidentsCompletedTodayAttribute() 
     {   
-        // $response = $this;
-
         return $incident_count =  DB::table('response_teams')
         ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
         ->join('patients', 'incidents.id', '=', 'patients.incident_id')

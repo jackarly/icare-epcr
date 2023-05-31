@@ -89,8 +89,9 @@ Route::put('/response/{responseTeam}/update', [ResponseTeamController::class, 'u
 //     dd('welp');
 // });
 
-// Route::fallback('/');
-
+Route::fallback(function () {
+    view('errors.404');
+});
 
 
 
