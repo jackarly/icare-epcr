@@ -20,20 +20,51 @@ class PatientController extends Controller
 
     public function index($status = null)
     {
-        switch($status) {
-            case('ongoing'):
-                $patients = Patient::where('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
-                break;
+        if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+            if (Auth::user()->user_type == 'hospital'){
+                $assignedPatients = PatientManagement::where('user_hospital_id', Auth::user()->user_hospital->id)->pluck('patient_id');
+            }
+            elseif(Auth::user()->user_type == 'ambulance'){
+                $assignedPatients = DB::table('user_ambulances')
+                ->join('response_teams', 'user_ambulances.id', '=', 'response_teams.user_ambulance_id')
+                ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
+                ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+                ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
+                ->pluck('patients.id');
+            }
+            else{
+                return view('errors.404');
+            }
+            switch($status) {
+                case('ongoing'):
+                    $patients = Patient::whereIn('id', $assignedPatients)->where('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
+                    break;
 
-            case('completed'):
-                $patients = Patient::whereNot('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
-                break;
+                case('completed'):
+                    $patients = Patient::whereIn('id', $assignedPatients)->whereNot('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
+                    break;
 
-            default:
-                $patients = Patient::latest()->with(['patient_management'])->paginate(12);
-                $status = 'all patients';
+                default:
+                    $patients = Patient::whereIn('id', $assignedPatients)->latest()->with(['patient_management'])->paginate(12);
+                    $status = 'all patients';
+            }
         }
+        else{
+            switch($status) {
+                case('ongoing'):
+                    $patients = Patient::where('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
+                    break;
 
+                case('completed'):
+                    $patients = Patient::whereNot('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
+                    break;
+
+                default:
+                    $patients = Patient::latest()->with(['patient_management'])->paginate(12);
+                    $status = 'all patients';
+            }
+
+        }
         return view('patient.index', [
             'patients' => $patients,
             'status' => $status,

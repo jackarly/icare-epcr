@@ -68,7 +68,7 @@
                                             <a href="{{route('incident.show', $patient->incident_id)}}" class="btn btn-outline-primary btn-sm d-block">View IR</a>
                                         </li>
                                         <li class="mt-1">
-                                            <a href="{{route('pcr.show', $patient->incident_id)}}" class="btn btn-primary btn-sm d-block">View PCR</a>
+                                            <a href="{{route('pcr.show', $patient->id)}}" class="btn btn-primary btn-sm d-block">View PCR</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -83,8 +83,8 @@
             
         @else
             <hr>
-            <div class="col-md-8">
-                <span class="fst-italic text-secondary">Nothing to show</span>
+            <div class="col-md-12 text-center">
+                <span class="text-secondary my-5">Nothing to show</span>
             </div>
         @endif        
     </div>

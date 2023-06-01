@@ -138,8 +138,8 @@
             </div>
         @else
             <hr>
-            <div class="col-md-8">
-                <span class="fst-italic text-secondary">Nothing to show</span>
+            <div class="col-md-12 text-center">
+                <span class="text-secondary my-5">Nothing to show</span>
             </div>
         @endif        
     </div>

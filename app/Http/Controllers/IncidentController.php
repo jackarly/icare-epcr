@@ -19,24 +19,59 @@ class IncidentController extends Controller
     
     public function index($status = null)
     {
-        switch($status) {
-            case('unassigned today'):
-                $incidents = Incident::where('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                break;
+        if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+            if (Auth::user()->user_type == 'hospital'){
+                $assignedIncidents = DB::table('incidents')
+                ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+                ->join('patient_managements', 'patients.id', '=', 'patient_managements.patient_id')
+                ->where('patient_managements.user_hospital_id', '=', Auth::user()->user_hospital->id)
+                ->pluck('incidents.id');
+            }
+            elseif(Auth::user()->user_type == 'ambulance'){
+                $assignedIncidents = DB::table('incidents')
+                ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+                ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
+                ->pluck('incidents.id');
+            }
+            else{
+                return view('errors.404');
+            }
+            switch($status) {
+                case('unassigned today'):
+                    $incidents = Incident::where('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                    break;
 
-            case('assigned today'):
-                $incidents = Incident::whereNot('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                break;
+                case('assigned today'):
+                    $incidents = Incident::whereNot('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                    break;
 
-            case('all incidents'):
-                $incidents = Incident::latest()->paginate(12);
-                break;
+                case('all incidents'):
+                    $incidents = Incident::whereIn('id', $assignedIncidents)->latest()->paginate(12);
+                    break;
 
-            default:
-                $incidents = Incident::whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                $status = 'incidents today';
+                default:
+                    $incidents = Incident::whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                    $status = 'incidents today';
+            }
+        }else{
+            switch($status) {
+                case('unassigned today'):
+                    $incidents = Incident::where('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                    break;
+
+                case('assigned today'):
+                    $incidents = Incident::whereNot('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                    break;
+
+                case('all incidents'):
+                    $incidents = Incident::latest()->paginate(12);
+                    break;
+
+                default:
+                    $incidents = Incident::whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                    $status = 'incidents today';
+            }
         }
-
         return view('incident.index', [
             'incidents' => $incidents,
             'status' => $status,
@@ -94,32 +129,113 @@ class IncidentController extends Controller
     
     public function show(Incident $incident)
     {
-        $responses = ResponseTeam::whereDate('created_at', Carbon::today())->get();
-        $patients = $incident->patients()->get();
-        $medics= null;
+        if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+            $grantAccess = false;
 
-        if  ($incident->response_team_id){
-            $medics = DB::table('personnels')
-                ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
-                ->join('response_teams', 'response_teams.id', '=', 'response_personnels.response_team_id')
-                ->where('response_teams.id','=',$incident->response_team_id)
-                ->get();
+            if (Auth::user()->user_type == 'hospital'){
+                $assignedIncidents = DB::table('incidents')
+                ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+                ->join('patient_managements', 'patients.id', '=', 'patient_managements.patient_id')
+                ->where('patient_managements.user_hospital_id', '=', Auth::user()->user_hospital->id)
+                ->pluck('incidents.id');
+                foreach ($assignedIncidents as $item) {
+                    if($incident->id == $item){
+                        $grantAccess = true;
+                        break;
+                    }
+                }
+                
+            }
+            elseif(Auth::user()->user_type == 'ambulance'){
+                $assignedIncidents = DB::table('incidents')
+                ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+                ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
+                ->pluck('incidents.id');
+                foreach ($assignedIncidents as $item) {
+                    if($incident->id == $item){
+                        $grantAccess = true;
+                        break;
+                    }
+                }
+            }
+            else{
+                return view('errors.404');
+            }
+
+            if ($grantAccess){
+                $responses = ResponseTeam::whereDate('created_at', Carbon::today())->get();
+                $patients = $incident->patients()->get();
+                $medics= null;
+
+                if  ($incident->response_team_id){
+                    $medics = DB::table('personnels')
+                        ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
+                        ->join('response_teams', 'response_teams.id', '=', 'response_personnels.response_team_id')
+                        ->where('response_teams.id','=',$incident->response_team_id)
+                        ->get();
+                }
+                return view('incident.show', [
+                    'incident' => $incident,
+                    'patients' => $patients,
+                    'responses' => $responses,
+                    'medics' => $medics,
+                ]);
+            }else{
+                return view('errors.404');
+            }
+            
+        }else{
+            $responses = ResponseTeam::whereDate('created_at', Carbon::today())->get();
+            $patients = $incident->patients()->get();
+            $medics= null;
+
+            if  ($incident->response_team_id){
+                $medics = DB::table('personnels')
+                    ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
+                    ->join('response_teams', 'response_teams.id', '=', 'response_personnels.response_team_id')
+                    ->where('response_teams.id','=',$incident->response_team_id)
+                    ->get();
+            }
+            return view('incident.show', [
+                'incident' => $incident,
+                'patients' => $patients,
+                'responses' => $responses,
+                'medics' => $medics,
+            ]);
         }
-        return view('incident.show', [
-            'incident' => $incident,
-            'patients' => $patients,
-            'responses' => $responses,
-            'medics' => $medics,
-        ]);
+
     }
+        
 
     
     public function edit(Incident $incident)
     {
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
-            return view('incident.edit', [
-                'incident' => $incident,
-            ]);
+            if (Auth::user()->user_type == 'ambulance'){
+                $grantAccess = false;
+                $assignedIncidents = DB::table('incidents')
+                ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+                ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
+                ->pluck('incidents.id');
+
+                foreach ($assignedIncidents as $item) {
+                    if($incident->id == $item){
+                        $grantAccess = true;
+                        break;
+                    }
+                }
+                if ($grantAccess){
+                    return view('incident.edit', [
+                        'incident' => $incident,
+                    ]);
+                }else{
+                    return view('errors.404');
+                }
+            }else{
+                return view('incident.edit', [
+                    'incident' => $incident,
+                ]);
+            }
         }
         else{
             return view('errors.404');

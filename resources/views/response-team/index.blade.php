@@ -47,8 +47,9 @@
             @endforeach
             
         @else
-            <div class="col-md-8">
-                Nothing
+            <hr>
+            <div class="col-md-12 text-center">
+                <span class="text-secondary my-5">Nothing to show</span>
             </div>
         @endif        
     </div>
