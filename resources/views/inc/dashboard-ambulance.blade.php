@@ -6,7 +6,7 @@
             <div class="text-center border border-success rounded bg-success text-light opacity-75" style="height: 100%; width: 100%">
                 <ul class="list-group list-group-flush custom-list">
                     <li class="custom-dashboard-title mt-3 mt-lg-4"><h5 class="fw-bold">New</h5></li>
-                    <li class="mt-2"><span class="display-4">{{  App\Models\UserAmbulance::dashboardCompletedOverall()}}</span></li>
+                    <li class="mt-2"><span class="display-4">{{  App\Models\UserAmbulance::dashboardNewToday()}}</span></li>
                 </ul>
             </div>
         </div>
@@ -14,7 +14,7 @@
             <div class="text-center border border-warning rounded bg-warning opacity-75" style="height: 100%; width: 100%">
                 <ul class="list-group list-group-flush custom-list">
                     <li class="custom-dashboard-title mt-3 mt-lg-4"><h5 class="fw-bold">Completed Today</h5></li>
-                    <li class="mt-2"><span class="display-4">{{ App\Models\UserAmbulance::dashboardCompletedOverall() }}</span></li>
+                    <li class="mt-2"><span class="display-4">{{ App\Models\UserAmbulance::dashboardCompletedToday() }}</span></li>
                 </ul>
             </div>
         </div>
@@ -31,7 +31,7 @@
     
     
     <h5 class="fw-semibold text-secondary">Account Overview</h5> <span></span>
-    <span class="text-secondary"> Ambulance Plate No:</span> <span class="fw-semibold text-secondary">DERF123</span> 
+    <span class="text-secondary"> Ambulance Plate No:</span> <span class="fw-semibold text-secondary">{{auth()->user()->user_ambulance->plate_no}}</span> 
     <div class="row justify-content-around my-4">
 
         @php $medics = App\Models\UserAmbulance::dashboardMedics() @endphp

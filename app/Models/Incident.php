@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Patient;
 use App\Models\ResponseTeam;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Incident extends Model
 {
@@ -52,7 +53,13 @@ class Incident extends Model
 
     public static function getOngoingToday() 
     {
-        return Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->count();
+        // return Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->count();
+
+        return $incidents =  DB::table('incidents')
+            ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+            ->whereNull('patients.completed_at')
+            ->whereDate('incidents.created_at', Carbon::today())
+            ->count();
     }
 
     public static function getDeployedToday() 

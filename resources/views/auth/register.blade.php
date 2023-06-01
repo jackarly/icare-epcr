@@ -8,28 +8,46 @@
             <div class="card mb-3">
                 <div class="card-header">{{ __('User Type') }}</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 my-1">
-                            <div class="d-grid gap-2">
-                                <a href="{{ route('account.create', 'ambulance') }}" class="btn btn-{{ ($user_type=='ambulance') ? '' : 'outline-'}}primary">Ambulance</a>
+                        @if ( auth()->user()->user_type == 'admin' )
+                            <div class="row">
+                                <div class="col-md-3 my-1">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('account.create', 'ambulance') }}" class="btn btn-{{ ($user_type=='ambulance') ? '' : 'outline-'}}primary">Ambulance</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 my-1">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('account.create', 'hospital') }}" class="btn btn-{{ ($user_type=='hospital') ? '' : 'outline-'}}primary">Hospital</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 my-1">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('account.create', 'comcen') }}" class="btn btn-{{ ($user_type=='comcen') ? '' : 'outline-'}}primary">ComCen</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 my-1">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('account.create', 'admin') }}" class="btn btn-{{ ($user_type=='admin') ? '' : 'outline-'}}primary">Admin</a>
+                                    </div>
+                                </div>
+                                
                             </div>
-                        </div>
-                        <div class="col-md-3 my-1">
-                            <div class="d-grid gap-2">
-                                <a href="{{ route('account.create', 'hospital') }}" class="btn btn-{{ ($user_type=='hospital') ? '' : 'outline-'}}primary">Hospital</a>
+                        @else
+                            <div class="row">
+                                <div class="col-md-6 my-1">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('account.create', 'ambulance') }}" class="btn btn-{{ ($user_type=='ambulance') ? '' : 'outline-'}}primary">Ambulance</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 my-1">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ route('account.create', 'hospital') }}" class="btn btn-{{ ($user_type=='hospital') ? '' : 'outline-'}}primary">Hospital</a>
+                                    </div>
+                                </div>
+                                
                             </div>
-                        </div>
-                        <div class="col-md-3 my-1">
-                            <div class="d-grid gap-2">
-                                <a href="{{ route('account.create', 'comcen') }}" class="btn btn-{{ ($user_type=='comcen') ? '' : 'outline-'}}primary">ComCen</a>
-                            </div>
-                        </div>
-                        <div class="col-md-3 my-1">
-                            <div class="d-grid gap-2">
-                                <a href="{{ route('account.create', 'admin') }}" class="btn btn-{{ ($user_type=='admin') ? '' : 'outline-'}}primary">Admin</a>
-                            </div>
-                        </div>
-                    </div>
+                        @endif
+                    
                 </div>
             </div>
         </div>
@@ -203,7 +221,7 @@
                                     </div>
 
                                     <div class="col-md-2">
-                                        <input id="mid_name" type="text" class="form-control @error('mid_name') is-invalid @enderror" name="mid_name" value="{{ old('mid_name') }}" required autocomplete="mid_name" autofocus placeholder="Mid Name">
+                                        <input id="mid_name" type="text" class="form-control @error('mid_name') is-invalid @enderror" name="mid_name" value="{{ old('mid_name') }}"  autocomplete="mid_name" autofocus placeholder="Mid Name">
                                         @error('mid_name')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -261,7 +279,7 @@
                                     </div>
 
                                     <div class="col-md-2">
-                                        <input id="mid_name" type="text" class="form-control @error('mid_name') is-invalid @enderror" name="mid_name" value="{{ old('mid_name') }}" required autocomplete="mid_name" autofocus placeholder="Mid Name">
+                                        <input id="mid_name" type="text" class="form-control @error('mid_name') is-invalid @enderror" name="mid_name" value="{{ old('mid_name') }}"  autocomplete="mid_name" autofocus placeholder="Mid Name">
                                         @error('mid_name')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>

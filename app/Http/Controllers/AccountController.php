@@ -19,27 +19,44 @@ class AccountController extends Controller
     public function index($user_type = null)
     {
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
-            switch($user_type) {
-                case('ambulance'):
-                    $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
-                    break;
-    
-                case('hospital'):
-                    $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
-                    break;
-    
-                case('comcen'):
-                    $accounts = User::where('user_type', $user_type)->latest()->with(['user_comcen'])->paginate(12);
-                    break;
-    
-                case('admin'):
-                    $accounts = User::where('user_type', $user_type)->latest()->with(['user_admin'])->paginate(12);
-                    break;
-    
-                default:
-                    $accounts = User::latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
-                    $user_type = 'all users';
+            if (Auth::user()->user_type == 'admin'){
+                switch($user_type) {
+                    case('ambulance'):
+                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
+                        break;
+        
+                    case('hospital'):
+                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
+                        break;
+        
+                    case('comcen'):
+                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_comcen'])->paginate(12);
+                        break;
+        
+                    case('admin'):
+                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_admin'])->paginate(12);
+                        break;
+        
+                    default:
+                        $accounts = User::latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
+                        $user_type = 'all users';
+                }
+            }else{
+                switch($user_type) {
+                    case('ambulance'):
+                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
+                        break;
+        
+                    case('hospital'):
+                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
+                        break;
+        
+                    default:
+                        $accounts = User::whereIN('user_type', ['ambulance', 'hospital'])->latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
+                        $user_type = 'all users';
+                }
             }
+            
     
             return view('auth.index', [
                 'accounts' => $accounts,
@@ -117,7 +134,7 @@ class AccountController extends Controller
                             $this->validate($request, [
                                 'username' => 'required|string|max:255|unique:users',
                                 'first_name' => 'required|string|max:255', 
-                                'mid_name' => 'string|max:255', 
+                                'mid_name' => 'nullable|string|max:255', 
                                 'last_name' => 'required|string|max:255', 
                                 'email' =>  'string|email|max:255',
                                 'contact_1' => 'required|numeric|max_digits:11',
@@ -145,7 +162,7 @@ class AccountController extends Controller
                             $this->validate($request, [
                                 'username' => 'required|string|max:255|unique:users',
                                 'first_name' => 'required|string|max:255', 
-                                'mid_name' => 'string|max:255', 
+                                'mid_name' => 'nullable|string|max:255', 
                                 'last_name' => 'required|string|max:255', 
                                 'email' =>  'string|email|max:255',
                                 'contact_1' => 'required|numeric|max_digits:11',
@@ -221,7 +238,7 @@ class AccountController extends Controller
                                 'username' => 'required|string|max:255|unique:users',
                                 'password' => 'required|string|min:8|confirmed',
                                 'first_name' => 'required|string|max:255', 
-                                'mid_name' => 'string|max:255', 
+                                'mid_name' => 'nullable|string|max:255', 
                                 'last_name' => 'required|string|max:255', 
                                 'email' =>  'string|email|max:255',
                                 'contact_1' => 'required|numeric|max_digits:11',
@@ -250,7 +267,7 @@ class AccountController extends Controller
                                 'username' => 'required|string|max:255|unique:users',
                                 'password' => 'required|string|min:8|confirmed',
                                 'first_name' => 'required|string|max:255', 
-                                'mid_name' => 'string|max:255', 
+                                'mid_name' => 'nullable|string|max:255', 
                                 'last_name' => 'required|string|max:255', 
                                 'email' =>  'string|email|max:255',
                                 'contact_1' => 'required|numeric|max_digits:11',
@@ -288,11 +305,23 @@ class AccountController extends Controller
     public function show(string $id)
     {
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
-            $account = User::find($id);
+            if (Auth::user()->user_type == 'admin'){
+                $account = User::find($id);
+                return view('auth.show', [
+                    'account' => $account,
+                ]);
+            }else{
+                $account = User::find($id);
+
+                if (($account->user_type == 'admin') || ($account->user_type == 'comcen')){
+                    return view('errors.404');
+                }else{
+                    return view('auth.show', [
+                        'account' => $account,
+                    ]);
+                }
+            }
             
-            return view('auth.show', [
-                'account' => $account,
-            ]);
         }
         else{
             return view('errors.404');

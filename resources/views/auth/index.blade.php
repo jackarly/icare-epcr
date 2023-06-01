@@ -14,8 +14,10 @@
                             <li><a class="dropdown-item" href="{{ route('account.overview') }}">All Users</a></li>
                             <li><a class="dropdown-item" href="{{ route('account.overview', 'ambulance') }}">Ambulance</a></li>
                             <li><a class="dropdown-item" href="{{ route('account.overview', 'hospital') }}">Hospital</a></li>
-                            <li><a class="dropdown-item" href="{{ route('account.overview', 'comcen') }}">ComCen</a></li>
-                            <li><a class="dropdown-item" href="{{ route('account.overview', 'admin') }}">Admin</a></li>
+                            @if ( auth()->user()->user_type == 'admin' )
+                                <li><a class="dropdown-item" href="{{ route('account.overview', 'comcen') }}">ComCen</a></li>
+                                <li><a class="dropdown-item" href="{{ route('account.overview', 'admin') }}">Admin</a></li>
+                            @endif
                             <!-- <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#">Something else here</a></li> -->
                         </ul>
