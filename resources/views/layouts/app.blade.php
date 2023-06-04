@@ -14,10 +14,11 @@
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- CSS -->
+    <link rel="stylesheet" href="{{ asset('css/app-3ea8b221.css') }}">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <script type="text/javascript" src="{{ asset('js/app-d4b42df8.js') }}"></script>
     <script src="https://kit.fontawesome.com/d6f1131e8e.js" crossorigin="anonymous"></script>
 </head>
 <body class="">
