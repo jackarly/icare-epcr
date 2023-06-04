@@ -72,10 +72,8 @@ class UserAmbulance extends Model
         return $incidents =  DB::table('response_teams')
         ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
         ->join('user_ambulances', 'response_teams.user_ambulance_id', '=', 'user_ambulances.id')
-        ->join('patients', 'incidents.id', '=', 'patients.incident_id')
         ->where('user_ambulances.id', '=', $ambulance->id)
         ->whereDate('incidents.created_at', Carbon::today())
-        ->whereNull('patients.completed_at')
         ->count();
     }
 }
