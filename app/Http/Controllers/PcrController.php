@@ -96,5 +96,26 @@ class PcrController extends Controller
         }    
     }
 
+    public function print(Patient $patient){
+        $incident = Incident::find($patient->incident_id);
+            $patient_assessment = PatientAssessment::where('patient_id',$patient->id)->first();
+            $patient_management = PatientManagement::where('patient_id',$patient->id)->first();
+            $patient_observation = PatientObservation::where('patient_id',$patient->id)->first();
+            
+            $medics = DB::table('personnels')
+                ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
+                ->join('response_teams', 'response_teams.id', '=', 'response_personnels.response_team_id')
+                ->where('response_teams.id','=',$incident->response_team_id)
+                ->get();
+
+        return view('pcr.print', [
+            'patient' => $patient,
+            'incident' => $incident,
+            'patient_assessment' => $patient_assessment,
+            'patient_management' => $patient_management,
+            'patient_observation' => $patient_observation,
+            'medics' => $medics,
+        ]);
+    }
         
 }

@@ -335,11 +335,15 @@
                                                     <li class="text-capitalize ms-3"><i class="fa-solid fa-square{{ ($patient_observation->numbness === 1)? '-check text-success' : ' text-secondary opacity-50'}}"></i> n numbness</li>
                                                     <li class="text-capitalize ms-3"><i class="fa-solid fa-square{{ ($patient_observation->rash === 1)? '-check text-success' : ' text-secondary opacity-50'}}"></i> r rash</li>
                                                     <li class="text-capitalize ms-3"><i class="fa-solid fa-square{{ ($patient_observation->swelling === 1)? '-check text-success' : ' text-secondary opacity-50'}}"></i> s swelling</li>
-                                                    <li class="text-capitalize ms-3"><i class="fa-solid fa-square{{ ($patient_observation->burn === 1)? '-check text-success' : ' text-secondary opacity-50'}}"></i> b burn
-                                                        @if ($patient_observation->burn)
-                                                            {{$patient_observation->burn_calculation}}<span>%</span>
-                                                        @endif
-                                                    </li>
+                                                    @if ($patient_observation->burn_calculation > 0)
+                                                        <li class="text-capitalize ms-3"><i class="fa-solid fa-square-check text-success"></i> 
+                                                            b burn {{$patient_observation->burn_calculation}}<span>%</span>
+                                                        </li>
+                                                    @else
+                                                        <li class="text-capitalize ms-3"><i class="fa-solid fa-square text-secondary opacity-50"></i>
+                                                            b burn
+                                                        </li>
+                                                    @endif
                                                     <li class="text-capitalize mt-3 "><span class="fw-semibold text-secondary">Burn Classification: </span>{{$patient_observation->burn_classification}}</li>
                                                 </ul>
                                             </div>
@@ -496,7 +500,11 @@
                                 </ul>
                             </div>
                             <div class="col-md-6">
-                            <h5 class="fw-semibold mb-3">Patient Progress</h5>
+                            <h5 class="fw-semibold mb-3">Patient Progress
+                                @if ($patient->completed_at)
+                                    <a href="{{ route('pcr.print', $patient->id) }}" class="btn btn-outline-primary btn-sm custom-rounded-btn text-decoration-none float-end"><small>Print/Download</small></a>
+                                @endif
+                            </h5>
                                 <ul class="row list-group list-group-flush text-start custom-list">
                                     @if ($patient->completed_at)
                                         <span class="col-10 mx-auto btn btn-outline-success btn-sm rounded-pill">Completed {{ \Carbon\Carbon::parse($patient->completed_at)->diffForHumans() }}</span>
@@ -510,7 +518,7 @@
                                                             @method('PUT')
                                                             <div class="d-grid">
                                                                 <button type="submit" class="btn btn-success btn-sm rounded-pill fw-semibold">
-                                                                    PCR Complete
+                                                                    Tag PCR as Complete
                                                                 </button>
                                                             </div>
                                                         </form>
@@ -520,7 +528,8 @@
                                                     
                                                 </li>
                                             @else
-                                            <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Update Patient Management Timings</li>
+                                                <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Update Patient Management Timings</li>
+                                                <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Complete PCR to Print/Download</li>
                                             @endif
                                             
                                         @else
@@ -530,9 +539,9 @@
                                             @if (!$patient_management)
                                                 <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Add Patient Management</li>
                                             @endif
+                                            <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Complete PCR to Print/Download</li>
                                         @endif
                                     @endif
-                                    
                                 </ul>
                             </div>
                         </div>

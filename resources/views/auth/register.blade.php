@@ -334,12 +334,6 @@
                                 <button type="submit" class="btn btn-primary">
                                     Save
                                 </button>
-
-                                <!-- @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif -->
                             </div>
                         </div>
                     </form>
@@ -352,29 +346,6 @@
 
 
 @push('scripts')
-    <!-- <script type="text/javascript">
-        function EnableDisableTextBox(chkPassport) {
-            var txtPassportNumber = document.getElementById("txtPassportNumber");
-            txtPassportNumber.disabled = chkPassport.checked ? false : true;
-            if (txtPassportNumber.disabled) {
-                txtPassportNumber.value="";
-            }
-        }
-    </script> -->
-
-    <!-- <script type="text/javascript">
-        var checkAll = document.getElementById("id_check_uncheck_all");
-        checkAll.addEventListener("change", function() 
-        {
-            var checked = this.checked;
-            var otherCheckboxes = document.querySelectorAll(".toggleable");
-            [].forEach.call(otherCheckboxes, function(item) 
-            {
-                item.checked = checked;
-            });
-        });
-    </script> -->
-
     <script type="text/javascript">
         function defaultUser(x) {
             if(x.checked == true){
@@ -394,15 +365,5 @@
             }
         }
     </script>
-
-    <!-- <script type="text/javascript">
-        function disable() {
-        document.querySelectorAll('.sample').forEach(element => element.disabled = true);
-        }
-
-        function enable() {
-        document.querySelectorAll('.sample').forEach(element => element.disabled = false);
-        }
-    </script> -->
 @endpush
 

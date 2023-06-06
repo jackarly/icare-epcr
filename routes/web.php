@@ -55,6 +55,7 @@ Route::put('/patient/{patient}/update', [PatientController::class, 'update'])->n
 Route::put('/patient/{patient}/complete', [PatientController::class, 'completePatient'])->name('patient.complete');
 
 Route::get('/pcr/{patient}', [PcrController::class, 'show'])->name('pcr.show');
+Route::get('/pcr/{patient}/print', [PcrController::class, 'print'])->name('pcr.print');
 
 Route::get('/assessment/create/{patient}', [PatientAssessmentController::class, 'create'])->name('assessment.create');
 Route::post('/assessment/store/{patient}', [PatientAssessmentController::class, 'store'])->name('assessment.store');

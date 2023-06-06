@@ -1,0 +1,79 @@
+body {
+    background: rgb(204,204,204); 
+}
+page {
+    background: white;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 0.5cm;
+    /* box-shadow: 0 0 0.5cm rgba(0,0,0,0.5); */
+}
+page[size="A4"] {  
+    width: 21cm;
+    height: 29.7cm; 
+}
+@media print {
+
+    body{
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
+    }
+
+    #buttons * {
+        display: none;
+    }
+}
+.custom-margin {
+    padding: 20px;
+}
+
+.small-address{
+    font-size: 8.5px;
+    /* margin-top: -7px; */
+}
+
+.fs-7 {
+    font-size: .7rem!important;
+}
+
+
+.fs-8, .custom-table td, .custom-table th{
+    font-size: .6rem!important;
+}
+
+.custom-bg-incident{
+    background-color: #0b3ea7e0;
+}
+
+.custom-bg-patient{
+    background-color: #f08080; 
+}
+
+.custom-bg-assessment{
+    background-color: #d6c845; 
+}
+
+.custom-bg-management{
+    background-color: #a0522d;
+}
+
+.custom-list-print, .custom-content-margin{
+    margin-left: 12px;
+}
+
+.custom-table td, .custom-table th{
+    padding: 0.1rem !important;
+}
+
+.custom-width-25 td{
+    width: 25%;
+}
+
+.custom-width-33 td{
+    width: 33%;
+}
+.custom-width-16 td{
+    width: 16%;
+}
+
+

@@ -132,6 +132,12 @@
                                         KED
                                     </label>
                                 </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="immobilization" id="immobilization3" value="splints"{{(old('immobilization') == 'splints') ? 'checked' : ''}}>
+                                    <label class="form-check-label" for="immobilization3" style="text-transform: capitalize">
+                                        splints
+                                    </label>
+                                </div>
                                 <hr>
                             </div>
                         </div>
@@ -165,44 +171,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <label for="receiving_facility" class="col-md-4 col-form-label text-md-end">Receiving Facility</label>
-
-                            <div class="col-md-6 mt-2">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="receiving_facility" id="receiving_facility1" value="hospital" {{(old('receiving_facility') == 'hospital') ? 'checked' : ''}}>
-                                    <label class="form-check-label" for="receiving_facility1" style="text-transform: capitalize">
-                                        hospital
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="receiving_facility" id="receiving_facility2" value="clinic"{{(old('receiving_facility') == 'clinic') ? 'checked' : ''}}>
-                                    <label class="form-check-label" for="receiving_facility2" style="text-transform: capitalize">
-                                        clinic
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="receiving_facility" id="receiving_facility3" value="home"{{(old('receiving_facility') == 'home') ? 'checked' : ''}}>
-                                    <label class="form-check-label" for="receiving_facility3" style="text-transform: capitalize">
-                                        home
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="receiving_facility" id="receiving_facility4" value="terminal"{{(old('receiving_facility') == 'terminal') ? 'checked' : ''}}>
-                                    <label class="form-check-label" for="receiving_facility4" style="text-transform: capitalize">
-                                        terminal
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="receiving_facility" id="receiving_facility5" value="institution"{{(old('receiving_facility') == 'institution') ? 'checked' : ''}}>
-                                    <label class="form-check-label" for="receiving_facility5" style="text-transform: capitalize">
-                                        institution
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="facility_assigned" class="col-md-4 col-form-label text-md-end">Name of Facility</label>
+                            <label for="facility_assigned" class="col-md-4 col-form-label text-md-end">Receiving Facility</label>
 
                             <div class="col-md-6">
                                 @if ($hospitals->count())
@@ -290,7 +259,8 @@
                                 @enderror
                             </div>
                         </div>
-
+                        
+                        <input type="hidden" id="user_type" name="receiving_facility" value="hospital">
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4 d-grid">
                                 <button type="submit" class="btn btn-primary">
