@@ -44,72 +44,114 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Incident ID: </span>{{ $incident->id }}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Nature of call: </span>{{ $incident->nature_of_call }}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Incident Type: </span>{{ $incident->incident_type }}</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-6">
-                                    <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Status: </span>
+                                        <li class="text-capitalize"><span class="fw-semibold">Incident ID: </span>{{ $incident->id }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Nature of call: </span>{{ $incident->nature_of_call }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Incident Type: </span>{{ $incident->incident_type }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Reported </span>{{ $incident->created_at->diffForHumans() }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Status: </span>
                                             @isset($incident->response_team_id)
                                                 <span class="text-success fw-semibold">Assigned</span>
                                             @else
                                                 <span class="text-danger fw-semibold">Unassigned</span>
                                             @endisset 
                                         </li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Reported at: </span>{{ $incident->created_at->diffForHumans() }}</li>
-                                        
-                                    </ul>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">No of person involved/injured: </span>{{ $incident->no_of_persons_involved }}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Caller: </span>{{ $incident->caller_first_name }} {{ $incident->caller_last_name }}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Contact: </span>{{ $incident->caller_number }}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary"></span> </li>
                                     </ul>
                                 </div>
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Area Type: </span>{{ $incident->area_type }}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Location: </span>{{ $incident->incident_location }}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary"></span> </li>
+                                        <li class="text-capitalize"><span class="fw-semibold">No of person involved/injured: </span>{{ $incident->no_of_persons_involved }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Caller: </span>{{ $incident->caller_first_name }} {{ $incident->caller_last_name }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Contact: </span>{{ $incident->caller_number }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold"></span> </li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Area Type: </span>{{ $incident->area_type }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Location: </span>{{ $incident->incident_location }}</li>
                                     </ul>
                                 </div>
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col-md-6">
-                                    <span class="fw-semibold text-secondary mb-3">Timings</span>
+                                <div class="col-md-10 col-lg-6 mx-auto">
+                                    <span class="fw-semibold mb-3">Timings</span>
                                     <table class="table table-bordered table-sm">
                                         <thead>
                                             <tr class="text-secondary fw-semibold">
-                                                <td>Dispatch</td>
-                                                <td>En Route</td>
-                                                <td>Arrival</td>
-                                                <td>Depart</td>
+                                                <td style="width:25%">Dispatch</td>
+                                                <td style="width:25%">En Route</td>
+                                                <td style="width:25%">Arrival</td>
+                                                <td style="width:25%">Depart</td>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr class="text-center">
                                                 <td><small>{{$incident->timing_dispatch }}</small></td>
-                                                <td><small>{{$incident->timing_enroute }}</small></td>
-                                                <td><small>{{$incident->timing_arrival }}</small></td>
-                                                <td><small>{{$incident->timing_depart }}</small></td>
+                                                <td>
+                                                    @if ($incident->timing_enroute)
+                                                        <small>{{$incident->timing_enroute }}</small>
+                                                    @else
+                                                        @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                                            <form method="POST" action="{{route('incident.enroute',  $patient->id)}}">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <div class="d-grid">
+                                                                    <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                        Add Time
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        @else
+                                                            <small class="text-secondary fst-italic">(not set)</small>
+                                                        @endif
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($incident->timing_arrival)
+                                                        <small>{{$incident->timing_arrival }}</small>
+                                                    @else
+                                                        @if ($incident->timing_enroute)
+                                                            @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                                                <form method="POST" action="{{route('incident.arrival',  $patient->id)}}">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <div class="d-grid">
+                                                                        <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                            Add Time
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            @else
+                                                                <small class="text-secondary fst-italic">(not set)</small>
+                                                            @endif
+                                                        @else
+                                                            <small class="text-secondary fst-italic">(not set)</small>
+                                                        @endif
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($incident->timing_depart)
+                                                        <small>{{$incident->timing_depart }}</small>
+                                                    @else
+                                                        @if ($incident->timing_arrival)
+                                                            @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                                                <form method="POST" action="{{route('incident.depart',  $patient->id)}}">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <div class="d-grid">
+                                                                        <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                            Add Time
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            @else
+                                                                <small class="text-secondary fst-italic">(not set)</small>
+                                                            @endif
+                                                        @else
+                                                            <small class="text-secondary fst-italic">(not set)</small>
+                                                        @endif
+                                                    @endif
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div>
-                                <div class="col-md-6 text-center my-auto">
-                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                            Update Incident Timings
-                                        </button>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -126,29 +168,29 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Patient Name: </span> {{$patient->patient_first_name}} {{$patient->patient_last_name}}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Sex: </span> {{$patient->sex}} </li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Age: </span> {{$patient->age}} </li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary"></span> </li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Patient Name: </span> {{$patient->patient_first_name}} {{$patient->patient_last_name}}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Sex: </span> {{$patient->sex}} </li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Age: </span> {{$patient->age}} </li>
+                                        <li class="text-capitalize"><span class="fw-semibold"></span> </li>
                                     </ul>
                                 </div>
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Birthday: </span>
+                                        <li class="text-capitalize"><span class="fw-semibold">Birthday: </span>
                                             @isset($patient->birthday)
                                                 {{ \Carbon\Carbon::parse($patient->birthday)->format('M d, Y') }}
                                             @else
                                                 <small class="fst-italic">(Not set)</small>
                                             @endisset
                                         </li>
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Contact: </span> {{$patient->contact_no}}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Contact: </span> {{$patient->contact_no}}</li>
                                         
                                     </ul>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <span class="fw-semibold text-secondary">Address: </span><span>{{$patient->address}}</span>
+                                    <span class="fw-semibold">Address: </span><span>{{$patient->address}}</span>
                                 </div>
                             </div>
                         </div>
@@ -166,14 +208,14 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <ul class="list-group list-group-flush custom-list">
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Chief Complaint: </span>
+                                            <li class="text-capitalize"><span class="fw-semibold">Chief Complaint: </span>
                                                 <p>{{ $patient_assessment->chief_complaint }}</p>
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="col-md-6">
                                         <ul class="list-group list-group-flush custom-list">
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">History: </span>
+                                            <li class="text-capitalize"><span class="fw-semibold">History: </span>
                                                 <p>{{ $patient_assessment->history }}</p>
                                             </li>
                                         </ul>
@@ -182,26 +224,26 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <span class="text-capitalize"><span class="fw-semibold text-secondary">Primary: </span>{{$patient_assessment->primary1}}</span>
+                                        <span class="text-capitalize"><span class="fw-semibold">Primary: </span>{{$patient_assessment->primary1}}</span>
                                         <ul class="">
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Airway: </span><span>{{$patient_assessment->airway}}</span></li>
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Breathing: </span><span>{{$patient_assessment->breathing}}</span></li>
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Circulation</span>
+                                            <li class="text-capitalize"><span class="fw-semibold">Airway: </span><span>{{$patient_assessment->airway}}</span></li>
+                                            <li class="text-capitalize"><span class="fw-semibold">Breathing: </span><span>{{$patient_assessment->breathing}}</span></li>
+                                            <li class="text-capitalize"><span class="fw-semibold">Circulation</span>
                                                 <ul>
-                                                    <li class="text-capitalize"><span class="fw-semibold text-secondary">Pulse: </span><span>{{$patient_assessment->pulse}}</span></li>
-                                                    <li class="text-capitalize"><span class="fw-semibold text-secondary">Skin Appearance: </span><span>{{$patient_assessment->skin_appearance}}</span></li>
+                                                    <li class="text-capitalize"><span class="fw-semibold">Pulse: </span><span>{{$patient_assessment->pulse}}</span></li>
+                                                    <li class="text-capitalize"><span class="fw-semibold">Skin Appearance: </span><span>{{$patient_assessment->skin_appearance}}</span></li>
                                                 </ul>
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="text-capitalize fw-semibold text-secondary mb-2">Glasgow Coma Scale: </span>
+                                        <span class="text-capitalize fw-semibold mb-2">Glasgow Coma Scale: </span>
                                         <table class="table table-bordered table-sm">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col" class="text-secondary">Verbal</th>
-                                                    <th scope="col" class="text-secondary">Motor</th>
-                                                    <th scope="col" class="text-secondary">Eye</th>
+                                                    <th scope="col" class="text-secondary" style="width:33%">Verbal</th>
+                                                    <th scope="col" class="text-secondary" style="width:33%">Motor</th>
+                                                    <th scope="col" class="text-secondary" style="width:33%">Eye</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -241,53 +283,71 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <span class="text-capitalize fw-semibold text-secondary">Secondary: </span>
+                                        <span class="text-capitalize fw-semibold">Secondary: </span>
                                         <ul class="">
-                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold text-secondary">Signs & Symptoms: </span><span>{{$patient_assessment->signs_symptoms}}</span></li>
-                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold text-secondary">Allergies: </span><span>{{$patient_assessment->allergies}}</span></li>
-                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold text-secondary">Medications: </span><span>{{$patient_assessment->medications}}</span></li>
-                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold text-secondary">Past History: </span><span>{{$patient_assessment->past_history}}</span></li>
-                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold text-secondary">Last Intake: </span><span>{{$patient_assessment->last_intake}}</span></li>
-                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold text-secondary">Event Prior: </span><span>{{$patient_assessment->event_prior}}</span></li>
+                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold">Signs & Symptoms: </span><span>{{$patient_assessment->signs_symptoms}}</span></li>
+                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold">Allergies: </span><span>{{$patient_assessment->allergies}}</span></li>
+                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold">Medications: </span><span>{{$patient_assessment->medications}}</span></li>
+                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold">Past History: </span><span>{{$patient_assessment->past_history}}</span></li>
+                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold">Last Intake: </span><span>{{$patient_assessment->last_intake}}</span></li>
+                                            <li class="text-capitalize mb-3 mb-md-2"><span class="fw-semibold">Event Prior: </span><span>{{$patient_assessment->event_prior}}</span></li>
                                         </ul>
                                     </div>
                                     <div class="col-md-6">
-                                        <span class="text-capitalize fw-semibold text-secondary">Vital Signs: </span>
+                                        <span class="text-capitalize fw-semibold">Vital Signs: </span>
                                         <table class="table table-bordered table-sm">
                                             <thead>
                                                 <tr class="text-secondary">
-                                                    <th scope="col">Time</th>
-                                                    <th scope="col">B/P</th>
-                                                    <th scope="col">HR</th>
-                                                    <th scope="col">RR</th>
-                                                    <th scope="col">O2 Sat</th>
-                                                    <th scope="col">Glucose</th>
+                                                    <th scope="col" style="width:16%">Time</th>
+                                                    <th scope="col" style="width:16%">B/P</th>
+                                                    <th scope="col" style="width:16%">HR</th>
+                                                    <th scope="col" style="width:16%">RR</th>
+                                                    <th scope="col" style="width:16%">O2 Sat</th>
+                                                    <th scope="col" style="width:16%">Glucose</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr class="text-secondary">
-                                                    <td><small>{{$patient_assessment->vital_time1}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_bp1}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_hr1}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_rr1}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_o2sat1}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_glucose1}}</small></td>
+                                                    <td style="width:16%">
+                                                        @if ($patient_assessment->vital_time1)
+                                                            <small>{{$patient_assessment->vital_time1}}</small>
+                                                        @else
+                                                            <small class="fst-italic text-light">(not set)</small>
+                                                        @endif
+                                                    </td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_bp1}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_hr1}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_rr1}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_o2sat1}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_glucose1}}</small></td>
                                                 </tr>
                                                 <tr class="text-secondary">
-                                                    <td><small>{{$patient_assessment->vital_time2}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_bp2}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_hr2}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_rr2}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_o2sat2}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_glucose2}}</small></td>
+                                                    <td style="width:16%">
+                                                        @if ($patient_assessment->vital_time2)
+                                                            <small>{{$patient_assessment->vital_time2}}</small>
+                                                        @else
+                                                            <small class="fst-italic text-light">(not set)</small>
+                                                        @endif
+                                                    </td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_bp2}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_hr2}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_rr2}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_o2sat2}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_glucose2}}</small></td>
                                                 </tr>
                                                 <tr class="text-secondary">
-                                                    <td><small>{{$patient_assessment->vital_time3}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_bp3}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_hr3}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_rr3}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_o2sat3}}</small></td>
-                                                    <td><small>{{$patient_assessment->vital_glucose3}}</small></td>
+                                                    <td style="width:16%">
+                                                        @if ($patient_assessment->vital_time3)
+                                                        <small>{{$patient_assessment->vital_time3}}</small>
+                                                        @else
+                                                            <small class="fst-italic text-light">(not set)</small>
+                                                        @endif
+                                                    </td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_bp3}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_hr3}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_rr3}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_o2sat3}}</small></td>
+                                                    <td style="width:16%"><small>{{$patient_assessment->vital_glucose3}}</small></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -296,8 +356,8 @@
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Assessment</h5>
                                 <div class="col-md-12 text-center mb-3">
-                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
-                                        <a class="btn btn-primary btn-sm" href=" {{route('assessment.create', $patient->id)}} ">Create Patient Assessment</a>
+                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                        <a class="btn btn-primary btn-sm" href=" {{route('assessment.create', $patient->id)}}">Create Patient Assessment</a>
                                     @else
                                         <small class="fst-italic text-secondary">Nothing to show</small>
                                     @endif
@@ -319,7 +379,7 @@
                                     <div class="col-md-6">
                                         <div class="row mb-3">
                                             <div class="col-12">
-                                                <span class="text-capitalize fw-semibold text-secondary">Observations: </span>
+                                                <span class="text-capitalize fw-semibold">Observations: </span>
                                                 <ul class="list-group list-group-flush custom-list">
                                                     <li>{{$patient_observation->observations}}</li>
                                                 </ul>
@@ -344,7 +404,7 @@
                                                             b burn
                                                         </li>
                                                     @endif
-                                                    <li class="text-capitalize mt-3 "><span class="fw-semibold text-secondary">Burn Classification: </span>{{$patient_observation->burn_classification}}</li>
+                                                    <li class="text-capitalize mt-3 "><span class="fw-semibold">Burn Classification: </span>{{$patient_observation->burn_classification}}</li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -370,7 +430,7 @@
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Observation</h5>
                                 <div class="col-md-12 text-center mb-3">
-                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                         <a class="btn btn-primary btn-sm" href=" {{route('observation.create', $patient->id)}} ">Create Patient Observation</a>
                                     @else
                                         <small class="fst-italic text-secondary">Nothing to show</small>
@@ -392,15 +452,15 @@
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <ul class="list-group list-group-flush custom-list">
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Airway & Breathing: </span><span>{{$patient_management->airway_breathing}}</span></li>
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Circulation: </span><span>{{$patient_management->circulation}}</span></li>
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Wound/Burn Care: </span><span>{{$patient_management->wound_burn_care}}</span></li>
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Immobilization: </span><span>{{$patient_management->immobilization}}</span></li>
+                                            <li class="text-capitalize"><span class="fw-semibold">Airway & Breathing: </span><span>{{$patient_management->airway_breathing}}</span></li>
+                                            <li class="text-capitalize"><span class="fw-semibold">Circulation: </span><span>{{$patient_management->circulation}}</span></li>
+                                            <li class="text-capitalize"><span class="fw-semibold">Wound/Burn Care: </span><span>{{$patient_management->wound_burn_care}}</span></li>
+                                            <li class="text-capitalize"><span class="fw-semibold">Immobilization: </span><span>{{$patient_management->immobilization}}</span></li>
                                         </ul>
                                     </div>
                                     <div class="col-md-6">
                                         <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Others: </span><span>{{$patient_management->others1}}</span></li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Others: </span><span>{{$patient_management->others1}}</span></li>
                                             <li class="text-capitalize"><span>{{$patient_management->others2}}</span></li>
                                         </ul>
                                     </div>
@@ -409,20 +469,20 @@
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <ul class="list-group list-group-flush custom-list">
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Receiving Facility: </span>
+                                            <li class="text-capitalize"><span class="fw-semibold">Receiving Facility: </span>
                                                 <span>{{$patient_management->receiving_facility}}</span>
                                             </li>
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Name of Facility: </span>
+                                            <li class="text-capitalize"><span class="fw-semibold">Name of Facility: </span>
                                                 <span>{{$patient_management->user_hospital->hospital_abbreviation . ' - '}}{{$patient_management->user_hospital->hospital_name}}</span>
                                             </li>
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Location: </span>
+                                            <li class="text-capitalize"><span class="fw-semibold">Location: </span>
                                                 <span>{{$patient_management->user_hospital->hospital_address}}</span>
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="col-md-6">
                                         <ul class="list-group list-group-flush custom-list">
-                                            <li><span class="fw-semibold text-secondary">Contact: </span> <span>{{$patient_management->user_hospital->email}}</span>
+                                            <li><span class="fw-semibold">Contact: </span> <span>{{$patient_management->user_hospital->email}}</span>
                                                 <ul class="custom-list custom-management-contact">
                                                     <li>{{$patient_management->user_hospital->contact_1}}</li>
                                                     <li>{{$patient_management->user_hospital->contact_2}}</li>
@@ -434,40 +494,103 @@
                                 <hr>
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                    <span class="fw-semibold text-secondary">Timings: </span>
+                                    <span class="fw-semibold">Timings: </span>
                                     <table class="table table-bordered table-sm">
                                         <thead>
                                             <tr class="text-secondary fw-semibold">
-                                                <td>Arrival</td>
-                                                <td>Handover</td>
-                                                <td>Clear</td>
+                                                <td style="width:33%">Arrival</td>
+                                                <td style="width:33%">Handover</td>
+                                                <td style="width:33%">Clear</td>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="text-secondary">
-                                                <td><small>{{$patient_management->timings_arrival}}</small></td>
-                                                <td><small>{{$patient_management->timings_handover}}</small></td>
-                                                <td><small>{{$patient_management->timings_clear}}</small></td>
+                                            <tr class="text-secondary text-center">
+                                                <td>
+                                                    @if ($patient_management->timings_arrival)
+                                                        <small>{{$patient_management->timings_arrival}}</small>
+                                                    @else
+                                                        @if ($incident->timing_depart)
+                                                            @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                                                <form method="POST" action="{{route('management.arrival',  $patient->id)}}">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <div class="d-grid">
+                                                                        <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                            Add Time
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            @else
+                                                                <small class="text-secondary fst-italic">(not set)</small>
+                                                            @endif
+                                                        @else
+                                                            <small class="text-secondary fst-italic lh-1">(set incident depart)</small>
+                                                        @endif
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($patient_management->timings_handover)
+                                                        <small>{{$patient_management->timings_handover}}</small>
+                                                    @else
+                                                        @if ($patient_management->timings_arrival)
+                                                            @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                                                @if ($patient_assessment && $patient_observation)
+                                                                    <form method="POST" action="{{route('management.handover',  $patient->id)}}">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <div class="d-grid">
+                                                                            <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                                Add Time
+                                                                            </button>
+                                                                        </div>
+                                                                    </form>
+                                                                @else
+                                                                    <small class="text-secondary fst-italic lh-1">(see patient progress)</small>
+                                                                @endif
+                                                            @else
+                                                                <small class="text-secondary fst-italic">(not set)</small>
+                                                            @endif
+                                                        @else
+                                                            <small class="text-secondary fst-italic">(not set)</small>
+                                                        @endif
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($patient_management->timings_clear)
+                                                        <small>{{$patient_management->timings_clear}}</small>
+                                                    @else
+                                                        @if ((auth()->user()->user_type == 'hospital') || (auth()->user()->user_type == 'admin'))
+                                                            @if ($patient_management->timings_handover)
+                                                                <form method="POST" action="{{route('management.clear',  $patient->id)}}">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <div class="d-grid">
+                                                                        <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                            Add Time
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            @else
+                                                                <small class="text-secondary fst-italic">(not set)</small>
+                                                            @endif
+                                                        @elseif (auth()->user()->user_type == 'ambulance')   
+                                                            <small class="btn btn-outline-danger btn-sm custom-rounded-btn lh-1">to be cleared by facility</small>
+                                                        @endif
+                                                    @endif
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     </div>
                                     <div class="col-md-6">
                                         <ul class="list-group list-group-flush custom-list">
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Narrative: </span>
+                                            <li class="text-capitalize"><span class="fw-semibold">Narrative: </span>
                                                 <span>{{$patient_management->narrative}}</span>
                                             </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <ul class="list-group list-group-flush custom-list">
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Receiving Provider: </span>
+                                            <li class="text-capitalize"><span class="fw-semibold">Receiving Provider: </span>
                                                 <span>{{$patient_management->receiving_provider}}</span>
                                             </li>
-                                            <li class="text-capitalize"><span class="fw-semibold text-secondary">Position: </span>
+                                            <li class="text-capitalize"><span class="fw-semibold">Position: </span>
                                                 <span>{{$patient_management->provider_position}}</span>
                                             </li>
                                         </ul>
@@ -475,8 +598,8 @@
                                 </div>
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Management</h5>
-                                <div class="col-md-12 text-center mb-3">
-                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                <div class="col-md-12 text-center">
+                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                         <a class="btn btn-primary btn-sm" href=" {{route('management.create', $patient->id)}} ">Create Patient Management</a>
                                     @else
                                         <small class="fst-italic text-secondary">Nothing to show</small>
@@ -489,110 +612,85 @@
                 <div class="card mb-2">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
-                            <h5 class="fw-semibold mb-3">Patient Provider</h5>
+                        <div class="col-md-6 mb-3">
+                                <h5 class="fw-semibold">Patient Provider</h5>
                                 <ul class="list-group list-group-flush text-start custom-list">
-                                    <li class="text-capitalize"><span class="fw-semibold text-secondary">Ambulance: </span> {{$incident->response_team->user_ambulance->plate_no}}</li>
+                                    <li class="text-capitalize"><span class="fw-semibold">Ambulance: </span> {{$incident->response_team->user_ambulance->plate_no}}</li>
                                     @foreach ($medics as $medic)
-                                        <li class="text-capitalize"><span class="fw-semibold text-secondary">Medic: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">Medic: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
                                     @endforeach
-                                    <li class="text-capitalize"><span class="fw-semibold text-secondary"></span> </li>
                                 </ul>
                             </div>
+
                             <div class="col-md-6">
-                            <h5 class="fw-semibold mb-3">Patient Progress
-                                @if ($patient->completed_at)
-                                    <a href="{{ route('pcr.print', $patient->id) }}" class="btn btn-outline-primary btn-sm custom-rounded-btn text-decoration-none float-end"><small>Print/Download</small></a>
-                                @endif
-                            </h5>
-                                <ul class="row list-group list-group-flush text-start custom-list">
-                                    @if ($patient->completed_at)
-                                        <span class="col-10 mx-auto btn btn-outline-success btn-sm rounded-pill">Completed {{ \Carbon\Carbon::parse($patient->completed_at)->diffForHumans() }}</span>
-                                    @else
-                                        @if ($patient_assessment && $patient_management)
-                                            @if ($patient_management->timings_handover && $patient_management->timings_clear)
-                                                <li class="col-10 mx-auto mb-1">
-                                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
-                                                        <form method="POST" action="{{route('patient.complete',  $patient->id)}}">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <div class="d-grid">
-                                                                <button type="submit" class="btn btn-success btn-sm rounded-pill fw-semibold">
-                                                                    Tag PCR as Complete
-                                                                </button>
-                                                            </div>
-                                                        </form>
+                                <h5 class="fw-semibold">Patient Progress</h5>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <ul class="list-group custom-list ps-1">
+                                            <li class="">
+                                                <i class="fa-solid fa-square{{ ($patient_assessment)? '-check text-success' : ' text-secondary'}}"></i>
+                                                <span class="{{ ($patient_assessment)? 'fw-semibold text-success' : ' text-secondary'}}">Patient Assessment</span>
+                                            </li>
+                                            <li class="">
+                                                <i class="fa-solid fa-square{{ ($patient_observation)? '-check text-success' : ' text-secondary'}}"></i>
+                                                <span class="{{ ($patient_observation)? 'fw-semibold text-success' : ' text-secondary'}}">Patient Observation</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <ul class="list-group custom-list ps-1">
+                                            <li class="">
+                                                <i class="fa-solid fa-square{{ ($patient_management)? '-check text-success' : ' text-secondary'}}"></i>
+                                                <span class="{{ ($patient_management)? 'fw-semibold text-success' : ' text-secondary'}}">Patient Management</span>
+                                                @if ($patient_management)
+                                                    @if ($patient_management->timings_handover)
+                                                        <li class="fs-7 ps-3">
+                                                            <i class="fa-regular fa-square-check text-success"></i>
+                                                            <span class="fw-semibold text-success">Handover to facility</span>
+                                                        </li>
                                                     @else
-                                                        <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">To be cleared by facility</li>
+                                                        <li class="fs-7 ps-3">
+                                                            <i class="fa-regular fa-square text-secondary"></i>
+                                                            <span class="text-secondary">Handover to facility</span>
+                                                        </li>
                                                     @endif
-                                                    
-                                                </li>
-                                            @else
-                                                <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Update Patient Management Timings</li>
-                                                <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Complete PCR to Print/Download</li>
-                                            @endif
-                                            
-                                        @else
-                                            @if (!$patient_assessment)
-                                                <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Add Patient Assessment</li>
-                                            @endif
-                                            @if (!$patient_management)
-                                                <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Add Patient Management</li>
-                                            @endif
-                                            <li class="col-10 mx-auto btn btn-warning btn-sm rounded-pill mb-1">Complete PCR to Print/Download</li>
-                                        @endif
+                                                    @if ($patient_management->timings_clear)
+                                                        <li class="fs-7 ps-3">
+                                                            <i class="fa-regular fa-square-check text-success"></i>
+                                                            <span class="fw-semibold text-success">Cleared by facility</span>
+                                                        </li>
+                                                    @else
+                                                        <li class="fs-7 ps-3">
+                                                            <i class="fa-regular fa-square text-secondary"></i>
+                                                            <span class="text-secondary">Cleared by facility</span>
+                                                        </li>
+                                                    @endif
+                                                @else
+                                                    <li class="fs-7 ps-3">
+                                                        <i class="fa-regular fa-square text-secondary"></i>
+                                                        <span class="text-secondary">Handover to facility</span>
+                                                    </li>
+                                                    <li class="fs-7 ps-3">
+                                                        <i class="fa-regular fa-square text-secondary"></i>
+                                                        <span class="text-secondary">Cleared by facility</span>
+                                                    </li>
+                                                @endif
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <span class="d-grid mt-1">
+                                    @if ($patient->completed_at)
+                                        <a href="{{ route('pcr.print', $patient->id) }}" class="btn btn-success btn-sm rounded-pill custom-rounded-btn text-decoration-none">Print/Download PCR</a>   
+                                    @else
+                                        <a href="" class="btn btn-outline-secondary btn-sm custom-rounded-btn text-decoration-none disabled">Complete PCR to print/download</a>  
                                     @endif
-                                </ul>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Incident Timings</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <form method="POST" action="{{ route('incident.timings', $patient->id) }}">
-                    <div class="modal-body">
-                            @csrf
-                            @method('PUT')
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <table class="table table-bordered table-sm">
-                                        <thead>
-                                            <tr>
-                                                <td>Dispatch</td>
-                                                <td>En Route</td>
-                                                <td>Arrival</td>
-                                                <td>Depart</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="timing_dispatch" value="{{ old('timing_dispatch') ?? $incident->timing_dispatch }}"></div></td>
-                                                <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="timing_enroute" value="{{ old('timing_enroute') ?? $incident->timing_enroute }}"></div></td>
-                                                <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="timing_arrival" value="{{ old('timing_arrival') ?? $incident->timing_arrival }}"></div></td>
-                                                <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="timing_depart" value="{{ old('timing_depart') ?? $incident->timing_depart }}"></div></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                        
-                    </div>
-                </form>
             </div>
         </div>
     </div>

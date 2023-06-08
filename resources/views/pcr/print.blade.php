@@ -340,7 +340,7 @@
                                     </tr>
                                     <tr class="custom-width-33 fs-8">
                                         <td class="{{$patient_assessment->gcs_eye == 2 ? 'fw-semibold' : ''}}">2 Pain</td>
-                                        <td class="{{$patient_assessment->gcs_verbal == 3 ? 'fw-semibold' : ''}}">3 Inappropriatr</td>
+                                        <td class="{{$patient_assessment->gcs_verbal == 3 ? 'fw-semibold' : ''}}">3 Inappropriate</td>
                                         <td class="{{$patient_assessment->gcs_motor == 4 ? 'fw-semibold' : ''}}">4 Withdraw</td>
                                     </tr>
                                     <tr class="custom-width-33 fs-8">
@@ -632,7 +632,7 @@
                                 </li>
                                 <li class="list-inline-item">
                                     <i class="fa-regular fa-square"></i>
-                                    teminal
+                                    terminal
                                 </li>
                                 <li class="list-inline-item">
                                     <i class="fa-regular fa-square"></i>

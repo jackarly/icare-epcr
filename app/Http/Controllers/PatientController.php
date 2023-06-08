@@ -163,17 +163,4 @@ class PatientController extends Controller
         }
     }
 
-    public function completePatient(Patient $patient)
-    {
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
-            $patient->update([
-                'completed_at'=> Carbon::now(),
-            ]);
-            return redirect()->route('pcr.show', $patient->id)->with('success', 'Patient information updated successfully');
-        }
-        else{
-            return view('errors.404');
-        }
-    }
-
 }

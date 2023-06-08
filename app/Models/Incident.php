@@ -56,7 +56,8 @@ class Incident extends Model
         // return Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->count();
 
         return $incidents =  DB::table('incidents')
-            ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+            ->leftJoin('patients', 'incidents.id', '=', 'patients.incident_id')
+            ->whereNotNull('incidents.response_team_id')
             ->whereNull('patients.completed_at')
             ->whereDate('incidents.created_at', Carbon::today())
             ->count();

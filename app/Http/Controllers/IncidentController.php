@@ -16,7 +16,7 @@ class IncidentController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index($status = null)
     {
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
@@ -88,7 +88,6 @@ class IncidentController extends Controller
         }
     }
 
-    
     public function store(Request $request)
     {
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
@@ -126,7 +125,6 @@ class IncidentController extends Controller
         }
     }
 
-    
     public function show(Incident $incident)
     {
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
@@ -205,9 +203,7 @@ class IncidentController extends Controller
         }
 
     }
-        
 
-    
     public function edit(Incident $incident)
     {
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
@@ -287,6 +283,7 @@ class IncidentController extends Controller
             ]);
     
             $incident->response_team_id = $request->response_team;
+            $incident->timing_dispatch = Carbon::now()->format('g:i A');
             $incident->save();
             return redirect()->route('incident.show', $incident->id )->with('success', 'Response team added successfully');
         }
@@ -295,25 +292,97 @@ class IncidentController extends Controller
         }
         
     }
-    
-    public function updateTimings(Request $request, Patient $patient)
+
+    public function enroute(Request $request,Patient $patient)
     {
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
-            $this->validate($request, [
-                'timing_dispatch'=> 'nullable|string',
-                'timing_enroute'=> 'nullable|string',
-                'timing_arrival'=> 'nullable|string',
-                'timing_depart'=> 'nullable|string',
+            
+            $incident = Incident::find($patient->incident_id);
+            $incident->update([
+                $incident->timing_enroute = Carbon::now()->format('g:i A')
             ]);
     
+            return redirect()->route('pcr.show', $patient->id)->with('success', 'Incident timing updated successfully');
+        }
+        else{
+            return view('errors.404');
+        }
+    }
+
+    public function arrival(Request $request,Patient $patient)
+    {
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            
             $incident = Incident::find($patient->incident_id);
-            $incident->timing_dispatch = $request->timing_dispatch;
-            $incident->timing_enroute = $request->timing_enroute;
-            $incident->timing_arrival = $request->timing_arrival;
-            $incident->timing_depart = $request->timing_depart;
-            $incident->save();
+            $incident->update([
+                $incident->timing_arrival = Carbon::now()->format('g:i A')
+            ]);
     
-            return redirect()->route('pcr.show', $patient->id)->with('success', 'Patient incident updated successfully');
+            return redirect()->route('pcr.show', $patient->id)->with('success', 'Incident timing updated successfully');
+        }
+        else{
+            return view('errors.404');
+        }
+    }
+
+    public function depart(Request $request,Patient $patient)
+    {
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            
+            $incident = Incident::find($patient->incident_id);
+            $incident->update([
+                $incident->timing_depart = Carbon::now()->format('g:i A')
+            ]);
+    
+            return redirect()->route('pcr.show', $patient->id)->with('success', 'Incident timing updated successfully');
+        }
+        else{
+            return view('errors.404');
+        }
+    }
+
+    public function enrouteIncident(Request $request,Incident $incident)
+    {
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            
+            $incident = Incident::find($incident->id);
+            $incident->update([
+                $incident->timing_enroute = Carbon::now()->format('g:i A')
+            ]);
+    
+            return redirect()->route('incident.show', $incident->id)->with('success', 'Incident timing updated successfully');
+        }
+        else{
+            return view('errors.404');
+        }
+    }
+
+    public function arrivalIncident(Request $request,Incident $incident)
+    {
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            
+            $incident = Incident::find($incident->id);
+            $incident->update([
+                $incident->timing_arrival = Carbon::now()->format('g:i A')
+            ]);
+    
+            return redirect()->route('incident.show', $incident->id)->with('success', 'Incident timing updated successfully');
+        }
+        else{
+            return view('errors.404');
+        }
+    }
+
+    public function departIncident(Request $request,Incident $incident)
+    {
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            
+            $incident = Incident::find($incident->id);
+            $incident->update([
+                $incident->timing_depart = Carbon::now()->format('g:i A')
+            ]);
+    
+            return redirect()->route('incident.show', $incident->id)->with('success', 'Incident timing updated successfully');
         }
         else{
             return view('errors.404');

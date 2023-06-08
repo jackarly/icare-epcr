@@ -195,29 +195,6 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            <label for="timings" class="col-md-4 col-form-label text-md-end">Timings</label>
-
-                            <div class="col-md-6">
-                                <table class="table table-bordered table-sm">
-                                    <thead>
-                                        <tr>
-                                            <td>Arrival</td>
-                                            <td>Handover</td>
-                                            <td>Clear</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="arrival" value="{{ old('arrival') ?? $patient_management->timings_arrival}}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="handover" value="{{ old('handover') ?? $patient_management->timings_handover }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="clear" value="{{ old('clear') ?? $patient_management->timings_clear }}"></div></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
                         <div class="row mb-3">
                             <label for="narrative" class="col-md-4 col-form-label text-md-end">Narrative</label>
 

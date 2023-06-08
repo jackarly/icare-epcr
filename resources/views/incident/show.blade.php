@@ -67,6 +67,88 @@
                                 <span>{{ $incident->injuries_details }}</span>
                             </div>
                         </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-10 mx-auto">
+                                <span class="fw-semibold mb-3">Timings</span>
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr class="text-secondary fw-semibold">
+                                            <td style="width:25%">Dispatch</td>
+                                            <td style="width:25%">En Route</td>
+                                            <td style="width:25%">Arrival</td>
+                                            <td style="width:25%">Depart</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-center">
+                                            <td>
+                                                @if ($incident->timing_dispatch)
+                                                    <small>{{$incident->timing_dispatch }}</small>
+                                                @else
+                                                    <small class="text-secondary fst-italic">(not set)</small>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($incident->timing_enroute)
+                                                    <small>{{$incident->timing_enroute }}</small>
+                                                @else
+                                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                                        <form method="POST" action="{{route('incident.only.enroute',  $incident->id)}}">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="d-grid">
+                                                                <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                    Add Time
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    @else
+                                                        <small class="text-secondary fst-italic">(not set)</small>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($incident->timing_arrival)
+                                                    <small>{{$incident->timing_arrival }}</small>
+                                                @else
+                                                    @if ($incident->timing_enroute)
+                                                        @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                                            <form method="POST" action="{{route('incident.only.arrival',  $incident->id)}}">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <div class="d-grid">
+                                                                    <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                        Add Time
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        @else
+                                                            <small class="text-secondary fst-italic">(not set)</small>
+                                                        @endif
+                                                    @else
+                                                        <small class="text-secondary fst-italic">(not set)</small>
+                                                    @endif
+
+                                                    
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($incident->timing_depart)
+                                                    <small>{{$incident->timing_depart }}</small>
+                                                @else
+                                                    @if ($incident->timing_arrival)
+                                                        <small class="text-secondary">(see PCR)</small>
+                                                    @else
+                                                        <small class="text-secondary fst-italic">(not set)</small>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card mt-3">
@@ -105,50 +187,48 @@
                         <div class="row mb-1">
                             <h5 class="fw-semibold">Patient Information</h5>
                             @isset( $incident->response_team_id)
-                                    @if($patients->count())
-                                        <div class="col-md-12">
-                                            @foreach ($patients as $patient)
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <ul class="list-group list-group-flush custom-list">
-                                                            <li class="text-capitalize"><span class="fw-semibold">Patient Name: </span> {{$patient->patient_first_name}} {{$patient->patient_last_name}}</li>
-                                                            <li class="text-capitalize"><span class="fw-semibold">Sex: </span> {{$patient->sex}} </li>
-                                                            <li class="text-capitalize"><span class="fw-semibold">Age: </span> {{$patient->age}} </li>
-                                                            <li class="text-capitalize"><span class="fw-semibold"></span> </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <ul class="list-group list-group-flush custom-list">
-                                                            <li class="text-capitalize"><span class="fw-semibold">Birthday: </span>
-                                                                @isset($patient->birthday)
-                                                                    {{ \Carbon\Carbon::parse($patient->birthday)->format('M d, Y') }}
-                                                                @else
-                                                                    <small class="fst-italic">(Not set)</small>
-                                                                @endisset
-                                                            </li>
-                                                            <li class="text-capitalize"><span class="fw-semibold">Contact: </span> {{$patient->contact_no}}</li>
-                                                            
-                                                        </ul>
-                                                    </div>
+                                @if($patients->count())
+                                    <div class="col-md-12">
+                                        @foreach ($patients as $patient)
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <ul class="list-group list-group-flush custom-list">
+                                                        <li class="text-capitalize"><span class="fw-semibold">Patient Name: </span> {{$patient->patient_first_name}} {{$patient->patient_last_name}}</li>
+                                                        <li class="text-capitalize"><span class="fw-semibold">Sex: </span> {{$patient->sex}} </li>
+                                                        <li class="text-capitalize"><span class="fw-semibold">Age: </span> {{$patient->age}} </li>
+                                                        <li class="text-capitalize"><span class="fw-semibold"></span> </li>
+                                                    </ul>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col text-center mt-1">
-                                                        <a class="btn btn-primary btn-sm" href="{{route('pcr.show', $patient->id)}}">View PCR</a>
-                                                    </div>
+                                                <div class="col-md-6">
+                                                    <ul class="list-group list-group-flush custom-list">
+                                                        <li class="text-capitalize"><span class="fw-semibold">Birthday: </span>
+                                                            @isset($patient->birthday)
+                                                                {{ \Carbon\Carbon::parse($patient->birthday)->format('M d, Y') }}
+                                                            @else
+                                                                <small class="fst-italic">(Not set)</small>
+                                                            @endisset
+                                                        </li>
+                                                        <li class="text-capitalize"><span class="fw-semibold">Contact: </span> {{$patient->contact_no}}</li>
+                                                        
+                                                    </ul>
                                                 </div>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        
-                                        <div class="col-md-12 text-center">
-                                            @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
-                                                <a class="btn btn-primary btn-sm" href=" {{route('patient.create', $incident->id)}} "> Create Patient Info</a> 
-                                            @else
-                                                <small class="fst-italic text-secondary">Nothing to show</small>
-                                            @endif
-                                        </div>
-                                    @endif
-                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col text-center mt-1">
+                                                    <a class="btn btn-primary btn-sm" href="{{route('pcr.show', $patient->id)}}">View PCR</a>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="col-md-12 text-center">
+                                        @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                            <a class="btn btn-primary btn-sm" href=" {{route('patient.create', $incident->id)}} "> Create Patient Info</a> 
+                                        @else
+                                            <small class="fst-italic text-secondary">Nothing to show</small>
+                                        @endif
+                                    </div>
+                                @endif
                             @else
                                 <div class="col-md-12">
                                     <small class="fst-italic">Nothing to show</small>
