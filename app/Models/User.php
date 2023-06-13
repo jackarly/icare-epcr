@@ -48,64 +48,28 @@ class User extends Authenticatable
         'email_verified_at','datetime',
     ];
 
+    // Set user and admin relationship
     public function user_admin()
     {
         return $this->hasOne(UserAdmin::class);
     }
 
+    // Set user and ambulance relationship
     public function user_ambulance()
     {
         return $this->hasOne(UserAmbulance::class);
     }
 
+    // Set user and comcen relationship
     public function user_comcen()
     {
         return $this->hasOne(UserComcen::class);
     }
 
+    // Set user and hospital relationship
     public function user_hospital()
     {
         return $this->hasOne(UserHospital::class);
     }
-
-    // public function setDefaultUsername($data, $usertype)
-    public static function setDefaultUsername($value)
-    {
-        // switch($usertype) 
-        // {
-        //     case('hospital'):
-        //         break;
-
-        //     case('comcen'):
-        //         break;
-
-        //     case('admin'):
-        //         break;
-
-        //     default:
-        //         $msg = 'Something went wrong.';
-        // }
-        // return $this->hasMany(Patient::class);
-
-        $firstName = $value['first_name'];
-        $lastName = strtolower($value['last_name']);
-
-        $username = $firstName[0] . $lastName;
-
-        $i = 0;
-        while(User::whereUsername($username)->exists())
-        {
-            $i++;
-            $username = $firstName[0] . $lastName . $i;
-        }
-
-        return $value['username'] = $username;
-
-    }
-
-    // public function userInfo(User $user)
-    // {
-    //     return $this->user_ambulance->contains('user_id', $user->id);
-    // }
 
 }

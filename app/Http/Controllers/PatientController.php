@@ -20,6 +20,7 @@ class PatientController extends Controller
 
     public function index($status = null)
     {
+        // Show hospital and ambulance only their assigned patients
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
             if (Auth::user()->user_type == 'hospital'){
                 $assignedPatients = PatientManagement::where('user_hospital_id', Auth::user()->user_hospital->id)->pluck('patient_id');
@@ -49,6 +50,7 @@ class PatientController extends Controller
                     $status = 'all patients';
             }
         }
+        // Show comcen and admin all patients
         else{
             switch($status) {
                 case('ongoing'):
@@ -73,7 +75,8 @@ class PatientController extends Controller
 
     public function create(Incident $incident)
     {
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        // Only allow ambulance and admin to create patient info
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             return view('patient.create', [
                 'incident' => $incident,
             ]);
@@ -85,7 +88,8 @@ class PatientController extends Controller
 
     public function store(Incident $incident, Request $request)
     {   
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        // Only allow ambulance and admin to save patient info
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'ppcr_color'=> 'required|string',
                 'patient_first_name'=> 'required|string',
@@ -119,6 +123,7 @@ class PatientController extends Controller
 
     public function edit(Patient $patient)
     {
+        // Only allow ambulance, comcen, and admin to edit patient info
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             return view('patient.edit', [
                 'patient' => $patient,
@@ -131,6 +136,7 @@ class PatientController extends Controller
 
     public function update(Request $request, Patient $patient)
     {
+        // Only allow ambulance, comcen, and admin to update patient info
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'ppcr_color'=> 'required|string',

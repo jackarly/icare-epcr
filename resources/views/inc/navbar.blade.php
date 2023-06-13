@@ -66,7 +66,6 @@
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             <small class="text-capitalize">{{ Auth::user()->user_type }}</small> <span class="fs-5">|</span> <span class="fw-bold">{{ Auth::user()->username }}</span>
-                            <!-- {{ Auth::user()->username }} <span class="fs-5">|</span> <small class="text-capitalize">{{ Auth::user()->user_type }}</small> -->
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

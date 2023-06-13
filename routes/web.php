@@ -95,10 +95,6 @@ Route::get('/response/{responseTeam}', [ResponseTeamController::class, 'show'])-
 Route::get('/response/{responseTeam}/edit', [ResponseTeamController::class, 'edit'])->name('response.edit');
 Route::put('/response/{responseTeam}/update', [ResponseTeamController::class, 'update'])->name('response.update');
 
-// Route::fallback(function () {
-//     dd('welp');
-// });
-
 Route::fallback(function () {
     view('errors.404');
 });

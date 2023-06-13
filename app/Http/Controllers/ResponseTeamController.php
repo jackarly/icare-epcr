@@ -21,6 +21,7 @@ class ResponseTeamController extends Controller
     
     public function index()
     {
+        // Only show response teams to comcen and admin accounts
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $responses = ResponseTeam::whereDate('created_at', Carbon::today())->latest()->with(['incidents', 'user_ambulance'])->paginate(12);
             
@@ -35,6 +36,7 @@ class ResponseTeamController extends Controller
 
     public function create()
     {
+        // Only allow comcen and admin to create response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $medics_active = DB::table('personnels')
                 ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
@@ -61,6 +63,7 @@ class ResponseTeamController extends Controller
 
     public function store(Request $request)
     {
+        // Only allow comcen and admin to save response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             if ($request->medic1 === $request->medic2){
                 return back()->with('error', 'Select medic only once');
@@ -93,6 +96,7 @@ class ResponseTeamController extends Controller
 
     public function show(ResponseTeam $responseTeam)
     {   
+        // Only allow comcen and admin to view response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $medics = DB::table('personnels')
                 ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
@@ -112,6 +116,7 @@ class ResponseTeamController extends Controller
 
     public function edit(ResponseTeam $responseTeam)
     {
+        // Only allow comcen and admin to edit response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             // Get all active medics
             $medics_active = DB::table('personnels')
@@ -154,6 +159,7 @@ class ResponseTeamController extends Controller
 
     public function update(Request $request, ResponseTeam $responseTeam)
     {
+        // Only allow comcen and admin to update response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'ambulance'=> 'required',

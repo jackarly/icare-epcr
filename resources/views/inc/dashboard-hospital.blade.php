@@ -2,6 +2,8 @@
     <hr>
     <h5 class="fw-semibold text-secondary">Patients Received</h5>
     <div class="row mb-3">
+
+        <!-- Count en route patients -->
         <div class="col-md-4 mb-2" style="height: 10rem;">
             <div class="text-center border border-success rounded bg-success text-light opacity-75" style="height: 100%; width: 100%">
                 <ul class="list-group list-group-flush custom-list">
@@ -10,6 +12,8 @@
                 </ul>
             </div>
         </div>
+
+        <!-- Count completed patients today-->
         <div class="col-md-4 mb-2" style="height: 10rem;">
             <div class="text-center border border-warning rounded bg-warning opacity-75" style="height: 100%; width: 100%">
                 <ul class="list-group list-group-flush custom-list">
@@ -18,6 +22,8 @@
                 </ul>
             </div>
         </div>
+
+        <!-- Count overall patients -->
         <div class="col-md-4 mb-2" style="height: 10rem;">
             <div class="text-center border border-secondary rounded bg-secondary text-light opacity-75" style="height: 100%; width: 100%">
                 <ul class="list-group list-group-flush custom-list">
@@ -67,6 +73,4 @@
         </div>
     </div>
     <hr>
-    
-    
 </div>

@@ -6,6 +6,7 @@
         <div class="col-md-8">
             <h4 class="fw-semibold">Dashboard</h4>
             <div class="card bg-transparent border border-0">
+                <!-- Show different dashboard based on user_type -->
                 @if (auth()->user()->user_type == 'hospital')
                     @include('inc.dashboard-hospital')
                 @elseif (auth()->user()->user_type == 'ambulance')

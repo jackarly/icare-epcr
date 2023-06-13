@@ -32,29 +32,28 @@ class Incident extends Model
         'timing_arrival',
         'timing_depart',
     ];
-
+    
+    // Set incident and patients relationship
     public function patients()
     {
         return $this->hasMany(Patient::class);
     }
     
+    // Set response team and patients relationship
     public function response_team()
     {
         return $this->belongsTo(ResponseTeam::class);
     }
 
+    // Count assigned incidents today
     public static function getActiveToday() 
     {
-        // $incidentCount = Incident::whereNull('reponse_team_id')->whereDate('created_at', Carbon::today())->count();
-        // return $incidentCount;
-
         return Incident::whereNull('response_team_id')->whereDate('created_at', Carbon::today())->count();
     }
 
+    // Count assigned but incomplete incidents today
     public static function getOngoingToday() 
     {
-        // return Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->count();
-
         return $incidents =  DB::table('incidents')
             ->leftJoin('patients', 'incidents.id', '=', 'patients.incident_id')
             ->whereNotNull('incidents.response_team_id')
@@ -63,11 +62,13 @@ class Incident extends Model
             ->count();
     }
 
+    // Count reponse teams that are deployed today
     public static function getDeployedToday() 
     {
         return Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->distinct()->count('response_team_id');
     }
 
+    // Count available response team today
     public static function getAvailableToday() 
     {
         $teamsDeployed = Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->pluck('response_team_id');

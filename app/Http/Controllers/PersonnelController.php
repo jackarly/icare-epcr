@@ -18,6 +18,7 @@ class PersonnelController extends Controller
 
     public function index($status = null)
     {
+        // Only show medics to comcen and admin accounts
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             switch($status) {
                 case('available'):
@@ -47,6 +48,7 @@ class PersonnelController extends Controller
 
     public function create()
     {
+        // Only allow comcen and admin to create medic profile
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             return view('personnel.create');
         }
@@ -58,6 +60,7 @@ class PersonnelController extends Controller
 
     public function store(Request $request)
     {
+        // Only allow comcen and admin to save medic profile
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'personnel_first_name'=> 'required|string',
@@ -89,6 +92,7 @@ class PersonnelController extends Controller
 
     public function show(Personnel $personnel)
     {
+        // Only allow comcen and admin to view medic profile
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             return view('personnel.show', [
                 'personnel' => $personnel,
@@ -101,6 +105,7 @@ class PersonnelController extends Controller
 
     public function edit(Personnel $personnel)
     {
+        // Only allow comcen and admin to edit medic profile
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             return view('personnel.edit', [
                 'personnel' => $personnel,
@@ -113,6 +118,7 @@ class PersonnelController extends Controller
 
     public function update(Request $request, Personnel $personnel)
     {
+        // Only allow comcen and admin to update medic profile
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'personnel_first_name'=> 'required|string',
@@ -140,35 +146,5 @@ class PersonnelController extends Controller
             return view('errors.404');
         }
     }
-    
-    // TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE 
-    public function sample()
-    {
-
-        if (Auth::user()->user_type == 'admin'){
-        }
-        else{
-            return view('errors.404');
-        }
-
-
-
-        if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
-        }
-        else{
-            return view('errors.404');
-        }
-
-
-
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
-        }
-        else{
-            return view('errors.404');
-        }
-
-
-    }
-    // TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE TEMPLATE 
 
 }

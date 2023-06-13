@@ -20,12 +20,13 @@ class UserAmbulance extends Model
 
     protected $appends = ['dashboardMedics'];
     
+    // Set ambulance and response team relationship
     public function response_team()
     {
         return $this->hasOne(ResponseTeam::class);
     }
     
-
+    // Get medic information
     public static function dashboardMedics() 
     {   
         $ambulance = Auth::user()->user_ambulance;
@@ -40,6 +41,7 @@ class UserAmbulance extends Model
         ->get();
     }
 
+    // Count overall incidents completed by ambulance 
     public static function dashboardCompletedOverall() 
     {   
         $ambulance = Auth::user()->user_ambulance;
@@ -52,6 +54,7 @@ class UserAmbulance extends Model
         ->count();
     }
 
+    // Count all incidents completed by ambulance today
     public static function dashboardCompletedToday() 
     {   
         $ambulance = Auth::user()->user_ambulance;
@@ -64,6 +67,7 @@ class UserAmbulance extends Model
         ->count();
     }
     
+    // Count newly assigned incidents
     public static function dashboardNewToday() 
     {   
         $ambulance = Auth::user()->user_ambulance;

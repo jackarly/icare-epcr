@@ -9,6 +9,7 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-bold mb-3">Pre-Hospital Patient Care Report
+                                <!-- Show update button if user_type == Ambulance, Comcen, or Admin -->
                                 @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                                     <a href="{{ route('patient.edit', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                 @endif
@@ -37,6 +38,7 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-semibold mb-3">Incident Information
+                                <!-- Show update button if user_type == Ambulance, Comcen, or Admin -->
                                 @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                                     <a href="{{ route('incident.edit', $incident->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                 @endif
@@ -49,6 +51,8 @@
                                         <li class="text-capitalize"><span class="fw-semibold">Incident Type: </span>{{ $incident->incident_type }}</li>
                                         <li class="text-capitalize"><span class="fw-semibold">Reported </span>{{ $incident->created_at->diffForHumans() }}</li>
                                         <li class="text-capitalize"><span class="fw-semibold">Status: </span>
+
+                                            <!-- Check if incident is assigned or not -->
                                             @isset($incident->response_team_id)
                                                 <span class="text-success fw-semibold">Assigned</span>
                                             @else
@@ -85,9 +89,11 @@
                                             <tr class="text-center">
                                                 <td><small>{{$incident->timing_dispatch }}</small></td>
                                                 <td>
+                                                    <!-- Check if enroute is set -->
                                                     @if ($incident->timing_enroute)
                                                         <small>{{$incident->timing_enroute }}</small>
                                                     @else
+                                                        <!-- Show add time is user_type == Ambulance or Admin -->
                                                         @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                                             <form method="POST" action="{{route('incident.enroute',  $patient->id)}}">
                                                                 @csrf
@@ -104,10 +110,13 @@
                                                     @endif
                                                 </td>
                                                 <td>
+                                                    <!-- Check if arrival is set -->
                                                     @if ($incident->timing_arrival)
                                                         <small>{{$incident->timing_arrival }}</small>
                                                     @else
+                                                        <!-- Check if enroute is set -->
                                                         @if ($incident->timing_enroute)
+                                                            <!-- Show add time is user_type == Ambulance or Admin -->
                                                             @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                                                 <form method="POST" action="{{route('incident.arrival',  $patient->id)}}">
                                                                     @csrf
@@ -127,10 +136,13 @@
                                                     @endif
                                                 </td>
                                                 <td>
+                                                    <!-- Check if depart is set -->
                                                     @if ($incident->timing_depart)
                                                         <small>{{$incident->timing_depart }}</small>
                                                     @else
+                                                        <!-- Check if arrival is set -->
                                                         @if ($incident->timing_arrival)
+                                                            <!-- Show add time is user_type == Ambulance or Admin -->
                                                             @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                                                 <form method="POST" action="{{route('incident.depart',  $patient->id)}}">
                                                                     @csrf
@@ -161,6 +173,7 @@
                     <div class="card-body">
                         <div class="row">
                             <h5 class="fw-semibold mb-3">Patient Information
+                                <!-- Show update button if user_type == Ambulance, Comcen, or Admin -->
                                 @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                                     <a href="{{ route('patient.edit', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                 @endif
@@ -199,8 +212,10 @@
                 <div class="card mb-2">
                     <div class="card-body">
                         <div class="row">
+                            <!-- Check is patient assessment is not null -->
                             @isset($patient_assessment)
                                 <h5 class="fw-semibold mb-3">Patient Assessment
+                                <!-- Show update button if user_type == Ambulance, Comcen, or Admin -->
                                 @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                                     <a href="{{ route('assessment.edit', $patient_assessment->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                 @endif
@@ -309,6 +324,7 @@
                                             <tbody>
                                                 <tr class="text-secondary">
                                                     <td style="width:16%">
+                                                        <!-- Set default value to preserve cell height -->
                                                         @if ($patient_assessment->vital_time1)
                                                             <small>{{$patient_assessment->vital_time1}}</small>
                                                         @else
@@ -323,6 +339,7 @@
                                                 </tr>
                                                 <tr class="text-secondary">
                                                     <td style="width:16%">
+                                                        <!-- Set default value to preserve cell height -->
                                                         @if ($patient_assessment->vital_time2)
                                                             <small>{{$patient_assessment->vital_time2}}</small>
                                                         @else
@@ -337,6 +354,7 @@
                                                 </tr>
                                                 <tr class="text-secondary">
                                                     <td style="width:16%">
+                                                        <!-- Set default value to preserve cell height -->
                                                         @if ($patient_assessment->vital_time3)
                                                         <small>{{$patient_assessment->vital_time3}}</small>
                                                         @else
@@ -356,6 +374,7 @@
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Assessment</h5>
                                 <div class="col-md-12 text-center mb-3">
+                                    <!-- Show create button if user_type == Ambulance or Admin -->
                                     @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                         <a class="btn btn-primary btn-sm" href=" {{route('assessment.create', $patient->id)}}">Create Patient Assessment</a>
                                     @else
@@ -371,6 +390,7 @@
                         <div class="row">
                         @isset($patient_observation)
                             <h5 class="fw-semibold mb-3">Patient Observation
+                                <!-- Show update button if user_type == Ambulance, Comcen, or Admin -->
                                 @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                                     <a href="{{ route('observation.edit', $patient_observation->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                 @endif
@@ -412,6 +432,7 @@
                                     <div class="col-md-6">
                                         <div class="row mb-3">
                                             <div class="col-md-12 text-center">
+                                                <!-- Show/hide chart based on age_group -->
                                                 @if ($patient_observation->age_group === "adult")
                                                     <img src="{{ asset('/images/rule-9-adult.jpg') }}" alt="Rule 9 Adult" style="height: auto; width: 75%; object-fit: contain">
                                                 @elseif ($patient_observation->age_group === "pedia")
@@ -430,6 +451,7 @@
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Observation</h5>
                                 <div class="col-md-12 text-center mb-3">
+                                    <!-- Show create button if user_type == Ambulance or Admin -->
                                     @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                         <a class="btn btn-primary btn-sm" href=" {{route('observation.create', $patient->id)}} ">Create Patient Observation</a>
                                     @else
@@ -445,6 +467,7 @@
                         <div class="row">
                             @isset($patient_management)
                                 <h5 class="fw-semibold mb-3">Patient Management
+                                    <!-- Show update button if user_type == Ambulance, Comcen, or Admin -->
                                     @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                                         <a href="{{ route('management.edit', $patient_management->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
                                     @endif
@@ -506,10 +529,13 @@
                                         <tbody>
                                             <tr class="text-secondary text-center">
                                                 <td>
+                                                    <!-- Check if arrival is set -->
                                                     @if ($patient_management->timings_arrival)
                                                         <small>{{$patient_management->timings_arrival}}</small>
                                                     @else
+                                                        <!-- Check if incident depart is set -->
                                                         @if ($incident->timing_depart)
+                                                            <!-- Show add time if user_type == Ambulance or Admin -->
                                                             @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                                                 <form method="POST" action="{{route('management.arrival',  $patient->id)}}">
                                                                     @csrf
@@ -529,10 +555,13 @@
                                                     @endif
                                                 </td>
                                                 <td>
+                                                    <!-- Check if handover is set -->
                                                     @if ($patient_management->timings_handover)
                                                         <small>{{$patient_management->timings_handover}}</small>
                                                     @else
+                                                        <!-- Check if arrival is set -->
                                                         @if ($patient_management->timings_arrival)
+                                                            <!-- Show add time if user_type == Ambulance or Admin -->
                                                             @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                                                 @if ($patient_assessment && $patient_observation)
                                                                     <form method="POST" action="{{route('management.handover',  $patient->id)}}">
@@ -556,9 +585,11 @@
                                                     @endif
                                                 </td>
                                                 <td>
+                                                    <!-- Check if clear is set -->
                                                     @if ($patient_management->timings_clear)
                                                         <small>{{$patient_management->timings_clear}}</small>
                                                     @else
+                                                        <!-- Show add time if user_type == Hospital or Admin -->
                                                         @if ((auth()->user()->user_type == 'hospital') || (auth()->user()->user_type == 'admin'))
                                                             @if ($patient_management->timings_handover)
                                                                 <form method="POST" action="{{route('management.clear',  $patient->id)}}">
@@ -642,6 +673,8 @@
                                             <li class="">
                                                 <i class="fa-solid fa-square{{ ($patient_management)? '-check text-success' : ' text-secondary'}}"></i>
                                                 <span class="{{ ($patient_management)? 'fw-semibold text-success' : ' text-secondary'}}">Patient Management</span>
+                                                <!-- Check if patient management is set -->
+                                                <!-- Set checkbox style and color -->
                                                 @if ($patient_management)
                                                     @if ($patient_management->timings_handover)
                                                         <li class="fs-7 ps-3">
@@ -681,6 +714,7 @@
                                 </div>
                                 
                                 <span class="d-grid mt-1">
+                                    <!-- Show download/print button if patient is tagged as completed -->
                                     @if ($patient->completed_at)
                                         <a href="{{ route('pcr.print', $patient->id) }}" class="btn btn-success btn-sm rounded-pill custom-rounded-btn text-decoration-none">Print/Download PCR</a>   
                                     @else

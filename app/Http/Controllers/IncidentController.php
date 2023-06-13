@@ -19,6 +19,7 @@ class IncidentController extends Controller
 
     public function index($status = null)
     {
+        // Only show hospital and ambulance accounts their assigned incidents 
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
             if (Auth::user()->user_type == 'hospital'){
                 $assignedIncidents = DB::table('incidents')
@@ -53,6 +54,7 @@ class IncidentController extends Controller
                     $incidents = Incident::whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
                     $status = 'incidents today';
             }
+        // Show all incident for comcen and admin accounts
         }else{
             switch($status) {
                 case('unassigned today'):
@@ -80,6 +82,7 @@ class IncidentController extends Controller
 
     public function create()
     {
+        // Only allow comcen and admin accounts to create incidents
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
             return view('incident.create');
         }
@@ -90,6 +93,7 @@ class IncidentController extends Controller
 
     public function store(Request $request)
     {
+        // Only allow comcen and admin accounts to save incidents
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
             $this->validate($request, [
                 'nature_of_call'=> 'required|string',
@@ -127,6 +131,7 @@ class IncidentController extends Controller
 
     public function show(Incident $incident)
     {
+        // Only show hospital and ambulance accounts their assigned incidents
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
             $grantAccess = false;
 
@@ -182,6 +187,7 @@ class IncidentController extends Controller
                 return view('errors.404');
             }
             
+        // Show all incident for comcen and admin accounts
         }else{
             $responses = ResponseTeam::whereDate('created_at', Carbon::today())->get();
             $patients = $incident->patients()->get();
@@ -206,6 +212,7 @@ class IncidentController extends Controller
 
     public function edit(Incident $incident)
     {
+        // Allow accounts except hospital to edit incident
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             if (Auth::user()->user_type == 'ambulance'){
                 $grantAccess = false;
@@ -240,6 +247,7 @@ class IncidentController extends Controller
 
     public function update(Request $request, Incident $incident)
     {
+        // Allow accounts except hospital to update incident
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'nature_of_call'=> 'required|string',
@@ -277,6 +285,7 @@ class IncidentController extends Controller
 
     public function assign(Request $request,Incident $incident)
     {
+        // Allow only comcen and admin account to assign response team
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'response_team'=> 'required',
@@ -295,6 +304,7 @@ class IncidentController extends Controller
 
     public function enroute(Request $request,Patient $patient)
     {
+        // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $incident = Incident::find($patient->incident_id);
@@ -311,6 +321,7 @@ class IncidentController extends Controller
 
     public function arrival(Request $request,Patient $patient)
     {
+        // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $incident = Incident::find($patient->incident_id);
@@ -327,6 +338,7 @@ class IncidentController extends Controller
 
     public function depart(Request $request,Patient $patient)
     {
+        // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $incident = Incident::find($patient->incident_id);
@@ -343,6 +355,7 @@ class IncidentController extends Controller
 
     public function enrouteIncident(Request $request,Incident $incident)
     {
+        // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $incident = Incident::find($incident->id);
@@ -359,6 +372,7 @@ class IncidentController extends Controller
 
     public function arrivalIncident(Request $request,Incident $incident)
     {
+        // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $incident = Incident::find($incident->id);
@@ -375,6 +389,7 @@ class IncidentController extends Controller
 
     public function departIncident(Request $request,Incident $incident)
     {
+        // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $incident = Incident::find($incident->id);

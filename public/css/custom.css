@@ -17,10 +17,6 @@ ul.custom-list, ul.custom-list-print{
     list-style-type: none;
 }
 
-/* .img-badge{
-    margin-top: -2px;
-} */
-
 .account-name, .name-space{
     height: 50px;
 }

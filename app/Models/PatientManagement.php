@@ -30,6 +30,7 @@ class PatientManagement extends Model
         'patient_id',
     ];
 
+    // Set patient management and hospital relationship
     public function user_hospital()
     {
         return $this->belongsTo(UserHospital::class);

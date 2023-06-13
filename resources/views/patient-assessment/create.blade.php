@@ -433,7 +433,6 @@
                         <hr>
 
                         <div class="row mb-3">
-                            <!-- <label for="vitals" class="col-md-4 col-form-label text-md-end">Vitals</label> -->
 
                             <div class="col-md-10 mx-auto">
                                 <span class="">Vitals</span><br>

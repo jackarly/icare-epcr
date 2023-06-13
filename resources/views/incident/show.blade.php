@@ -24,6 +24,8 @@
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush custom-list">
                                         <li class="text-capitalize"><span class="fw-semibold">Status:</span>
+
+                                            <!-- Check if incident is assigned to a response team or not -->
                                             @isset($incident->response_team_id)
                                                 <span class="text-success fw-semibold">Assigned</span>
                                             @else
@@ -83,6 +85,7 @@
                                     <tbody>
                                         <tr class="text-center">
                                             <td>
+                                                <!-- Check if dispatch is not null -->
                                                 @if ($incident->timing_dispatch)
                                                     <small>{{$incident->timing_dispatch }}</small>
                                                 @else
@@ -90,9 +93,12 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                <!-- Check if enroute is not null -->
                                                 @if ($incident->timing_enroute)
                                                     <small>{{$incident->timing_enroute }}</small>
                                                 @else
+                                                    
+                                                    <!-- Only show to user_type Admin or Ambulance -->
                                                     @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                                         <form method="POST" action="{{route('incident.only.enroute',  $incident->id)}}">
                                                             @csrf
@@ -109,10 +115,15 @@
                                                 @endif
                                             </td>
                                             <td>
+
+                                                <!-- Check if arrival is not null -->
                                                 @if ($incident->timing_arrival)
                                                     <small>{{$incident->timing_arrival }}</small>
                                                 @else
+                                                    
+                                                    <!-- Only show if enroute is not null -->
                                                     @if ($incident->timing_enroute)
+                                                        <!-- Only show to user_type Admin or Ambulance -->
                                                         @if ((auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
                                                             <form method="POST" action="{{route('incident.only.arrival',  $incident->id)}}">
                                                                 @csrf
@@ -134,6 +145,7 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                <!-- Check if depart is not null -->
                                                 @if ($incident->timing_depart)
                                                     <small>{{$incident->timing_depart }}</small>
                                                 @else
@@ -154,6 +166,8 @@
                 <div class="card mt-3">
                     <div class="card-body">
                         <div class="row mb-3">
+
+                            <!-- Show if response team is assigned -->
                             @isset( $incident->response_team_id)
                                 <h5 class="fw-semibold">Response Team
                                     @if ( (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
@@ -241,6 +255,7 @@
         </div>
     </div>
     
+    <!-- Modal can only be accessed by user_type comcen or admin -->
     @if ( (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

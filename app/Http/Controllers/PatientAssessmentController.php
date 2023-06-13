@@ -16,7 +16,8 @@ class PatientAssessmentController extends Controller
 
     public function create(Patient $patient)
     {
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        // Only allow ambulance and admin to create patient assessment
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             return view('patient-assessment.create', [
                 'patient' => $patient,
             ]);
@@ -28,7 +29,8 @@ class PatientAssessmentController extends Controller
 
     public function store(Patient $patient, Request $request)
     {
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        // Only allow ambulance and admin to save patient assessment
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'chief_complaint'=> 'required|string',
                 'history'=> 'required|string',
@@ -113,6 +115,7 @@ class PatientAssessmentController extends Controller
 
     public function edit(PatientAssessment $patientAssessment)
     {
+        // Only allow ambulance, comcen admin to edit patient assessment
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             return view('patient-assessment.edit', [
                 'patient_assessment' => $patientAssessment,
@@ -125,6 +128,7 @@ class PatientAssessmentController extends Controller
 
     public function update(Request $request, PatientAssessment $patientAssessment)
     {
+        // Only allow ambulance, comcen admin to update patient assessment
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'chief_complaint'=> 'required|string',

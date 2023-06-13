@@ -22,31 +22,37 @@ class ResponseTeam extends Model
 
     protected $appends = ['incidentsToday', 'incidentsTotal', 'incidentsCompletedToday'];
 
+    // Set response team and incident relationship
     public function incidents()
     {
         return $this->hasMany(Incident::class);
     }
 
+    // Set response team and response personnel relationship
     public function response_personnels()
     {
         return $this->hasMany(ResponsePersonnel::class);
     }
 
+    // Set response team and ambulance relationship
     public function user_ambulance()
     {
         return $this->belongsTo(UserAmbulance::class);
     }
 
+    // Count all incidents today
     public function getIncidentsTodayAttribute() 
     {
         return $this->incidents()->whereDate('created_at', Carbon::today())->count();
     }
 
+    // Count all incidents
     public function getIncidentsTotalAttribute() 
     {
         return $this->incidents()->count();
     }
 
+    // Count incidents assigned to response team today
     public function getIncidentsCompletedTodayAttribute() 
     {   
         return $incident_count =  DB::table('response_teams')

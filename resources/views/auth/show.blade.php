@@ -5,11 +5,13 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <h4 class="text-center mb-3 fw-bold">
-            @if (auth()->user()->id === $account->id)
-                My Account
-            @else
-                Account Information
-            @endif
+
+                    <!-- Show different header if own account -->
+                    @if (auth()->user()->id === $account->id)
+                        My Account
+                    @else
+                        Account Information
+                    @endif
                 </h4>
                 <div class="card">
                     <div class="card-body">
@@ -20,6 +22,9 @@
                             <div class="col-md-8">
                                 <ul class="list-group list-group-flush custom-list">
                                         <li class="text-center"><span class="fs-5 fw-bold">{{ $account->username }}</span>
+
+                                            <!-- Check and show update button based on user_type -->
+                                            <!-- Redirect to different URL if own account -->
                                             @switch($account->user_type)
                                                 @case('ambulance')
                                                     @if (auth()->user()->id === $account->id )
@@ -57,6 +62,8 @@
                                         </li>
                                         <li class="text-capitalize">ID{{ $account->id }} <span class="fs-5">|</span> {{ $account->user_type }}</li>
                                         <li class="account-name">
+
+                                            <!-- Check and show details based on user_type -->
                                             @switch($account->user_type)
                                                 @case('ambulance')
                                                     <span class="fw-semibold text-secondary">Plate: </span>
@@ -93,6 +100,8 @@
                             <h5 class="fw-semibold">Account Details</h5>
                             <div class="col-md-8">
                                 <ul class="list-group list-group-flush custom-list">
+                                    
+                                    <!-- Check and show details based on user_type -->
                                     @switch($account->user_type)
                                         @case('ambulance')
                                             <li> <span class="text-secondary fw-semibold">Contact No: </span><span>{{$account->user_ambulance->plate_no}}</span></li>
@@ -124,6 +133,8 @@
                                 </ul>
                             </div>
                         </div>
+
+                        <!-- Check and show details based on user_type -->
                         @switch($account->user_type)
                             @case('ambulance')
                                 <hr>

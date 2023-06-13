@@ -18,7 +18,9 @@ class AccountController extends Controller
 
     public function index($user_type = null)
     {
+        // Only allow logged on comcen or admin; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
+            // Show all accounts to admin
             if (Auth::user()->user_type == 'admin'){
                 switch($user_type) {
                     case('ambulance'):
@@ -41,6 +43,7 @@ class AccountController extends Controller
                         $accounts = User::latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
                         $user_type = 'all users';
                 }
+            // Show only ambulance & hospital accounts to comcen
             }else{
                 switch($user_type) {
                     case('ambulance'):
@@ -56,8 +59,6 @@ class AccountController extends Controller
                         $user_type = 'all users';
                 }
             }
-            
-    
             return view('auth.index', [
                 'accounts' => $accounts,
                 'user_type' => $user_type,
@@ -70,9 +71,12 @@ class AccountController extends Controller
 
     public function create($userType = 'ambulance')
     {   
+        // Set default to ambulance
         if ($userType == 'all users'){
             $userType = 'ambulance';
         }
+
+        // Only allow comcen or admin account; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')) {
             return view('auth.register', [
                 'user_type' => $userType,
@@ -86,8 +90,11 @@ class AccountController extends Controller
 
     public function store(Request $request)
     {
+        // Only allow comcen or admin account; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')) {
+            // Check if default_user is true, set username as password, else set inputted password
             if($request->default_user){
+                // Check which user_type to store
                 switch($request->user_type) {
                     case('ambulance'):
                         $this->validate($request, [
@@ -304,6 +311,7 @@ class AccountController extends Controller
 
     public function show(string $id)
     {
+        // Only allow logged on comcen or admin accounts; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
             if (Auth::user()->user_type == 'admin'){
                 $account = User::find($id);
@@ -331,6 +339,7 @@ class AccountController extends Controller
 
     public function editAmbulance(User $user)
     {
+        // Only allow logged on comcen or admin accounts; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
             $ambulance = $user->user_ambulance()->first();
             
@@ -347,6 +356,7 @@ class AccountController extends Controller
 
     public function updateAmbulance(Request $request, User $user)
     {
+        // Only allow logged on comcen or admin accounts; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
             if($request->default_user){
                 $this->validate($request, [
@@ -384,6 +394,7 @@ class AccountController extends Controller
 
     public function editHospital(User $user)
     {
+        // Only allow logged on comcen or admin accounts; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
             $hospital = $user->user_hospital()->first();
             return view('account.edit-hospital', [
@@ -399,6 +410,7 @@ class AccountController extends Controller
     
     public function updateHospital(Request $request, User $user)
     {
+        // Only allow logged on comcen or admin accounts; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
             if($request->default_user){
                 $this->validate($request, [
@@ -456,6 +468,7 @@ class AccountController extends Controller
 
     public function editComcen(User $user)
     {
+        // Only allow logged on admin accounts; else redirect to error page
         if (Auth::user()->user_type == 'admin'){
             $comcen = $user->user_comcen()->first();
 
@@ -472,6 +485,7 @@ class AccountController extends Controller
 
     public function updateComcen(Request $request, User $user)
     {
+        // Only allow logged on admin accounts; else redirect to error page
         if (Auth::user()->user_type == 'admin'){
             if($request->default_user){
                 $this->validate($request, [
@@ -525,6 +539,7 @@ class AccountController extends Controller
 
     public function editAdmin(User $user)
     {
+        // Only allow logged on admin accounts; else redirect to error page
         if (Auth::user()->user_type == 'admin'){
             $admin = $user->user_admin()->first();
             return view('account.edit-admin', [
@@ -540,6 +555,7 @@ class AccountController extends Controller
 
     public function updateAdmin(Request $request, User $user)
     {
+        // Only allow logged on admin accounts; else redirect to error page
         if (Auth::user()->user_type == 'admin'){
             if($request->default_user){
                 $this->validate($request, [
@@ -593,6 +609,7 @@ class AccountController extends Controller
 
     public function showMyAccount()
     {
+        // Show own account page
         $account = Auth::user();
         
         return view('auth.show', [
@@ -603,8 +620,8 @@ class AccountController extends Controller
     public function editMyAccount()
     {
         $user = Auth::user();
-        // dd($account->user_type);
 
+        // Check user_type then get details based on user_type
         switch ($user->user_type) {
             case 'ambulance':
                 $ambulance = $user->user_ambulance()->first();
@@ -645,6 +662,7 @@ class AccountController extends Controller
     {
         $user = Auth::user();
 
+        // Check user_type then update details based on user_type
         switch ($user->user_type) {
             case 'ambulance':
                 if($request->default_user){

@@ -23,9 +23,15 @@
 </head>
 <body class="">
     <div id="app">
+
+        <!-- Navbar -->
         @include('inc.navbar')
         <main class="py-4">
+
+            <!-- Errors and messages -->
             @include('inc.messages')
+            
+            <!-- Main page and content -->
             @yield('content')
         </main>
     </div>

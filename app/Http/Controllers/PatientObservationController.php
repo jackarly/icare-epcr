@@ -16,7 +16,8 @@ class PatientObservationController extends Controller
 
     public function create(Patient $patient)
     {
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        // Only allow ambulance and admin to create patient observation
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             return view('patient-observation.create', [
                 'patient' => $patient,
             ]);
@@ -28,7 +29,8 @@ class PatientObservationController extends Controller
 
     public function store(Patient $patient, Request $request)
     {
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        // Only allow ambulance and admin to save patient observation
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'observations'=> 'nullable|string',
                 'age_group'=> 'nullable|string',
@@ -147,6 +149,7 @@ class PatientObservationController extends Controller
 
     public function edit(PatientObservation $patientObservation)
     {
+        // Only allow ambulance, comcen, and admin to edit patient observation
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             return view('patient-observation.edit', [
                 'patient_observation' => $patientObservation,
@@ -159,6 +162,7 @@ class PatientObservationController extends Controller
 
     public function update(Request $request, PatientObservation $patientObservation)
     {
+        // Only allow ambulance, comcen, and admin to update patient observation
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'observations'=> 'nullable|string',

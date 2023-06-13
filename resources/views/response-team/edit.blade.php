@@ -99,9 +99,3 @@
     </div>
 </div>
 @endsection
-
-<!-- @push('head')
-    <script>
-        $("#selectBox option[value='option1']").remove();
-    </script>
-@endpush -->

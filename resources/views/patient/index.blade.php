@@ -16,11 +16,6 @@
                             <li><a class="dropdown-item" href="{{ route('patient', 'completed') }}">Completed</a></li>
                         </ul>
                     </ul>
-                    
-                <!-- <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form> -->
                 </div>
             </div>
         </nav>
@@ -43,6 +38,8 @@
                                         </li>
                                         <li class="">PATIENT{{$patient->id}}
                                             <span class="fs-5">|</span> 
+
+                                            <!-- Check if patient is enroute or cleared by provider -->
                                             @isset ($patient->completed_at)
                                                 <span class="text-success text-capitalize fw-semibold">Completed</span>
                                             @else
@@ -57,6 +54,8 @@
                                 <ul class="list-group list-group-flush custom-list">
                                         <li class=""><span class="text-capitalize">{{$patient->sex}}</span></li>
                                         <li class="">Age:
+
+                                            <!-- Check if birthday is set -->
                                             @isset($patient->birthday)
                                                 <span>{{\Carbon\Carbon::parse($patient->birthday)->diff(\Carbon\Carbon::now())->format('%y')}}</span>
                                             @else

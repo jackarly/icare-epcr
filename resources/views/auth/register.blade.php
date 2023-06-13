@@ -8,45 +8,48 @@
             <div class="card mb-3">
                 <div class="card-header">{{ __('User Type') }}</div>
                 <div class="card-body">
-                        @if ( auth()->user()->user_type == 'admin' )
-                            <div class="row">
-                                <div class="col-md-3 my-1">
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('account.create', 'ambulance') }}" class="btn btn-{{ ($user_type=='ambulance') ? '' : 'outline-'}}primary">Ambulance</a>
-                                    </div>
+
+                    <!-- Show if user_type == Admin -->
+                    @if ( auth()->user()->user_type == 'admin' )
+                        <div class="row">
+                            <div class="col-md-3 my-1">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('account.create', 'ambulance') }}" class="btn btn-{{ ($user_type=='ambulance') ? '' : 'outline-'}}primary">Ambulance</a>
                                 </div>
-                                <div class="col-md-3 my-1">
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('account.create', 'hospital') }}" class="btn btn-{{ ($user_type=='hospital') ? '' : 'outline-'}}primary">Hospital</a>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 my-1">
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('account.create', 'comcen') }}" class="btn btn-{{ ($user_type=='comcen') ? '' : 'outline-'}}primary">ComCen</a>
-                                    </div>
-                                </div>
-                                <div class="col-md-3 my-1">
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('account.create', 'admin') }}" class="btn btn-{{ ($user_type=='admin') ? '' : 'outline-'}}primary">Admin</a>
-                                    </div>
-                                </div>
-                                
                             </div>
-                        @else
-                            <div class="row">
-                                <div class="col-md-6 my-1">
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('account.create', 'ambulance') }}" class="btn btn-{{ ($user_type=='ambulance') ? '' : 'outline-'}}primary">Ambulance</a>
-                                    </div>
+                            <div class="col-md-3 my-1">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('account.create', 'hospital') }}" class="btn btn-{{ ($user_type=='hospital') ? '' : 'outline-'}}primary">Hospital</a>
                                 </div>
-                                <div class="col-md-6 my-1">
-                                    <div class="d-grid gap-2">
-                                        <a href="{{ route('account.create', 'hospital') }}" class="btn btn-{{ ($user_type=='hospital') ? '' : 'outline-'}}primary">Hospital</a>
-                                    </div>
-                                </div>
-                                
                             </div>
-                        @endif
+                            <div class="col-md-3 my-1">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('account.create', 'comcen') }}" class="btn btn-{{ ($user_type=='comcen') ? '' : 'outline-'}}primary">ComCen</a>
+                                </div>
+                            </div>
+                            <div class="col-md-3 my-1">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('account.create', 'admin') }}" class="btn btn-{{ ($user_type=='admin') ? '' : 'outline-'}}primary">Admin</a>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    @else
+                    <!-- Show if user_type == Comcen -->
+                        <div class="row">
+                            <div class="col-md-6 my-1">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('account.create', 'ambulance') }}" class="btn btn-{{ ($user_type=='ambulance') ? '' : 'outline-'}}primary">Ambulance</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6 my-1">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('account.create', 'hospital') }}" class="btn btn-{{ ($user_type=='hospital') ? '' : 'outline-'}}primary">Hospital</a>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    @endif
                     
                 </div>
             </div>
@@ -101,17 +104,9 @@
                                 </label>
                             </div>
                         </div>
-
-                        <!-- <div class="row mb-3">
-                            <div class="col-md-6 offset-md-4">
-                                <div style="display:none" id="defaultDetails">
-                                    Default: 
-                                </div>
-                            </div>
-                        </div> -->
-
                         <hr>
 
+                        <!-- Show form based on chosen user_type -->
                         @switch($user_type)
                             @case('ambulance')
                                 <div class="row mb-3">
@@ -349,14 +344,12 @@
     <script type="text/javascript">
         function defaultUser(x) {
             if(x.checked == true){
-                // document.getElementById('username').disabled = true;
                 document.getElementById('password').disabled = true;
                 document.getElementById('password-confirm').disabled = true;
                 document.getElementById('defaultDetails').style.display = "block";
                 document.getElementById('defaultUsernameContainer').style.display = "block";
                 document.getElementById('usernameContainer').style.display = "none";
             }else{
-                // document.getElementById('username').disabled = false;
                 document.getElementById('password').disabled = false;
                 document.getElementById('password-confirm').disabled = false;
                 document.getElementById('defaultDetails').style.display = "none";

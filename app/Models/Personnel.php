@@ -26,11 +26,13 @@ class Personnel extends Model
 
     protected $appends = ['medicStatus', 'incidentsToday', 'incidentsCompletedToday', 'incidentsCompletedOverall'];
 
+    // Set personnel and response personnel relationship
     public function response_personnels()
     {
         return $this->belongsTo(ResponsePersonnel::class);
     }
 
+    // Check if medic is assigned or unassigned today
     public function getMedicStatusAttribute()
     {
         $teamsAssignedToday =  DB::table('personnels')
@@ -46,6 +48,7 @@ class Personnel extends Model
         }
     }
 
+    // Count incidents assigned to medic today
     public function getIncidentsTodayAttribute() 
     {
         return $incident_count =  DB::table('incidents')
@@ -57,6 +60,7 @@ class Personnel extends Model
         ->count();
     }
 
+    // Count incidents completed by medic today
     public function getIncidentsCompletedTodayAttribute() 
     {   
         return $incident_count =  DB::table('patients')
@@ -69,6 +73,7 @@ class Personnel extends Model
         ->count();
     }
 
+    // Count overall incidents completed by medic
     public function getIncidentsCompletedOverallAttribute() 
     {   
         return $incident_count =  DB::table('patients')

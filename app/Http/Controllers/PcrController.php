@@ -19,7 +19,8 @@ class PcrController extends Controller
     }
 
     public function show(Patient $patient)
-    { 
+    {
+        // Only allow hospital and ambulance to view PCR assigned to their account
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
             $grantAccess = false;
             if (Auth::user()->user_type == 'hospital'){
@@ -73,6 +74,7 @@ class PcrController extends Controller
                 return view('errors.404');
             }
             
+        // Allow all PCR to be viewed by comcen and admin accounts
         }else{
             $incident = Incident::find($patient->incident_id);
             $patient_assessment = PatientAssessment::where('patient_id',$patient->id)->first();

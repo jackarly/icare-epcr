@@ -16,11 +16,13 @@ class ResponsePersonnel extends Model
         'personnel_id', 
     ];
 
+    // Set response personnel and personnel relationship
     public function personnel()
     {
         return $this->hasMany(Personnel::class);
     }
 
+    // Set response personnel and response team relationship
     public function response_teams()
     {
         return $this->belongsTo(ResponseTeam::class);

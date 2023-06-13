@@ -21,10 +21,6 @@
                 @if ( (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
                     <a href=" {{route('incident.create')}} " class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Create Incident</a>
                 @endif
-                <!-- <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form> -->
                 </div>
             </div>
         </nav>
@@ -41,6 +37,8 @@
                                     <ul class="list-group list-group-flush custom-list">
                                         <li class="text-capitalize text-center"><span class="fs-5 fw-bold">{{$incident->caller_first_name}} {{$incident->caller_last_name}}</span></li>
                                         <li class="">INCIDENT{{$incident->id}}<span class="fs-5">|</span> 
+
+                                            <!-- Check if incident is assigned to a response team or not -->
                                             @isset($incident->response_team_id)
                                                 <span class="text-success fw-semibold">Assigned</span>
                                             @else

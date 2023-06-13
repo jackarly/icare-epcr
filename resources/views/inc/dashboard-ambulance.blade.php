@@ -2,6 +2,8 @@
     <hr>
     <h5 class="fw-semibold text-secondary">Incidents</h5>
     <div class="row mb-3">
+
+        <!-- Count new incidents today -->
         <div class="col-md-4 mb-2" style="height: 10rem;">
             <div class="text-center border border-success rounded bg-success text-light opacity-75" style="height: 100%; width: 100%">
                 <ul class="list-group list-group-flush custom-list">
@@ -10,6 +12,8 @@
                 </ul>
             </div>
         </div>
+
+        <!-- Count completed incidents today -->
         <div class="col-md-4 mb-2" style="height: 10rem;">
             <div class="text-center border border-warning rounded bg-warning opacity-75" style="height: 100%; width: 100%">
                 <ul class="list-group list-group-flush custom-list">
@@ -18,6 +22,8 @@
                 </ul>
             </div>
         </div>
+        
+        <!-- Count overall completed incidents -->
         <div class="col-md-4 mb-2" style="height: 10rem;">
             <div class="text-center border border-secondary rounded bg-secondary text-light opacity-75" style="height: 100%; width: 100%">
                 <ul class="list-group list-group-flush custom-list">
@@ -27,14 +33,16 @@
             </div>
         </div>
     </div>
+
     <hr>
-    
-    
     <h5 class="fw-semibold text-secondary">Account Overview</h5> <span></span>
     <span class="text-secondary"> Ambulance Plate No:</span> <span class="fw-semibold text-secondary">{{auth()->user()->user_ambulance->plate_no}}</span> 
     <div class="row justify-content-around my-4">
 
+        <!-- Get assigned medics today -->
         @php $medics = App\Models\UserAmbulance::dashboardMedics() @endphp
+
+        <!-- Show assigned medics details -->
         @if ($medics->count() > 0)
             @foreach ($medics as $medic)
                 <div class="card col-md-6 col-lg-5">

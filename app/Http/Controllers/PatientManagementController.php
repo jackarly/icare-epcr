@@ -18,7 +18,8 @@ class PatientManagementController extends Controller
     
     public function create(Patient $patient)
     {
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        // Only allow ambulance and admin to create patient management
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             $hospitals = UserHospital::all();
             return view('patient-management.create', [
                 'patient' => $patient,
@@ -32,7 +33,8 @@ class PatientManagementController extends Controller
 
     public function store(Patient $patient, Request $request)
     {
-        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        // Only allow ambulance and admin to save patient management
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'airway_breathing'=> 'required|string',
                 'circulation'=> 'required|string',
@@ -69,6 +71,7 @@ class PatientManagementController extends Controller
 
     public function edit(PatientManagement $patientManagement)
     {
+        // Only allow ambulance, comcen, and admin to save patient management
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $hospitals = UserHospital::all();
     
@@ -84,6 +87,7 @@ class PatientManagementController extends Controller
 
     public function update(Request $request, PatientManagement $patientManagement)
     {
+        // Only allow ambulance, comcen, and admin to save patient management
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'airway_breathing'=> 'required|string',
@@ -121,6 +125,7 @@ class PatientManagementController extends Controller
 
     public function arrival(Request $request,Patient $patient)
     {
+        // Only allow ambulance, comcen, and admin to save patient management
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $patientManagement = PatientManagement::where('patient_id', $patient->id)->first();
@@ -137,6 +142,7 @@ class PatientManagementController extends Controller
     
     public function handover(Request $request,Patient $patient)
     {
+        // Only allow ambulance, comcen, and admin to save patient management
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $patientManagement = PatientManagement::where('patient_id', $patient->id)->first();
@@ -153,6 +159,7 @@ class PatientManagementController extends Controller
     
     public function clear(Request $request,Patient $patient)
     {
+        // Only allow hospital, comcen, and admin update timings_clear
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
             $patientManagement = PatientManagement::where('patient_id', $patient->id)->first();

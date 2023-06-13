@@ -22,6 +22,7 @@ class UserHospital extends Model
         'user_id',  
     ];
 
+    // Count all enroute patients today
     public static function dashboardEnrouteToday() 
     {   
         $hospital = Auth::user()->user_hospital;
@@ -35,6 +36,7 @@ class UserHospital extends Model
         ->count();
     }
 
+    // Count all completed patients today
     public static function dashboardCompletedToday() 
     {   
         $hospital = Auth::user()->user_hospital;
@@ -48,6 +50,7 @@ class UserHospital extends Model
         ->count();
     }
 
+    // Count overall completed patients
     public static function dashboardCompletedOverall() 
     {   
         $hospital = Auth::user()->user_hospital;

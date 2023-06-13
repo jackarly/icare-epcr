@@ -51,9 +51,7 @@
                                     </label>
                                 </div>
                             </div>
-
-
-
+                            
                             <div class="row mb-3">
                                 <label for="plate_no" class="col-md-4 col-form-label text-md-end">{{ __('Ambulance Plate #') }}</label>
                                 <div class="col-md-6">
@@ -149,14 +147,12 @@
     <script type="text/javascript">
         function defaultUser(x) {
             if(x.checked == true){
-                // document.getElementById('username').disabled = true;
                 document.getElementById('password').disabled = true;
                 document.getElementById('password-confirm').disabled = true;
                 document.getElementById('defaultDetails').style.display = "block";
                 document.getElementById('defaultUsernameContainer').style.display = "block";
                 document.getElementById('usernameContainer').style.display = "none";
             }else{
-                // document.getElementById('username').disabled = false;
                 document.getElementById('password').disabled = false;
                 document.getElementById('password-confirm').disabled = false;
                 document.getElementById('defaultDetails').style.display = "none";
