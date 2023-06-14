@@ -23,6 +23,7 @@ class PcrController extends Controller
         // Only allow hospital and ambulance to view PCR assigned to their account
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
             $grantAccess = false;
+            // Check if pcr is assigned to current logged in hospital
             if (Auth::user()->user_type == 'hospital'){
                 $assignedPatients = PatientManagement::where('user_hospital_id', Auth::user()->user_hospital->id)->pluck('patient_id');
                 foreach ($assignedPatients as $item) {
@@ -32,6 +33,7 @@ class PcrController extends Controller
                     }
                 }
             }
+            // Check if pcr is assigned to current logged in ambulance
             elseif(Auth::user()->user_type == 'ambulance'){
                 $assignedPatients = DB::table('user_ambulances')
                 ->join('response_teams', 'user_ambulances.id', '=', 'response_teams.user_ambulance_id')
@@ -49,7 +51,7 @@ class PcrController extends Controller
             else{
                 return view('errors.404');
             }
-
+            // Get PCR details if access is granted, else redirect to error page
             if($grantAccess){
                 $incident = Incident::find($patient->incident_id);
                 $patient_assessment = PatientAssessment::where('patient_id',$patient->id)->first();
@@ -61,7 +63,6 @@ class PcrController extends Controller
                     ->join('response_teams', 'response_teams.id', '=', 'response_personnels.response_team_id')
                     ->where('response_teams.id','=',$incident->response_team_id)
                     ->get();
-
                 return view('pcr.show', [
                     'patient' => $patient,
                     'incident' => $incident,
@@ -73,8 +74,8 @@ class PcrController extends Controller
             }else{
                 return view('errors.404');
             }
-            
         // Allow all PCR to be viewed by comcen and admin accounts
+        // Get PCR details
         }else{
             $incident = Incident::find($patient->incident_id);
             $patient_assessment = PatientAssessment::where('patient_id',$patient->id)->first();
@@ -99,6 +100,7 @@ class PcrController extends Controller
     }
 
     public function print(Patient $patient){
+        // Get patient details for printing
         $incident = Incident::find($patient->incident_id);
             $patient_assessment = PatientAssessment::where('patient_id',$patient->id)->first();
             $patient_management = PatientManagement::where('patient_id',$patient->id)->first();

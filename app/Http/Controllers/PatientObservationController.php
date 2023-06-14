@@ -124,7 +124,7 @@ class PatientObservationController extends Controller
                     $burn_total = $burn_total + 8;
                 }
             }else{
-                dd('error');
+                return view('errors.404');
             }
             
             $patient->patient_observation()->create([
@@ -258,7 +258,7 @@ class PatientObservationController extends Controller
                     $burn_total = $burn_total + 8;
                 }
             }else{
-                dd('error');
+                return view('errors.404');
             }
             
             $patientObservation->update([

@@ -22,6 +22,7 @@ class AccountController extends Controller
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
             // Show all accounts to admin
             if (Auth::user()->user_type == 'admin'){
+                // Get accounts by user_type
                 switch($user_type) {
                     case('ambulance'):
                         $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
@@ -45,6 +46,7 @@ class AccountController extends Controller
                 }
             // Show only ambulance & hospital accounts to comcen
             }else{
+                // Get accounts by user_type
                 switch($user_type) {
                     case('ambulance'):
                         $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
@@ -59,6 +61,7 @@ class AccountController extends Controller
                         $user_type = 'all users';
                 }
             }
+            
             return view('auth.index', [
                 'accounts' => $accounts,
                 'user_type' => $user_type,
@@ -196,6 +199,7 @@ class AccountController extends Controller
                         dd('Something went wrong.');
                 }
             }else{
+                // Check which user_type to store
                 switch($request->user_type) {
                     case('ambulance'):
                         $this->validate($request, [
@@ -298,7 +302,7 @@ class AccountController extends Controller
                         break;
     
                     default:
-                        dd('Something went wrong.');
+                        return view('errors.404');
                 }
             }
             return redirect()->route('account.overview')->with('success', 'User added successfully');
@@ -313,14 +317,18 @@ class AccountController extends Controller
     {
         // Only allow logged on comcen or admin accounts; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
+            // Check if logged on is admin
+            // Allow admin to view all account types
             if (Auth::user()->user_type == 'admin'){
                 $account = User::find($id);
                 return view('auth.show', [
                     'account' => $account,
                 ]);
-            }else{
+            }
+            // Check if logged on is comcen
+            else{
                 $account = User::find($id);
-
+                // Only allow comcen to view ambulance and hospital accounts
                 if (($account->user_type == 'admin') || ($account->user_type == 'comcen')){
                     return view('errors.404');
                 }else{
@@ -412,6 +420,7 @@ class AccountController extends Controller
     {
         // Only allow logged on comcen or admin accounts; else redirect to error page
         if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
+            // Check if default_user is true, set username as password, else set inputted password
             if($request->default_user){
                 $this->validate($request, [
                     "username" => 'required|string|max:255|unique:users,id,'.$user->id,
@@ -487,6 +496,7 @@ class AccountController extends Controller
     {
         // Only allow logged on admin accounts; else redirect to error page
         if (Auth::user()->user_type == 'admin'){
+            // Check if default_user is true, set username as password, else set inputted password
             if($request->default_user){
                 $this->validate($request, [
                     "username" => 'required|string|max:255|unique:users,id,'.$user->id,
@@ -557,6 +567,7 @@ class AccountController extends Controller
     {
         // Only allow logged on admin accounts; else redirect to error page
         if (Auth::user()->user_type == 'admin'){
+            // Check if default_user is true, set username as password, else set inputted password
             if($request->default_user){
                 $this->validate($request, [
                     "username" => 'required|string|max:255|unique:users,id,'.$user->id,
@@ -665,6 +676,7 @@ class AccountController extends Controller
         // Check user_type then update details based on user_type
         switch ($user->user_type) {
             case 'ambulance':
+                // Check if default_user is true, set username as password, else set inputted password
                 if($request->default_user){
                     $this->validate($request, [
                         "username" => 'required|string|max:255|unique:users,id,'.$user->id,
@@ -695,6 +707,7 @@ class AccountController extends Controller
                 break;
 
             case 'hospital':
+                // Check if default_user is true, set username as password, else set inputted password
                 if($request->default_user){
                     $this->validate($request, [
                         "username" => 'required|string|max:255|unique:users,id,'.$user->id,
@@ -745,6 +758,7 @@ class AccountController extends Controller
                 break;
 
             case 'comcen':
+                // Check if default_user is true, set username as password, else set inputted password
                 if($request->default_user){
                     $this->validate($request, [
                         "username" => 'required|string|max:255|unique:users,id,'.$user->id,
@@ -795,7 +809,4 @@ class AccountController extends Controller
                 break;
         }
     }
-    
-    
-
 }

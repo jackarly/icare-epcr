@@ -128,6 +128,7 @@ class PatientManagementController extends Controller
         // Only allow ambulance, comcen, and admin to save patient management
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set arrival to current time
             $patientManagement = PatientManagement::where('patient_id', $patient->id)->first();
             $patientManagement->update([
                 $patientManagement->timings_arrival = Carbon::now()->format('g:i A')
@@ -145,6 +146,7 @@ class PatientManagementController extends Controller
         // Only allow ambulance, comcen, and admin to save patient management
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set handover to current time
             $patientManagement = PatientManagement::where('patient_id', $patient->id)->first();
             $patientManagement->update([
                 $patientManagement->timings_handover = Carbon::now()->format('g:i A')
@@ -162,6 +164,7 @@ class PatientManagementController extends Controller
         // Only allow hospital, comcen, and admin update timings_clear
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set clear to current time
             $patientManagement = PatientManagement::where('patient_id', $patient->id)->first();
             $patientManagement->update([
                 $patientManagement->timings_clear = Carbon::now()->format('g:i A')

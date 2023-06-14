@@ -22,9 +22,12 @@ class PatientController extends Controller
     {
         // Show hospital and ambulance only their assigned patients
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+
+            // Get patients assigned to current logged on hospital
             if (Auth::user()->user_type == 'hospital'){
                 $assignedPatients = PatientManagement::where('user_hospital_id', Auth::user()->user_hospital->id)->pluck('patient_id');
             }
+            // Get patients assigned to current logged on ambulance
             elseif(Auth::user()->user_type == 'ambulance'){
                 $assignedPatients = DB::table('user_ambulances')
                 ->join('response_teams', 'user_ambulances.id', '=', 'response_teams.user_ambulance_id')
@@ -36,6 +39,7 @@ class PatientController extends Controller
             else{
                 return view('errors.404');
             }
+            // Show patients by status
             switch($status) {
                 case('ongoing'):
                     $patients = Patient::whereIn('id', $assignedPatients)->where('completed_at', null)->latest()->with(['patient_management'])->paginate(12);
@@ -52,6 +56,7 @@ class PatientController extends Controller
         }
         // Show comcen and admin all patients
         else{
+            // Show patients by status
             switch($status) {
                 case('ongoing'):
                     $patients = Patient::where('completed_at', null)->latest()->with(['patient_management'])->paginate(12);

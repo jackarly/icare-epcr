@@ -19,8 +19,9 @@ class IncidentController extends Controller
 
     public function index($status = null)
     {
-        // Only show hospital and ambulance accounts their assigned incidents 
+        // Only show hospital and ambulance their assigned incidents 
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+            // Get all assigned incidents for hospital
             if (Auth::user()->user_type == 'hospital'){
                 $assignedIncidents = DB::table('incidents')
                 ->join('patients', 'incidents.id', '=', 'patients.incident_id')
@@ -28,6 +29,7 @@ class IncidentController extends Controller
                 ->where('patient_managements.user_hospital_id', '=', Auth::user()->user_hospital->id)
                 ->pluck('incidents.id');
             }
+            // Get all assigned incidents for ambulance
             elseif(Auth::user()->user_type == 'ambulance'){
                 $assignedIncidents = DB::table('incidents')
                 ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
@@ -37,6 +39,7 @@ class IncidentController extends Controller
             else{
                 return view('errors.404');
             }
+            // Show assigned incidents by status
             switch($status) {
                 case('unassigned today'):
                     $incidents = Incident::where('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
@@ -54,8 +57,10 @@ class IncidentController extends Controller
                     $incidents = Incident::whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
                     $status = 'incidents today';
             }
+        }
         // Show all incident for comcen and admin accounts
-        }else{
+        else{
+            // Show assigned incidents by status
             switch($status) {
                 case('unassigned today'):
                     $incidents = Incident::where('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
@@ -134,7 +139,7 @@ class IncidentController extends Controller
         // Only show hospital and ambulance accounts their assigned incidents
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
             $grantAccess = false;
-
+            // Get all assigned incidents for current hospital logged in
             if (Auth::user()->user_type == 'hospital'){
                 $assignedIncidents = DB::table('incidents')
                 ->join('patients', 'incidents.id', '=', 'patients.incident_id')
@@ -147,8 +152,8 @@ class IncidentController extends Controller
                         break;
                     }
                 }
-                
             }
+            // Get all assigned incidents for current ambulance logged in
             elseif(Auth::user()->user_type == 'ambulance'){
                 $assignedIncidents = DB::table('incidents')
                 ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
@@ -165,11 +170,14 @@ class IncidentController extends Controller
                 return view('errors.404');
             }
 
+            // If selected incident is assigned, grant access, else redirect to error page
             if ($grantAccess){
+                // Get incident details
                 $responses = ResponseTeam::whereDate('created_at', Carbon::today())->get();
                 $patients = $incident->patients()->get();
                 $medics= null;
-
+                
+                // If reponse team is assigned, get medics info
                 if  ($incident->response_team_id){
                     $medics = DB::table('personnels')
                         ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
@@ -189,10 +197,12 @@ class IncidentController extends Controller
             
         // Show all incident for comcen and admin accounts
         }else{
+            // Get incident details
             $responses = ResponseTeam::whereDate('created_at', Carbon::today())->get();
             $patients = $incident->patients()->get();
             $medics= null;
 
+            // If reponse team is assigned, get medics info
             if  ($incident->response_team_id){
                 $medics = DB::table('personnels')
                     ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
@@ -214,12 +224,13 @@ class IncidentController extends Controller
     {
         // Allow accounts except hospital to edit incident
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            // Get all assigned incidents for ambualnce
             if (Auth::user()->user_type == 'ambulance'){
                 $grantAccess = false;
                 $assignedIncidents = DB::table('incidents')
-                ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
-                ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
-                ->pluck('incidents.id');
+                    ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+                    ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
+                    ->pluck('incidents.id');
 
                 foreach ($assignedIncidents as $item) {
                     if($incident->id == $item){
@@ -227,6 +238,8 @@ class IncidentController extends Controller
                         break;
                     }
                 }
+                
+                // If selected incident is assigned, grant access, else redirect to error page
                 if ($grantAccess){
                     return view('incident.edit', [
                         'incident' => $incident,
@@ -290,7 +303,8 @@ class IncidentController extends Controller
             $this->validate($request, [
                 'response_team'=> 'required',
             ]);
-    
+            
+            // Assign response team and set dispatch to current time
             $incident->response_team_id = $request->response_team;
             $incident->timing_dispatch = Carbon::now()->format('g:i A');
             $incident->save();
@@ -307,6 +321,7 @@ class IncidentController extends Controller
         // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set enroute to current time from pcr page
             $incident = Incident::find($patient->incident_id);
             $incident->update([
                 $incident->timing_enroute = Carbon::now()->format('g:i A')
@@ -324,6 +339,7 @@ class IncidentController extends Controller
         // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set arrival to current time from pcr page
             $incident = Incident::find($patient->incident_id);
             $incident->update([
                 $incident->timing_arrival = Carbon::now()->format('g:i A')
@@ -341,6 +357,7 @@ class IncidentController extends Controller
         // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set depart to current time from pcr page
             $incident = Incident::find($patient->incident_id);
             $incident->update([
                 $incident->timing_depart = Carbon::now()->format('g:i A')
@@ -358,6 +375,7 @@ class IncidentController extends Controller
         // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set enroute to current time from incident page
             $incident = Incident::find($incident->id);
             $incident->update([
                 $incident->timing_enroute = Carbon::now()->format('g:i A')
@@ -375,6 +393,7 @@ class IncidentController extends Controller
         // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set arrival to current time from incident page
             $incident = Incident::find($incident->id);
             $incident->update([
                 $incident->timing_arrival = Carbon::now()->format('g:i A')
@@ -392,6 +411,7 @@ class IncidentController extends Controller
         // Allow accounts except hospital to update timings
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Set depart to current time from incident page
             $incident = Incident::find($incident->id);
             $incident->update([
                 $incident->timing_depart = Carbon::now()->format('g:i A')

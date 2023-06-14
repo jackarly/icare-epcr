@@ -38,16 +38,19 @@ class ResponseTeamController extends Controller
     {
         // Only allow comcen and admin to create response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            // Get all assigned medic today
             $medics_active = DB::table('personnels')
                 ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
                 ->whereDate('response_personnels.created_at', Carbon::today())
                 ->pluck('personnels.id');
-    
+            
+            // Get all assigned ambulance today
             $ambulance_active = DB::table('user_ambulances')
                 ->join('response_teams', 'user_ambulances.id', '=', 'response_teams.user_ambulance_id')
                 ->whereDate('response_teams.created_at', Carbon::today())
                 ->pluck('user_ambulances.id');
-    
+            
+            // Get all registered but unassigned ambulances and medics
             $ambulances = UserAmbulance::whereNotIn('id', $ambulance_active)->get();
             $medics = Personnel::whereNotIn('id', $medics_active)->get();
     
@@ -65,6 +68,7 @@ class ResponseTeamController extends Controller
     {
         // Only allow comcen and admin to save response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            // Check if medic is selected twice
             if ($request->medic1 === $request->medic2){
                 return back()->with('error', 'Select medic only once');
             }
@@ -98,6 +102,7 @@ class ResponseTeamController extends Controller
     {   
         // Only allow comcen and admin to view response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            // Get response team details
             $medics = DB::table('personnels')
                 ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
                 ->join('response_teams', 'response_teams.id', '=', 'response_personnels.response_team_id')
@@ -124,13 +129,11 @@ class ResponseTeamController extends Controller
                 ->whereDate('response_personnels.created_at', Carbon::today())
                 ->pluck('personnels.id')->toArray();
     
-            // Remove current medics
+            // Remove current medics assigned
             $oldMedics = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->pluck('personnel_id')->toArray();
-    
             if(($key = array_search($oldMedics[0], $medics_active)) !== false) {
                 unset($medics_active[$key]);
             }
-    
             if(($key = array_search($oldMedics[1], $medics_active)) !== false) {
                 unset($medics_active[$key]);
             }
@@ -166,7 +169,8 @@ class ResponseTeamController extends Controller
                 'medic1'=> 'required',
                 'medic2'=> 'required'
             ]);
-    
+
+            // Check if medic is assigned twice
             if ($request->medic1 === $request->medic2){
                 return back()->with('error', 'Select medic only once');
             }

@@ -20,6 +20,7 @@ class PersonnelController extends Controller
     {
         // Only show medics to comcen and admin accounts
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            // Show medics by status
             switch($status) {
                 case('available'):
                     $responsePersonnels = ResponsePersonnel::whereDate('created_at', Carbon::today())->pluck('personnel_id');
@@ -72,7 +73,6 @@ class PersonnelController extends Controller
                 'sex'=> 'required|string',
                 'personnel_img' => 'image|nullable'
             ]);
-    
             Personnel::create([
                 'personnel_first_name'=> $request->personnel_first_name,
                 'personnel_mid_name'=> $request->personnel_mid_name,
