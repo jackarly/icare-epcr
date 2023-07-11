@@ -4,9 +4,9 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h4 class="text-center mb-3">Update Medic</h4>
+            <h4 class="text-center mb-3">Update Personnel</h4>
             <div class="card">
-                <div class="card-header">Medic</div>
+                <div class="card-header">Personnel</div>
                     
                 <div class="card-body">
                 <form method="POST" action="{{ route('personnel.update', $personnel->id) }}">
@@ -14,7 +14,7 @@
                         @method('PUT')
 
                         <div class="row mb-3">
-                            <label for="personnel_name" class="col-md-4 col-form-label text-md-end">Medic Name</label>
+                            <label for="personnel_name" class="col-md-4 col-form-label text-md-end">Personnel Name</label>
 
                             <div class="col-md-2">
                                 <input id="personnel_first_name" type="text" class="form-control @error('personnel_first_name') is-invalid @enderror" name="personnel_first_name" value="{{ old('personnel_first_name') ?? $personnel->personnel_first_name }}" required autocomplete="personnel_first_name" autofocus placeholder="First Name">
@@ -41,6 +41,25 @@
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="personnel_type" class="col-md-4 col-form-label text-md-end">Personnel Type</label>
+
+                            <div class="col-md-6 mt-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="personnel_type" id="personnel_type1" value="medic" {{($personnel->personnel_type == 'medic') ? 'checked' : ''}}>
+                                    <label class="form-check-label" for="personnel_type1" style="text-transform: capitalize">
+                                        medic
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="personnel_type" id="personnel_type2" value="driver" {{($personnel->personnel_type == 'driver') ? 'checked' : ''}}>
+                                    <label class="form-check-label" for="personnel_type2" style="text-transform: capitalize">
+                                        driver
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         

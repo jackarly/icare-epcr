@@ -159,6 +159,7 @@
                                     </label>
                                 </div>
                             </div>
+
                             <div class="col-md-6 offset-md-4">
                                 <textarea id="others2" type="text" class="form-control @error('others2') is-invalid @enderror" name="others2"autocomplete="others2">{{ old('others2') }}</textarea>
 
@@ -224,16 +225,19 @@
 
                         <div class="row mb-3">
                             <label for="provider_position" class="col-md-4 col-form-label text-md-end">Provider Position</label>
-
-                            <div class="col-md-6">
-                                <input id="provider_position" type="text" class="form-control @error('provider_position') is-invalid @enderror" name="provider_position" 
-                                value="{{ old('provider_position') }}" autocomplete="provider_position" autofocus>
-
-                                @error('provider_position')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                            <div class="col-md-6 mt-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="provider_position" id="provider_position1" value="doctor" checked>
+                                    <label class="form-check-label" for="provider_position1" style="text-transform: capitalize">
+                                    doctor
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="provider_position" id="provider_position2" value="nurse">
+                                    <label class="form-check-label" for="provider_position2" style="text-transform: capitalize">
+                                        nurse
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         

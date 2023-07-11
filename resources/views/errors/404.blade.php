@@ -36,7 +36,8 @@
                                 <div class="row">
                                     <div class="d-flex justify-content-between my-2">
                                         <a href="{{ url()->previous() }}" class="btn btn-outline-primary">
-                                        <i class="fa-solid fa-arrow-left"></i> Go Back</a>
+                                            <i class="fa-solid fa-arrow-left"></i> Go Back
+                                        </a>
                                         
                                         <a href="{{ route('home') }}" class="btn btn-primary"><i class="fa-solid fa-house"></i> Go Home </a>
                                     </div>

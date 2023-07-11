@@ -24,6 +24,9 @@
     <div class="row justify-content-left">
         @if ($responses->count())
             @foreach ($responses as $response)
+                @php
+                    $personnels = App\Models\ResponseTeam::getPersonnelList($response->id)
+                @endphp
                 <div class="col-sm-6 col-md-4 col-lg-3">
                     <div class="card mb-4">
                         <div class="card-body">
@@ -32,6 +35,8 @@
                                     <ul class="list-group list-group-flush custom-list">
                                         <li class="text-center name-space"><span class="text-capitalize fs-5 fw-semibold">{{ $response->user_ambulance->plate_no }}</span></li>
                                         <li class="">RT{{$response->id}}</li>
+                                        <li class="text-capitalize"><span class="text-capitalize fw-semibold text-secondary">Driver: </span>{{ $personnels['0']->personnel_first_name}} {{ $personnels['0']->personnel_last_name}}</li>
+                                        <li>{{ $personnels['0']->contact}}</li>
                                         <li class="text-capitalize fw-semibold name-space"><span class="">Incidents Today: {{ $response->incidents->count() }}</span>
                                         <li class=""><a href="{{ route('response.show', $response->id) }}" class="btn btn-outline-primary btn-sm d-block">View Team</a></li>
                                     </ul>

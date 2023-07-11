@@ -44,6 +44,31 @@
                         </div>
 
                         <div class="row mb-3">
+                            <label for="patient_conscious" class="col-md-4 col-form-label text-md-end" >Is patient conscious?</label>
+
+                            <div class="col-md-6 mt-1">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="patient_conscious" id="patient_conscious1" value="yes" onchange='consciousYes(this);' checked>
+                                    <label class="form-check-label" for="patient_conscious1" style="text-transform: capitalize">
+                                        yes
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="patient_conscious" id="patient_conscious2" value="no" onchange='consciousNo(this);'>
+                                    <label class="form-check-label" for="patient_conscious2" style="text-transform: capitalize">
+                                        no
+                                    </label>
+                                </div>
+
+                                @error('burn_classification')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <label for="patient_name" class="col-md-4 col-form-label text-md-end">Patient Name</label>
 
                             <div class="col-md-2">
@@ -159,7 +184,46 @@
                     </form>
                 </div>
             </div>
+            <div class="mt-2">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-arrow-left"></i> Go Back</a>
+            </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+
+    <script type="text/javascript">
+        function consciousYes(x) {
+            if(x.checked == true){
+                document.getElementById('patient_first_name').disabled = false;
+                document.getElementById('patient_mid_name').disabled = false;
+                document.getElementById('patient_last_name').disabled = false;
+                document.getElementById('age').disabled = false;
+                document.getElementById('birthday').disabled = false;
+                document.getElementById('contact_no').disabled = false;
+                document.getElementById('address').disabled = false;
+            }
+        }
+
+        function consciousNo(x) {
+            if(x.checked == true){
+                document.getElementById('patient_first_name').disabled = true;
+                document.getElementById('patient_mid_name').disabled = true;
+                document.getElementById('patient_last_name').disabled = true;
+                document.getElementById('age').disabled = true;
+                document.getElementById('birthday').disabled = true;
+                document.getElementById('contact_no').disabled = true;
+                document.getElementById('address').disabled = true;
+                document.getElementById('patient_first_name').value = "";
+                document.getElementById('patient_mid_name').value = "";
+                document.getElementById('patient_last_name').value = "";
+                document.getElementById('age').value = "";
+                document.getElementById('birthday').value = "";
+                document.getElementById('contact_no').value = "";
+                document.getElementById('address').value = "";
+            }
+        }
+    </script>
+@endpush

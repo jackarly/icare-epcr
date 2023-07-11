@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('birthday')->nullable();
             $table->string('sex')->nullable();
             $table->string('personnel_img')->nullable();
+            $table->string('personnel_type')->nullable();
             $table->timestamps();
         });
     }

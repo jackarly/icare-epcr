@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PatientAssessment;
 use App\Models\Patient;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class PatientAssessmentController extends Controller
 {
@@ -210,5 +211,91 @@ class PatientAssessmentController extends Controller
         else{
             return view('errors.404');
         }
-    }    
+    }
+
+    public function createVitals(PatientAssessment $patientAssessment)
+    {
+        // Only allow ambulance, comcen admin to edit patient assessment
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            return view('patient-assessment.vitals', [
+                'patient_assessment' => $patientAssessment,
+            ]);
+        }
+        else{
+            return view('errors.404');
+        }
+    }
+
+    public function updateVitals(Request $request, PatientAssessment $patientAssessment)
+    {
+        // Only allow ambulance, comcen admin to edit patient assessment
+        if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            
+            switch ($request->vitals_row) {
+                case 'vitals1':
+                    if (!$patientAssessment->vital_time1) {
+                        $patientAssessment->update([
+                            'vital_time1'=>Carbon::now()->format('g:i A')	
+                        ]);
+                    }
+                    $patientAssessment->update([
+                        'vital_bp1'=>$request->vital_bp1,		
+                        'vital_hr1'=>$request->vital_hr1,		
+                        'vital_rr1'=>$request->vital_rr1,		
+                        'vital_o2sat1'=>$request->vital_o2sat1,	
+                        'vital_glucose1'=>$request->vital_glucose1,		
+                    ]);
+                    return redirect()->route('assessment.vitals.create', $patientAssessment->id)->with('success', 'Vitals signs updated successfully');
+                    break;
+
+                case 'vitals2':
+                    if (!$patientAssessment->vital_time2) {
+                        $patientAssessment->update([
+                            'vital_time2'=>Carbon::now()->format('g:i A')	
+                        ]);
+                    }
+                    $patientAssessment->update([
+                        'vital_bp2'=>$request->vital_bp2,		
+                        'vital_hr2'=>$request->vital_hr2,		
+                        'vital_rr2'=>$request->vital_rr2,		
+                        'vital_o2sat2'=>$request->vital_o2sat2,	
+                        'vital_glucose2'=>$request->vital_glucose2,		
+                    ]);
+                    return redirect()->route('assessment.vitals.create', $patientAssessment->id)->with('success', 'Vitals signs updated successfully');
+                    break;
+
+                case 'vitals3':
+                    if (!$patientAssessment->vital_time3) {
+                        $patientAssessment->update([
+                            'vital_time3'=>Carbon::now()->format('g:i A')	
+                        ]);
+                    }
+                    $patientAssessment->update([
+                        'vital_bp3'=>$request->vital_bp3,		
+                        'vital_hr3'=>$request->vital_hr3,		
+                        'vital_rr3'=>$request->vital_rr3,		
+                        'vital_o2sat3'=>$request->vital_o2sat3,	
+                        'vital_glucose3'=>$request->vital_glucose3,		
+                    ]);
+                    return redirect()->route('assessment.vitals.create', $patientAssessment->id)->with('success', 'Vitals signs updated successfully');
+                    break;
+                
+                default:
+                    return view('errors.404');
+                    break;
+            }
+            
+            $patientAssessment->update([
+                'vital_time1'=>Carbon::now()->format('g:i A'),	
+                'vital_bp1'=>$request->vital_bp1,		
+                'vital_hr1'=>$request->vital_hr1,		
+                'vital_rr1'=>$request->vital_rr1,		
+                'vital_o2sat1'=>$request->vital_o2sat1,	
+                'vital_glucose1'=>$request->vital_glucose1,		
+            ]);
+        }
+        else{
+            return view('errors.404');
+        }
+    }
 }

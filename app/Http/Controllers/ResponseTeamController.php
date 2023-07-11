@@ -52,11 +52,13 @@ class ResponseTeamController extends Controller
             
             // Get all registered but unassigned ambulances and medics
             $ambulances = UserAmbulance::whereNotIn('id', $ambulance_active)->get();
-            $medics = Personnel::whereNotIn('id', $medics_active)->get();
+            $medics = Personnel::whereNotIn('id', $medics_active)->where('personnel_type', '=', 'medic')->get();
+            $drivers = Personnel::whereNotIn('id', $medics_active)->where('personnel_type', '=', 'driver')->get();
     
             return view('response-team.create', [
                 'ambulances' => $ambulances,
                 'medics' => $medics,
+                'drivers' => $drivers,
             ]);
         }
         else{
@@ -68,22 +70,47 @@ class ResponseTeamController extends Controller
     {
         // Only allow comcen and admin to save response teams
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+            
+            $this->validate($request, [
+                'ambulance'=> 'required',
+                'driver'=> 'required',
+                'medic1'=> 'required',
+                'medic2'=> 'nullable',
+                'medic3'=> 'nullable',
+            ]);
+
             // Check if medic is selected twice
             if ($request->medic1 === $request->medic2){
                 return back()->with('error', 'Select medic only once');
             }
-            else{
-                
-                $response= ResponseTeam::create([
-                    'user_ambulance_id'=> $request->ambulance,
-                ]);
-                
-                $response->response_personnels()->create([
-                    'personnel_id'=> $request->medic1,
-                ]);
-                
+            if ($request->medic1 === $request->medic3){
+                return back()->with('error', 'Select medic only once');
+            }
+            if ($request->medic2 === $request->medic3){
+                if ($request->medic2 != 0){
+                    return back()->with('error', 'Select medic only once');
+                }
+            }
+            
+            // Create Response Team
+            $response= ResponseTeam::create([
+                'user_ambulance_id'=> $request->ambulance,
+            ]);
+            $response->response_personnels()->create([
+                'personnel_id'=> $request->driver,
+            ]);
+            $response->response_personnels()->create([
+                'personnel_id'=> $request->medic1,
+            ]);
+
+            if ($request->medic2 != 0){
                 $response->response_personnels()->create([
                     'personnel_id'=> $request->medic2,
+                ]);
+            }
+            if ($request->medic3 != 0){
+                $response->response_personnels()->create([
+                    'personnel_id'=> $request->medic3,
                 ]);
             }
             return redirect()->route('response')->with('success', 'New response team added successfully');
@@ -91,11 +118,6 @@ class ResponseTeamController extends Controller
         else{
             return view('errors.404');
         }
-        $this->validate($request, [
-            'ambulance'=> 'required',
-            'medic1'=> 'required',
-            'medic2'=> 'required'
-        ]);
     }
 
     public function show(ResponseTeam $responseTeam)
@@ -137,6 +159,16 @@ class ResponseTeamController extends Controller
             if(($key = array_search($oldMedics[1], $medics_active)) !== false) {
                 unset($medics_active[$key]);
             }
+            if(isset($oldMedics[2])){
+                if(($key = array_search($oldMedics[2], $medics_active)) !== false) {
+                    unset($medics_active[$key]);
+                }
+            }
+            if(isset($oldMedics[3])){
+                if(($key = array_search($oldMedics[3], $medics_active)) !== false) {
+                    unset($medics_active[$key]);
+                }
+            }
     
             // Get active ambulance except current ambulance
             $ambulance_active = DB::table('user_ambulances')
@@ -147,11 +179,13 @@ class ResponseTeamController extends Controller
     
             // Assign medics and ambulance for input:option
             $ambulances = UserAmbulance::whereNotIn('id', $ambulance_active)->get();
-            $medics = Personnel::whereNotIn('id', $medics_active)->get();
+            $medics = Personnel::whereNotIn('id', $medics_active)->where('personnel_type', '=', 'medic')->get();
+            $drivers = Personnel::whereNotIn('id', $medics_active)->where('personnel_type', '=', 'driver')->get();
     
             return view('response-team.edit', [
                 'ambulances' => $ambulances,
                 'medics' => $medics,
+                'drivers' => $drivers,
                 'response' => $responseTeam,
             ]);
         }
@@ -166,27 +200,95 @@ class ResponseTeamController extends Controller
         if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'ambulance'=> 'required',
+                'driver'=> 'required',
                 'medic1'=> 'required',
-                'medic2'=> 'required'
+                'medic2'=> 'nullable',
+                'medic3'=> 'nullable',
             ]);
 
             // Check if medic is assigned twice
+            // if ($request->medic1 === $request->medic2){
+            //     return back()->with('error', 'Select medic only once');
+            // }
+            // else{
+            //     $responseTeam->user_ambulance_id = $request->ambulance;
+            //     $responseTeam->save();
+    
+            //     $oldMedics = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->pluck('personnel_id');
+            //     $newMedic1 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[0])->first();
+            //     $newMedic1->personnel_id = $request->medic1;
+            //     $newMedic1->save();
+                
+            //     $newMedic2 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[1])->first();
+            //     $newMedic2->personnel_id = $request->medic2;
+            //     $newMedic2->save();
+            // }
+
+            // Check if medic is selected twice
             if ($request->medic1 === $request->medic2){
                 return back()->with('error', 'Select medic only once');
             }
-            else{
-                $responseTeam->user_ambulance_id = $request->ambulance;
-                $responseTeam->save();
-    
-                $oldMedics = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->pluck('personnel_id');
-                $newMedic1 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[0])->first();
-                $newMedic1->personnel_id = $request->medic1;
-                $newMedic1->save();
-                
-                $newMedic2 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[1])->first();
-                $newMedic2->personnel_id = $request->medic2;
-                $newMedic2->save();
+            if ($request->medic1 === $request->medic3){
+                return back()->with('error', 'Select medic only once');
             }
+            if ($request->medic2 === $request->medic3){
+                if ($request->medic2 != 0){
+                    return back()->with('error', 'Select medic only once');
+                }
+            }
+
+            // Update Response Team
+            $responseTeam->user_ambulance_id = $request->ambulance;
+            $responseTeam->save();
+
+            $oldMedics = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->orderBy('id', 'asc')->pluck('personnel_id');
+
+            // Update Driver
+            $driver = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[0])->first();
+            $driver->personnel_id = $request->driver;
+            $driver->save();
+
+            // Update Medic1
+            $newMedic1 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[1])->first();
+            $newMedic1->personnel_id = $request->medic1;
+            $newMedic1->save();
+            
+            // Update Medic2
+            if(isset($oldMedics[2])){
+                if ($request->medic2 == 0){
+                    $newMedic2 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[2])->delete();
+                }else{
+                    $newMedic2 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[2])->first();
+                    $newMedic2->personnel_id = $request->medic2;
+                    $newMedic2->save();
+                }
+            }
+            else{
+                if ($request->medic2 != 0){
+                    $responseTeam->response_personnels()->create([
+                        'personnel_id'=> $request->medic2,
+                    ]);
+                }
+            }
+
+            // Update Medic3
+            if(isset($oldMedics[3])){
+                if ($request->medic3 == 0){
+                    $newMedic3 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[3])->delete();
+                }else{
+                    $newMedic3 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[3])->first();
+                    $newMedic3->personnel_id = $request->medic3;
+                    $newMedic3->save();
+                }
+            }
+            else{
+                if ($request->medic3 != 0){
+                    $responseTeam->response_personnels()->create([
+                        'personnel_id'=> $request->medic3,
+                    ]);
+                }
+            }
+
             return redirect()->route('response')->with('success', 'Response team updated successfully');
         }
         else{

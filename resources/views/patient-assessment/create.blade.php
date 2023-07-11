@@ -15,7 +15,20 @@
                         <div class="row mb-3">
                             <label for="chief_complaint" class="col-md-4 col-form-label text-md-end">Chief Complaint</label>
                             <div class="col-md-6">
-                                <textarea id="chief_complaint" class="form-control @error('chief_complaint') is-invalid @enderror" name="chief_complaint"  required autocomplete="chief_complaint" autofocus>{{ old('chief_complaint') }}</textarea>
+                                <select class="form-select text-capitalize" id="selection_chief_complaint" name="selection_chief_complaint" class="form-control" onchange="PopulateChiefComplaint()">
+                                    <option class="text-center" value="">--- Select Multiple ---</option>
+                                    <option class="text-start" value="difficulty of breathing">difficulty of breathing</option>
+                                    <option class="text-start" value="difficulty of swallowing">difficulty of swallowing</option>
+                                    <option class="text-start" value="lightheadedness">lightheadedness</option>
+                                    <option class="text-start" value="swelling">swelling</option>
+                                    <option class="text-start" value="weak to walk">weak to walk</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-4">
+                                <textarea id="chief_complaint" class="form-control @error('chief_complaint') is-invalid @enderror" name="chief_complaint" required autocomplete="chief_complaint" autofocus placeholder="Chief Complaint"></textarea>
 
                                 @error('chief_complaint')
                                     <span class="invalid-feedback" role="alert">
@@ -42,13 +55,21 @@
                             <label for="primary1" class="col-md-4 col-form-label text-md-end">Primary</label>
                             <div class="col-md-6 mt-2">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="primary1" id="primary11" value="conscious" {{(old('primary1') == 'conscious') ? 'checked' : ''}}>
+                                    @if($patient->patient_first_name || $patient->patient_mid_name || $patient->patient_last_name)
+                                        <input class="form-check-input" type="radio" name="primary1" id="primary11" value="conscious" checked>
+                                    @else
+                                        <input class="form-check-input" type="radio" name="primary1" id="primary11" value="conscious">
+                                    @endif
                                     <label class="form-check-label" for="primary11" style="text-transform: capitalize">
                                         conscious
                                     </label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="primary1" id="primary12" value="unconscious" {{(old('primary1') == 'unconscious') ? 'checked' : ''}}>
+                                    @if($patient->patient_first_name || $patient->patient_mid_name || $patient->patient_last_name)
+                                        <input class="form-check-input" type="radio" name="primary1" id="primary12" value="unconscious">
+                                    @else
+                                        <input class="form-check-input" type="radio" name="primary1" id="primary12" value="unconscious" checked>
+                                    @endif
                                     <label class="form-check-label" for="primary12" style="text-transform: capitalize">
                                         unconscious
                                     </label>
@@ -334,7 +355,38 @@
                                 <span class="">Signs & Symptoms</span>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <textarea id="signs_symptoms" class="form-control @error('signs_symptoms') is-invalid @enderror" name="signs_symptoms" autocomplete="signs_symptoms" autofocus>{{ old('signs_symptoms') }}</textarea>
+                                        <select class="form-select text-capitalize" id="selection_signs_symptoms" name="selection_signs_symptoms" class="form-control" onchange="PopulateSignSymptoms()">
+                                            <option class="text-center" value="">--- Select Multiple ---</option>
+                                            <option class="text-start" value="abdominal pain ">abdominal pain </option>
+                                            <option class="text-start" value="blood in stool ">blood in stool </option>
+                                            <option class="text-start" value="chest pain ">chest pain </option>
+                                            <option class="text-start" value="constipation ">constipation </option>
+                                            <option class="text-start" value="cough ">cough </option>
+                                            <option class="text-start" value="diarrhea ">diarrhea </option>
+                                            <option class="text-start" value="difficulty swallowing ">difficulty swallowing </option>
+                                            <option class="text-start" value="dizziness ">dizziness </option>
+                                            <option class="text-start" value="eye discomfort and redness ">eye discomfort and redness </option>
+                                            <option class="text-start" value="eye problems ">eye problems </option>
+                                            <option class="text-start" value="foot pain or ankle pain ">foot pain or ankle pain </option>
+                                            <option class="text-start" value="foot swelling or leg swelling ">foot swelling or leg swelling </option>
+                                            <option class="text-start" value="headaches ">headaches </option>
+                                            <option class="text-start" value="heart palpitations ">heart palpitations </option>
+                                            <option class="text-start" value="hip pain ">hip pain </option>
+                                            <option class="text-start" value="knee pain ">knee pain </option>
+                                            <option class="text-start" value="low back pain ">low back pain </option>
+                                            <option class="text-start" value="nasal congestion ">nasal congestion </option>
+                                            <option class="text-start" value="nausea or vomiting ">nausea or vomiting </option>
+                                            <option class="text-start" value="neck pain ">neck pain </option>
+                                            <option class="text-start" value="numbness or tingling in hands ">numbness or tingling in hands </option>
+                                            <option class="text-start" value="pelvic pain">pelvic pain</option>
+                                            <option class="text-start" value="shortness of breath ">shortness of breath </option>
+                                            <option class="text-start" value="shoulder pain ">shoulder pain </option>
+                                            <option class="text-start" value="sore throat ">sore throat </option>
+                                            <option class="text-start" value="urinary problems ">urinary problems </option>
+                                            <option class="text-start" value="wheezing ">wheezing </option>
+                                        </select>
+
+                                        <textarea id="signs_symptoms" class="form-control @error('signs_symptoms') is-invalid @enderror mt-1" name="signs_symptoms" autocomplete="signs_symptoms" autofocus>{{ old('signs_symptoms') }}</textarea>
 
                                         @error('signs_symptoms')
                                             <span class="invalid-feedback" role="alert">
@@ -350,7 +402,16 @@
                                 <span class="">Allergies</span>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <textarea id="allergies" class="form-control @error('allergies') is-invalid @enderror" name="allergies" autocomplete="allergies" autofocus>{{ old('allergies') }}</textarea>
+                                        <select class="form-select text-capitalize" id="selection_allergies" name="selection_allergies" class="form-control" onchange="PopulateAllergies()">
+                                            <option class="text-center" value="">--- Select Multiple ---</option>
+                                            <option class="text-start" value="no known drug allergies">no known drug allergies</option>
+                                            <option class="text-start" value="no known environmental, food, or seasonal allergies">no known environmental, food, or seasonal allergies</option>
+                                            <option class="text-start" value="benadryl">benadryl</option>
+                                            <option class="text-start" value="cipro">cipro</option>
+                                            <option class="text-start" value="sulfa drugs">sulfa drugs</option>
+                                        </select>
+
+                                        <textarea id="allergies" class="form-control @error('allergies') is-invalid @enderror mt-1" name="allergies" autocomplete="allergies" autofocus>{{ old('allergies') }}</textarea>
 
                                         @error('allergies')
                                             <span class="invalid-feedback" role="alert">
@@ -367,7 +428,15 @@
                                 <span class="">Medications</span>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <textarea id="medications"class="form-control @error('medications') is-invalid @enderror" name="medications"  autocomplete="medications" autofocus>{{ old('medications') }}</textarea>
+                                        <select class="form-select text-capitalize" id="selection_medications" name="selection_medications" class="form-control" onchange="PopulateMedications()">
+                                            <option class="text-center" value="">--- Select Multiple ---</option>
+                                            <option class="text-start" value="aspirin 81 mg">aspirin 81 mg</option>
+                                            <option class="text-start" value="diltiazem 300 mg">diltiazem 300 mg</option>
+                                            <option class="text-start" value="ibrupofen">ibrupofen</option>
+                                            <option class="text-start" value="metformin 500 mg">metformin 500 mg</option>
+                                            <option class="text-start" value="theophyline (uniphyl) 600 mg">theophyline (uniphyl) 600 mg</option>
+                                        </select>
+                                        <textarea id="medications"class="form-control @error('medications') is-invalid @enderror mt-1" name="medications"  autocomplete="medications" autofocus>{{ old('medications') }}</textarea>
 
                                         @error('medications')
                                             <span class="invalid-feedback" role="alert">
@@ -384,7 +453,13 @@
                                 <span class="">Past History</span>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <textarea id="past_history" class="form-control @error('past_history') is-invalid @enderror" name="past_history"  autocomplete="past_history" autofocus>{{ old('past_history') }}</textarea>
+                                        <select class="form-select text-capitalize" id="selection_past_history" name="selection_past_history" class="form-control" onchange="PopulatePastHistory()">
+                                            <option class="text-center" value="">--- Select Multiple ---</option>
+                                            <option class="text-start" value="cardiac stent in">cardiac stent in (YEAR)</option>
+                                            <option class="text-start" value="kidney stone retrieval in">kidney stone retrieval in (YEAR)</option>
+                                        </select>
+
+                                        <textarea id="past_history" class="form-control @error('past_history') is-invalid @enderror mt-1" name="past_history"  autocomplete="past_history" autofocus>{{ old('past_history') }}</textarea>
 
                                         @error('past_history')
                                             <span class="invalid-feedback" role="alert">
@@ -430,55 +505,8 @@
                             </div>
                         </div>
 
-                        <hr>
-
-                        <div class="row mb-3">
-
-                            <div class="col-md-10 mx-auto">
-                                <span class="">Vitals</span><br>
-                                <table class="table table-bordered table-sm">
-                                    <thead>
-                                        <tr>
-                                            <td>Time</td>
-                                            <td>B/P</td>
-                                            <td>HR</td>
-                                            <td>RR</td>
-                                            <td>O2 Sat</td>
-                                            <td>Glucose</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_time1" value="{{ old('vital_time1') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_bp1" value="{{ old('vital_bp1') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_hr1" value="{{ old('vital_hr1') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_rr1" value="{{ old('vital_rr1') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_o2sat1" value="{{ old('vital_o2sat1') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_glucose1" value="{{ old('vital_glucose1') }}"></div></td>
-                                        </tr>
-                                        <tr>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_time2" value="{{ old('vital_time2') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_bp2" value="{{ old('vital_bp2') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_hr2" value="{{ old('vital_hr2') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_rr2" value="{{ old('vital_rr2') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_o2sat2" value="{{ old('vital_o2sat2') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_glucose2" value="{{ old('vital_glucose2') }}"></div></td>
-                                        </tr>
-                                        <tr>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_time3" value="{{ old('vital_time3') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_bp3" value="{{ old('vital_bp3') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_hr3" value="{{ old('vital_hr3') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_rr3" value="{{ old('vital_rr3') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_o2sat3" value="{{ old('vital_o2sat3') }}"></div></td>
-                                            <td><div class="input-group input-group-sm"><input type="text" class="form-control" name="vital_glucose3" value="{{ old('vital_glucose3') }}"></div></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
                         <div class="row mb-0">
-                            <div class="col-md-6 mx-auto d-grid">
+                            <div class="col-md-6 offset-md-4 d-grid">
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Save') }}
                                 </button>
@@ -487,7 +515,65 @@
                     </form>
                 </div>
             </div>
+            <div class="mt-2">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-arrow-left"></i> Go Back</a>
+            </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script type="text/javascript">
+        function PopulateChiefComplaint() {
+            var dropdown = document.getElementById("selection_chief_complaint");
+            var field = document.getElementById("chief_complaint");
+            if ( field.value == "" ){
+                field.value = dropdown.value;   
+            }else{
+                field.value += ", " + dropdown.value;
+            }
+        }
+
+        function PopulateSignSymptoms() {
+            var dropdown = document.getElementById("selection_signs_symptoms");
+            var field = document.getElementById("signs_symptoms");
+            if ( field.value == "" ){
+                field.value = dropdown.value;   
+            }else{
+                field.value += ", " + dropdown.value;
+            }
+        }
+
+        function PopulateAllergies() {
+            var dropdown = document.getElementById("selection_allergies");
+            var field = document.getElementById("allergies");
+            if ( field.value == "" ){
+                field.value = dropdown.value;   
+            }else{
+                field.value += ", " + dropdown.value;
+            }
+        }
+
+        function PopulateMedications() {
+            var dropdown = document.getElementById("selection_medications");
+            var field = document.getElementById("medications");
+            if ( field.value == "" ){
+                field.value = dropdown.value;   
+            }else{
+                field.value += ", " + dropdown.value;
+            }
+        }
+
+        function PopulatePastHistory() {
+            var dropdown = document.getElementById("selection_past_history");
+            var field = document.getElementById("past_history");
+            if ( field.value == "" ){
+                field.value = dropdown.value;   
+            }else{
+                field.value += ", " + dropdown.value;
+            }
+        }
+
+    </script>
+@endpush

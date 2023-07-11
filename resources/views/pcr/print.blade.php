@@ -693,9 +693,9 @@
                             </ul>
 
                             <span class="fw-semibold fs-7 mt-2">REFUSAL OF TREATMENT AND/OR TRANSPORT</span>
-                            <p class="fs-7 lh-sm mb-0" style="text-align: justify">I, the undersigned have been advised that the medical assistance on my behalf is necessary and that refusal of said medical assistance and/or transportation for further treatment may result in death, or imperil my health condition. Nevertheless, I refuse to accept treatment and/or transport and assume all risk and consequences of my decision and release the Philippine Red Cross from any liability arisin from my refusal.</p>
+                            <p class="fs-7 lh-sm mb-0" style="text-align: justify">I, the undersigned have been advised that the medical assistance on my behalf is necessary and that refusal of said medical assistance and/or transportation for further treatment may result in death, or imperil my health condition. Nevertheless, I refuse to accept treatment and/or transport and assume all risk and consequences of my decision and release the Philippine Red Cross from any liability arising from my refusal.</p>
 
-                            <ul class="list-group list-group-flush custom-list fs-7 custom-list-print">
+                            <ul class="list-group list-group-flush custom-list fs-7 custom-list-print mb-2">
                                 <li>
                                     <ul class="list-inline fs-7 text-capitalize mb-1">
                                         <li class="list-inline-item">
@@ -721,17 +721,36 @@
                                     </ul>
                                 </li>
                             </ul>
+                            <hr>
+
+                            <span class="fw-semibold fs-7">HOSPITAL REFUSED TO RECEIVE PATIENT</span>
+                            <ul class="list-group list-group-flush custom-list fs-7 custom-list-print">
+                                <li>
+                                    <ul class="list-inline fs-7 text-capitalize mb-1">
+                                        <li class="list-inline-item name-space">
+                                            <span class="">DUE TO THE FOLLOWING REASONS: </span>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <ul class="list-inline fs-7 mb-1 text-end">
+                                        <li class="list-inline-item">
+                                            <span class="fw-semibold border-top border-dark px-3">Nurse on duty/Physicin on duty </span>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
                         </div>
 
                         <div class="row mt-2">
                             <p class="fs-7 mb-0 fw-semibold text-light custom-bg-incident">PROVIDER</p>
-                            <ul class="list-inline fs-7 text-capitalize mb-1">
+                            <ul class="list-inline fs-7 text-capitalize mb-1 row">
                                 @foreach ($medics as $medic)
-                                    <li class="list-inline-item">
-                                        <span class="fw-semibold">Medic: </span>
+                                    <li class="list-inline-item col-7">
+                                        <span class="fw-semibold">{{ $medic->personnel_type }}: </span>
                                         <span class="text-capitalize">{{ $medic->personnel_first_name }} {{ $medic->personnel_mid_name }} {{ $medic->personnel_last_name }}</span>
                                     </li>
-                                    <li class="list-inline-item">
+                                    <li class="list-inline-item col-4">
                                         <span class="fw-semibold">Signature: </span>
                                     </li>
                                 @endforeach

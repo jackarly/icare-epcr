@@ -49,16 +49,25 @@
                                         <li class="text-capitalize"><span class="fw-semibold">Incident ID: </span>{{ $incident->id }}</li>
                                         <li class="text-capitalize"><span class="fw-semibold">Nature of call: </span>{{ $incident->nature_of_call }}</li>
                                         <li class="text-capitalize"><span class="fw-semibold">Incident Type: </span>{{ $incident->incident_type }}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold">Reported </span>{{ $incident->created_at->diffForHumans() }}</li>
                                         <li class="text-capitalize"><span class="fw-semibold">Status: </span>
 
                                             <!-- Check if incident is assigned or not -->
                                             @isset($incident->response_team_id)
-                                                <span class="text-success fw-semibold">Assigned</span>
+                                                @if ($patient->completed_at)
+                                                    <span class="text-success fw-semibold">Completed</span>
+                                                @elseif ($patient->patient_refused_at)
+                                                    <span class="text-danger fw-semibold">Patient refused transport</span>
+                                                @elseif ($patient->hospital_refused_at)
+                                                    <span class="text-danger fw-semibold">Refused by hospital</span>
+                                                @else
+                                                    <span class="text-success fw-semibold">Assigned</span>
+                                                @endif
                                             @else
                                                 <span class="text-danger fw-semibold">Unassigned</span>
                                             @endisset 
                                         </li>
+                                        <li class=""><span class="fw-semibold">Reported </span>{{ $incident->created_at->diffForHumans() }}</li>
+                                        <li class="text-capitalize">{{ $incident->created_at->format('M d, Y g:i:s A') }}</li>
                                     </ul>
                                 </div>
                                 <div class="col-md-6">
@@ -181,10 +190,30 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <ul class="list-group list-group-flush custom-list">
-                                        <li class="text-capitalize"><span class="fw-semibold">Patient Name: </span> {{$patient->patient_first_name}} {{$patient->patient_last_name}}</li>
-                                        <li class="text-capitalize"><span class="fw-semibold">Sex: </span> {{$patient->sex}} </li>
-                                        <li class="text-capitalize"><span class="fw-semibold">Age: </span> {{$patient->age}} </li>
-                                        <li class="text-capitalize"><span class="fw-semibold"></span> </li>
+                                        <li class="text-capitalize">
+                                            <span class="fw-semibold">Patient Name: </span> 
+                                            @if($patient->patient_first_name || $patient->patient_mid_name || $patient->patient_last_name)
+                                                {{$patient->patient_first_name}} {{$patient->patient_mid_name}} {{$patient->patient_last_name}}
+                                            @else
+                                                <small class="fst-italic text-lowercase text-secondary">(Not set)</small>
+                                            @endif
+                                        </li>
+                                        <li class="text-capitalize">
+                                            <span class="fw-semibold">Sex: </span> 
+                                            @if($patient->sex)
+                                                {{$patient->sex}}
+                                            @else
+                                                <small class="fst-italic text-lowercase text-secondary">(Not set)</small>
+                                            @endif
+                                        </li>
+                                        <li class="text-capitalize">
+                                            <span class="fw-semibold">Age: </span> 
+                                            @if($patient->age)
+                                                {{$patient->age}} 
+                                            @else
+                                                <small class="fst-italic text-lowercase text-secondary">(Not set)</small>
+                                            @endif
+                                        </li>
                                     </ul>
                                 </div>
                                 <div class="col-md-6">
@@ -193,17 +222,30 @@
                                             @isset($patient->birthday)
                                                 {{ \Carbon\Carbon::parse($patient->birthday)->format('M d, Y') }}
                                             @else
-                                                <small class="fst-italic">(Not set)</small>
+                                                <small class="fst-italic text-lowercase text-secondary">(Not set)</small>
                                             @endisset
                                         </li>
-                                        <li class="text-capitalize"><span class="fw-semibold">Contact: </span> {{$patient->contact_no}}</li>
+                                        <li class="text-capitalize">
+                                            <span class="fw-semibold">Contact: </span>
+                                            @if($patient->contact_no)
+                                                {{$patient->contact_no}} 
+                                            @else
+                                                <small class="fst-italic text-lowercase text-secondary">(Not set)</small>
+                                            @endif
+                                        </li>
                                         
                                     </ul>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <span class="fw-semibold">Address: </span><span>{{$patient->address}}</span>
+                                    <span class="fw-semibold">Address: </span>
+                                    @if($patient->address)
+                                        <span>{{$patient->address}}</span> 
+                                    @else
+                                        <small class="fst-italic text-lowercase text-secondary">(Not set)</small>
+                                    @endif
+                                    
                                 </div>
                             </div>
                         </div>
@@ -310,6 +352,9 @@
                                     </div>
                                     <div class="col-md-6">
                                         <span class="text-capitalize fw-semibold">Vital Signs: </span>
+                                        @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'comcen') || (auth()->user()->user_type == 'admin') )
+                                            <a href="{{ route('assessment.vitals.create', $patient_assessment->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                        @endif
                                         <table class="table table-bordered table-sm">
                                             <thead>
                                                 <tr class="text-secondary">
@@ -627,6 +672,41 @@
                                         </ul>
                                     </div>
                                 </div>
+                                <hr>
+                                <div class="row mb-3">
+                                    
+                                    <span class="text-capitalize fw-semibold mb-2">Refusal:</span>
+                                    <div class="col-md-6 text-center">
+                                        @if ($patient->patient_refused_at)
+                                            <a href="{{ route('refusal.create', $patient->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                            <ul class="list-group list-group-flush custom-list text-start">
+                                                <li class="text-capitalize"><span class="fw-semibold text-decoration-underline">Patient Refused Transport </span></li>
+                                                <li class="text-capitalize"><span class="fw-semibold">Witness: </span><span>{{$patient->patient_refusal_witness}}</span></li>
+                                                <li class="text-capitalize"><span class="fw-semibold">Date: </span><span>{{Carbon\Carbon::parse($patient->patient_refused_at)->format('m/d/Y')}}</span></li>
+                                                <li class=""><span class="fw-semibold">Time: </span><span>{{Carbon\Carbon::parse($patient->patient_refused_at)->format('h:i:s a')}}</span></li>
+                                            </ul>
+                                        @else
+                                            <a class="btn btn-outline-secondary btn-sm" href="{{ route('refusal.create', $patient->id) }}">Create Patient Refusal</a>
+                                        @endif
+                                        
+                                    </div>
+                                    <div class="col-md-6 text-center">
+                                        @if ($patient->hospital_refused_at)
+                                            @foreach ( $patient_refusals as $refusal)
+                                                <a href="{{ route('refusal.hospital.edit', $refusal->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a>
+                                                <ul class="list-group list-group-flush custom-list text-start">
+                                                    <li class="text-capitalize"><span class="fw-semibold text-decoration-underline">Hospital Refused to Receive Patient </span></li>
+                                                    <li class=""><span class="fw-semibold">Hospital: </span><span>{{$refusal->hospital_reasons}}</span></li>
+                                                    <li class=""><span class="fw-semibold">Due to the following reasons: </span><span>{{$refusal->hospital_reasons}}</span></li>
+                                                    <li class=""><span class="fw-semibold">Nurse/Physician on duty: </span><span>{{$refusal->hospital_nurse_doctor}}</span></li>
+                                                </ul>
+                                            @endforeach
+                                            
+                                        @else
+                                            <a class="btn btn-outline-secondary btn-sm" href="{{ route('refusal.hospital.create', $patient->id) }}">Create Hospital Refusal</a>
+                                        @endif
+                                    </div>
+                                </div>
                             @else
                                 <h5 class="fw-semibold mb-3">Patient Management</h5>
                                 <div class="col-md-12 text-center">
@@ -648,7 +728,7 @@
                                 <ul class="list-group list-group-flush text-start custom-list">
                                     <li class="text-capitalize"><span class="fw-semibold">Ambulance: </span> {{$incident->response_team->user_ambulance->plate_no}}</li>
                                     @foreach ($medics as $medic)
-                                        <li class="text-capitalize"><span class="fw-semibold">Medic: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold">{{ $medic->personnel_type }}: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -676,28 +756,45 @@
                                                 <!-- Check if patient management is set -->
                                                 <!-- Set checkbox style and color -->
                                                 @if ($patient_management)
-                                                    @if ($patient_management->timings_handover)
-                                                        <li class="fs-7 ps-3">
-                                                            <i class="fa-regular fa-square-check text-success"></i>
-                                                            <span class="fw-semibold text-success">Handover to facility</span>
-                                                        </li>
+                                                    @if (($patient->patient_refused_at) || ($patient->hospital_refused_at) )
+                                                        @if ($patient->patient_refused_at)
+                                                            <li class="fs-7 ps-3">
+                                                                <i class="fa-regular fa-square-check text-danger"></i>
+                                                                <span class="fw-semibold text-danger">Patient refused transport</span>
+                                                            </li>
+                                                        @endif
+
+                                                        @if ($patient->hospital_refused_at)
+                                                            <li class="fs-7 ps-3">
+                                                                <i class="fa-regular fa-square-check text-danger"></i>
+                                                                <span class="fw-semibold text-danger">Refused by hospital</span>
+                                                            </li>
+                                                        @endif
                                                     @else
-                                                        <li class="fs-7 ps-3">
-                                                            <i class="fa-regular fa-square text-secondary"></i>
-                                                            <span class="text-secondary">Handover to facility</span>
-                                                        </li>
+                                                        @if ($patient_management->timings_handover)
+                                                            <li class="fs-7 ps-3">
+                                                                <i class="fa-regular fa-square-check text-success"></i>
+                                                                <span class="fw-semibold text-success">Handover to facility</span>
+                                                            </li>
+                                                        @else
+                                                            <li class="fs-7 ps-3">
+                                                                <i class="fa-regular fa-square text-secondary"></i>
+                                                                <span class="text-secondary">Handover to facility</span>
+                                                            </li>
+                                                        @endif
+                                                        @if ($patient_management->timings_clear)
+                                                            <li class="fs-7 ps-3">
+                                                                <i class="fa-regular fa-square-check text-success"></i>
+                                                                <span class="fw-semibold text-success">Cleared by facility</span>
+                                                            </li>
+                                                        @else
+                                                            <li class="fs-7 ps-3">
+                                                                <i class="fa-regular fa-square text-secondary"></i>
+                                                                <span class="text-secondary">Cleared by facility</span>
+                                                            </li>
+                                                        @endif
                                                     @endif
-                                                    @if ($patient_management->timings_clear)
-                                                        <li class="fs-7 ps-3">
-                                                            <i class="fa-regular fa-square-check text-success"></i>
-                                                            <span class="fw-semibold text-success">Cleared by facility</span>
-                                                        </li>
-                                                    @else
-                                                        <li class="fs-7 ps-3">
-                                                            <i class="fa-regular fa-square text-secondary"></i>
-                                                            <span class="text-secondary">Cleared by facility</span>
-                                                        </li>
-                                                    @endif
+                                                    
                                                 @else
                                                     <li class="fs-7 ps-3">
                                                         <i class="fa-regular fa-square text-secondary"></i>
@@ -715,11 +812,17 @@
                                 
                                 <span class="d-grid mt-1">
                                     <!-- Show download/print button if patient is tagged as completed -->
-                                    @if ($patient->completed_at)
-                                        <a href="{{ route('pcr.print', $patient->id) }}" class="btn btn-success btn-sm rounded-pill custom-rounded-btn text-decoration-none">Print/Download PCR</a>   
+                                    @if ($patient_assessment && $patient_management)
+                                        @if ($patient->completed_at || $patient->patient_refused_at || $patient_refusals->count() > 0)
+                                            <a href="{{ route('pcr.print', $patient->id) }}" class="btn btn-success btn-sm rounded-pill custom-rounded-btn text-decoration-none">Print/Download PCR</a>   
+                                        @else
+                                            <a href="" class="btn btn-outline-secondary btn-sm custom-rounded-btn text-decoration-none disabled">Complete PCR to print/download</a>  
+                                        @endif
                                     @else
                                         <a href="" class="btn btn-outline-secondary btn-sm custom-rounded-btn text-decoration-none disabled">Complete PCR to print/download</a>  
                                     @endif
+
+                                    
                                 </span>
                             </div>
                         </div>

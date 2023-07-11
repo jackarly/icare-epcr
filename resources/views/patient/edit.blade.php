@@ -151,7 +151,7 @@
                         </div>
 
                         <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
+                            <div class="col-md-6 offset-md-4 d-grid">
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Save') }}
                                 </button>
@@ -159,6 +159,9 @@
                         </div>
                     </form>
                 </div>
+            </div>
+            <div class="mt-2">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-arrow-left"></i> Go Back</a>
             </div>
         </div>
     </div>

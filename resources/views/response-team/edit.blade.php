@@ -8,10 +8,9 @@
             <div class="card">
                 <div class="card-header">Response Team</div>
                 <div class="card-body">
-                <form method="POST" action="{{ route('response.update', $response->id)}}">
+                    <form method="POST" action="{{ route('response.update', $response->id)}}">
                         @csrf
                         @method('PUT')
-
                         <div class="row mb-3">
                             <label for="ambulance" class="col-md-4 col-form-label text-md-end">Ambulance</label>
 
@@ -36,7 +35,37 @@
                                 
                             </div>
                         </div>
+                        
+                        <div class="row mb-3">
+                            <label for="medic1" class="col-md-4 col-form-label text-md-end">Driver</label>
 
+                            <div class="col-md-6">
+                                @if ($drivers->count())
+                                    <select class="form-select text-capitalize" aria-label="Default select example" name="driver" class="form-control @error('driver') is-invalid @enderror" required>
+                                        <option class="text-center" value="" selected disabled>--- Select Driver ---</option>
+                                        @foreach ($drivers as $driver)
+                                            <option class="text-capitalize" value="{{$driver->id}}">{{$driver->personnel_first_name}} {{$driver->personnel_last_name}}</option>
+                                        @endforeach
+                                    </select>
+
+                                    @error('driver')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                @else
+                                    <input type="text" class="form-control" name="" id="" disabled placeholder="No driver available">
+                                @endif
+                                
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row mb-1">
+                            <div class="col-md-6 offset-md-4">
+                                <small class="">Select at least 1 medic</small>
+                            </div>
+                        </div>
+                        
                         <div class="row mb-3">
                             <label for="medic1" class="col-md-4 col-form-label text-md-end">Medic 1</label>
 
@@ -66,14 +95,38 @@
 
                             <div class="col-md-6">
                                 @if ($medics->count() > 1)
-                                    <select class="form-select text-capitalize" aria-label="Default select example" name="medic2" class="form-control @error('medic2') is-invalid @enderror" required>
-                                        <option class="text-center" value="" selected disabled>--- Select Medic ---</option>
+                                    <select class="form-select text-capitalize" aria-label="Default select example" name="medic2" class="form-control @error('medic2') is-invalid @enderror">
+                                        <option class="text-center" value="0">--- None ---</option>
                                         @foreach ($medics as $medic)
                                             <option class="text-capitalize" value="{{$medic->id}}">{{$medic->personnel_first_name}} {{$medic->personnel_last_name}}</option>
                                         @endforeach
                                     </select>
 
                                     @error('medic2')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                @else
+                                    <input type="text" class="form-control" name="" id="" disabled placeholder="No medic available">
+                                @endif
+                                
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="medic3" class="col-md-4 col-form-label text-md-end">Medic 3</label>
+
+                            <div class="col-md-6">
+                                @if ($medics->count() > 1)
+                                    <select class="form-select text-capitalize" aria-label="Default select example" name="medic3" class="form-control @error('medic3') is-invalid @enderror">
+                                        <option class="text-center" value="0">--- None ---</option>
+                                        @foreach ($medics as $medic)
+                                            <option class="text-capitalize" value="{{$medic->id}}">{{$medic->personnel_first_name}} {{$medic->personnel_last_name}}</option>
+                                        @endforeach
+                                    </select>
+
+                                    @error('medic3')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>

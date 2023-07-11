@@ -13,10 +13,20 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="row mb-3">
+                        <div class="row mb-1">
                             <label for="observations" class="col-md-4 col-form-label text-md-end">Observations</label>
-
                             <div class="col-md-6">
+                                <select class="form-select text-capitalize" id="selection_observations" name="selection_observations" class="form-control" onchange="PopulateObservations()">
+                                    <option class="text-center" value="">--- Select Multiple ---</option>
+                                    <option class="text-start" value="swelling of ">swelling of (PART OF BODY)</option>
+                                    <option class="text-start" value="bleeding in ">bleeding in (PART OF BODY)</option>
+                                    <option class="text-start" value="difficulty in ">difficulty in (MOVEMENTS)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-4">
                                 <textarea id="observations" class="form-control @error('observations') is-invalid @enderror" name="observations" required autocomplete="observations" autofocus>{{ old('observations') ?? $patient_observation->observations }}</textarea>
 
                                 @error('observations')
@@ -324,29 +334,6 @@
 
 
 @push('scripts')
-    <!-- <script type="text/javascript">
-        function EnableDisableTextBox(chkPassport) {
-            var txtPassportNumber = document.getElementById("txtPassportNumber");
-            txtPassportNumber.disabled = chkPassport.checked ? false : true;
-            if (txtPassportNumber.disabled) {
-                txtPassportNumber.value="";
-            }
-        }
-    </script> -->
-
-    <!-- <script type="text/javascript">
-        var checkAll = document.getElementById("id_check_uncheck_all");
-        checkAll.addEventListener("change", function() 
-        {
-            var checked = this.checked;
-            var otherCheckboxes = document.querySelectorAll(".toggleable");
-            [].forEach.call(otherCheckboxes, function(item) 
-            {
-                item.checked = checked;
-            });
-        });
-    </script> -->
-
     <script type="text/javascript">
         function showAdult(x) {
             if(x.checked == true){
@@ -361,15 +348,15 @@
                 document.getElementById('showPediaChart').style.display = "block"; 
             }
         }
+
+        function PopulateObservations() {
+            var dropdown = document.getElementById("selection_observations");
+            var field = document.getElementById("observations");
+            if ( field.value == "" ){
+                field.value = dropdown.value;   
+            }else{
+                field.value += ", " + dropdown.value;
+            }
+        }
     </script>
-
-    <!-- <script type="text/javascript">
-        function disable() {
-        document.querySelectorAll('.sample').forEach(element => element.disabled = true);
-        }
-
-        function enable() {
-        document.querySelectorAll('.sample').forEach(element => element.disabled = false);
-        }
-    </script> -->
 @endpush

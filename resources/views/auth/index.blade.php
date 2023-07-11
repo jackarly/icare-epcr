@@ -25,6 +25,9 @@
 
                     
                     <a href=" {{route('account.create' ,$user_type)}} " class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Create User</a>
+                    <button type="button" class="btn btn-outline-secondary text-decoration-none" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        <span><i class="fa-solid fa-magnifying-glass"></i></span>
+                    </button>
                 </div>
             </div>
         </nav>
@@ -54,19 +57,43 @@
                                             <!-- Show details based on user_type -->
                                             @switch($account->user_type)
                                                 @case('ambulance')
-                                                    {{$account->user_ambulance->plate_no}}
+                                                    <span class="text-uppercase">
+                                                        @if ($account->plate_no)                                                        
+                                                            {{$account->plate_no}}
+                                                        @else
+                                                            {{$account->user_ambulance->plate_no}}
+                                                        @endif
+                                                    </span>
                                                     @break
 
                                                 @case('hospital')
-                                                    {{$account->user_hospital->hospital_name}} <small>({{$account->user_hospital->hospital_abbreviation}})</small>
+                                                    <span class="text-capitalize">
+                                                        @if ($account->hospital_name)
+                                                            {{$account->hospital_name}} <small>({{$account->hospital_abbreviation}})</small>                                                         
+                                                        @else
+                                                            {{$account->user_hospital->hospital_name}} <small>({{$account->user_hospital->hospital_abbreviation}})</small>
+                                                        @endif
+                                                    </span>
                                                     @break
 
                                                 @case('comcen')
-                                                    <span class="text-capitalize">{{$account->user_comcen->first_name}} {{$account->user_comcen->last_name}}</span>
+                                                    <span class="text-capitalize">
+                                                        @if ($account->comcen_first_name)
+                                                            {{$account->comcen_first_name}} {{$account->comcen_last_name}}
+                                                        @else
+                                                            {{$account->user_comcen->first_name}} {{$account->user_comcen->last_name}}
+                                                        @endif
+                                                    </span>
                                                     @break
                                                     
                                                 @case('admin')
-                                                    <span class="text-capitalize">{{$account->user_admin->first_name}} {{$account->user_admin->last_name}}</span>
+                                                    <span class="text-capitalize">
+                                                        @if ($account->first_name)
+                                                            {{$account->first_name}} {{$account->last_name}}
+                                                        @else
+                                                            {{$account->user_admin->first_name}} {{$account->user_admin->last_name}}
+                                                        @endif
+                                                    </span>
                                                     @break
 
                                                 @default
@@ -92,6 +119,57 @@
                 <span class="text-secondary my-5">Nothing to show</span>
             </div>
         @endif        
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="searchModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="searchModalLabel">Search Account</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <form method="POST" action="{{route('account.search')}}">
+                        @csrf
+                        
+                        <div class="row mb-3">
+                            <label for="search_name" class="col-md-4 col-form-label text-md-end">Name</label>
+                            <div class="col-md-6">
+                                <input id="search_name" type="text" class="form-control @error('search_name') is-invalid @enderror" name="search_name" 
+                                    value="{{ old('search_name') }}" autocomplete="search_name" autofocus>
+                                <small class="text-secondary fst-italic">*Name, Username, Plate No, or Facility</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <label for="status" class="col-md-4 col-form-label text-md-end">User Type</label>
+                            <div class="col-md-6">
+                                <select class="form-select text-capitalize" id="searchStatus" name="status" class="form-control @error('status') is-invalid @enderror">
+                                    <option class="text-capitalize" value="all users" {{ $user_type == 'all users' ? 'selected' : ''}} >all users</option>
+                                    <option class="text-capitalize" value="ambulance" {{ $user_type == 'ambulance' ? 'selected' : ''}} >ambulance</option>
+                                    <option class="text-capitalize" value="hospital" {{ $user_type == 'hospital' ? 'selected' : ''}} >hospital</option>
+                                    
+                                    
+                                    <!-- Show only for user_type = Admin  -->
+                                    @if ( auth()->user()->user_type == 'admin' )
+                                        <option class="text-capitalize" value="comcen" {{ $user_type == 'comcen' ? 'selected' : ''}} >comcen</option>
+                                        <option class="text-capitalize" value="admin" {{ $user_type == 'admin' ? 'selected' : ''}} >admin</option>
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="searchedQuery" name="searchedQuery" value="true">
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

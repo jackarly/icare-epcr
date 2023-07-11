@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\UserAmbulance;
+use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
@@ -16,59 +17,206 @@ class AccountController extends Controller
         
     }
 
-    public function index($user_type = null)
+    public function index(Request $request, $user_type = null)
     {
-        // Only allow logged on comcen or admin; else redirect to error page
-        if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
-            // Show all accounts to admin
-            if (Auth::user()->user_type == 'admin'){
-                // Get accounts by user_type
-                switch($user_type) {
-                    case('ambulance'):
-                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
-                        break;
-        
-                    case('hospital'):
-                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
-                        break;
-        
-                    case('comcen'):
-                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_comcen'])->paginate(12);
-                        break;
-        
-                    case('admin'):
-                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_admin'])->paginate(12);
-                        break;
-        
-                    default:
-                        $accounts = User::latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
-                        $user_type = 'all users';
-                }
-            // Show only ambulance & hospital accounts to comcen
-            }else{
-                // Get accounts by user_type
-                switch($user_type) {
-                    case('ambulance'):
-                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
-                        break;
-        
-                    case('hospital'):
-                        $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
-                        break;
-        
-                    default:
-                        $accounts = User::whereIN('user_type', ['ambulance', 'hospital'])->latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
-                        $user_type = 'all users';
-                }
-            }
+
+        $searchKeyword = null;
+
+        // Check if form search query
+        if ($request->searchedQuery) {
             
-            return view('auth.index', [
-                'accounts' => $accounts,
-                'user_type' => $user_type,
-            ]);
-        }
-        else{
-            return view('errors.404');
+            // Set search keywords & status
+            $searchKeyword = $request->search_name;
+            $user_type = $request->status;
+
+            // Only allow logged on comcen or admin; else redirect to error page
+            if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
+                // Show all accounts to admin
+                if (Auth::user()->user_type == 'admin'){
+                    // Get accounts by user_type
+                    switch($user_type) {
+                        case('ambulance'):
+                            // $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
+                            $accounts = DB::table('users')
+                                ->join('user_ambulances', 'users.id', '=', 'user_ambulances.user_id')
+                                ->where('users.username', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_ambulances.plate_no', 'like', '%'.$searchKeyword.'%')
+                                ->select('users.*', 'user_ambulances.plate_no')
+                                ->latest('users.created_at')
+                                ->paginate(12);
+                            break;
+            
+                        case('hospital'):
+                            // $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
+                            $accounts = DB::table('users')
+                                ->join('user_hospitals', 'users.id', '=', 'user_hospitals.user_id')
+                                ->where('users.username', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_abbreviation', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_address', 'like', '%'.$searchKeyword.'%')
+                                ->select('users.*', 'user_hospitals.hospital_name', 'user_hospitals.hospital_abbreviation', 'user_hospitals.hospital_address')
+                                ->latest('users.created_at')
+                                ->paginate(12);
+                            break;
+            
+                        case('comcen'):
+                            // $accounts = User::where('user_type', $user_type)->latest()->with(['user_comcen'])->paginate(12);
+                            $accounts = DB::table('users')
+                                ->join('user_comcens', 'users.id', '=', 'user_comcens.user_id')
+                                ->where('users.username', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_comcens.first_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_comcens.mid_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_comcens.last_name', 'like', '%'.$searchKeyword.'%')
+                                ->select('users.*', 'user_comcens.first_name as comcen_first_name', 'user_comcens.mid_name as comcen_mid_name', 'user_comcens.last_name as comcen_last_name')
+                                ->latest('users.created_at')
+                                ->paginate(12);
+                            break;
+            
+                        case('admin'):
+                            // $accounts = User::where('user_type', $user_type)->latest()->with(['user_admin'])->paginate(12);
+                            $accounts = DB::table('users')
+                                ->join('user_admins', 'users.id', '=', 'user_admins.user_id')
+                                ->where('users.username', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_admins.first_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_admins.mid_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_admins.last_name', 'like', '%'.$searchKeyword.'%')
+                                ->select('users.*', 'user_admins.first_name', 'user_admins.mid_name', 'user_admins.last_name')
+                                ->latest('users.created_at')
+                                ->paginate(12);
+                            break;
+            
+                        default:
+                            // $accounts = User::latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
+                            $accounts = DB::table('users')
+                                ->leftJoin('user_ambulances', 'users.id', '=', 'user_ambulances.user_id')
+                                ->leftJoin('user_hospitals', 'users.id', '=', 'user_hospitals.user_id')
+                                ->leftJoin('user_comcens', 'users.id', '=', 'user_comcens.user_id')
+                                ->leftJoin('user_admins', 'users.id', '=', 'user_admins.user_id')
+                                ->where('users.username', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_ambulances.plate_no', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_abbreviation', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_address', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_comcens.first_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_comcens.mid_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_comcens.last_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_admins.first_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_admins.mid_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_admins.last_name', 'like', '%'.$searchKeyword.'%')
+                                ->select('users.*', 'user_ambulances.plate_no', 'user_hospitals.hospital_name', 'user_hospitals.hospital_abbreviation', 'user_hospitals.hospital_address', 'user_comcens.first_name as comcen_first_name', 'user_comcens.mid_name as comcen_mid_name', 'user_comcens.last_name as comcen_last_name', 'user_admins.first_name', 'user_admins.mid_name', 'user_admins.last_name')
+                                ->latest('users.created_at')
+                                ->paginate(12);
+                            $user_type = 'all users';
+                    }
+                // Show only ambulance & hospital accounts to comcen
+                }else{
+                    // Get accounts by user_type
+                    switch($user_type) {
+                        case('ambulance'):
+                            // $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
+                            $accounts = DB::table('users')
+                                ->join('user_ambulances', 'users.id', '=', 'user_ambulances.user_id')
+                                ->where('users.username', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_ambulances.plate_no', 'like', '%'.$searchKeyword.'%')
+                                ->select('users.*', 'user_ambulances.plate_no')
+                                ->latest('users.created_at')
+                                ->paginate(12);
+                            break;
+            
+                        case('hospital'):
+                            // $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
+                            $accounts = DB::table('users')
+                                ->join('user_hospitals', 'users.id', '=', 'user_hospitals.user_id')
+                                ->where('users.username', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_abbreviation', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_address', 'like', '%'.$searchKeyword.'%')
+                                ->select('users.*', 'user_hospitals.hospital_name', 'user_hospitals.hospital_abbreviation', 'user_hospitals.hospital_address')
+                                ->latest('users.created_at')
+                                ->paginate(12);
+                            break;
+            
+                        default:
+                            // $accounts = User::whereIN('user_type', ['ambulance', 'hospital'])->latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
+                            $accounts = DB::table('users')
+                                ->leftJoin('user_ambulances', 'users.id', '=', 'user_ambulances.user_id')
+                                ->leftJoin('user_hospitals', 'users.id', '=', 'user_hospitals.user_id')
+                                ->where('users.user_type', '=', 'ambulance')
+                                ->orWhere('users.user_type', '=', 'hospital')
+                                ->where('users.username', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_ambulances.plate_no', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_name', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_abbreviation', 'like', '%'.$searchKeyword.'%')
+                                ->orWhere('user_hospitals.hospital_address', 'like', '%'.$searchKeyword.'%')
+                                ->select('users.*', 'user_ambulances.plate_no', 'user_hospitals.hospital_name', 'user_hospitals.hospital_abbreviation', 'user_hospitals.hospital_address')
+                                ->latest('users.created_at')
+                                ->paginate(12);
+                            // dd($accounts);
+                            $user_type = 'all users';
+                    }
+                }
+                
+                return view('auth.index', [
+                    'accounts' => $accounts,
+                    'user_type' => $user_type,
+                ]);
+            }
+            else{
+                return view('errors.404');
+            }
+        } else {
+            // Only allow logged on comcen or admin; else redirect to error page
+            if ((Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin')){
+                // Show all accounts to admin
+                if (Auth::user()->user_type == 'admin'){
+                    // Get accounts by user_type
+                    switch($user_type) {
+                        case('ambulance'):
+                            $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
+                            break;
+            
+                        case('hospital'):
+                            $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
+                            break;
+            
+                        case('comcen'):
+                            $accounts = User::where('user_type', $user_type)->latest()->with(['user_comcen'])->paginate(12);
+                            break;
+            
+                        case('admin'):
+                            $accounts = User::where('user_type', $user_type)->latest()->with(['user_admin'])->paginate(12);
+                            break;
+            
+                        default:
+                            $accounts = User::latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
+                            $user_type = 'all users';
+                    }
+                // Show only ambulance & hospital accounts to comcen
+                }else{
+                    // Get accounts by user_type
+                    switch($user_type) {
+                        case('ambulance'):
+                            $accounts = User::where('user_type', $user_type)->latest()->with(['user_ambulance'])->paginate(12);
+                            break;
+            
+                        case('hospital'):
+                            $accounts = User::where('user_type', $user_type)->latest()->with(['user_hospital'])->paginate(12);
+                            break;
+            
+                        default:
+                            $accounts = User::whereIN('user_type', ['ambulance', 'hospital'])->latest()->with(['user_admin', 'user_ambulance', 'user_comcen', 'user_hospital'])->paginate(12);
+                            $user_type = 'all users';
+                    }
+                }
+                
+                return view('auth.index', [
+                    'accounts' => $accounts,
+                    'user_type' => $user_type,
+                ]);
+            }
+            else{
+                return view('errors.404');
+            }
         }
     }
 

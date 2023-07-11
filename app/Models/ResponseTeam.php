@@ -62,4 +62,15 @@ class ResponseTeam extends Model
         ->whereDate('patients.completed_at', Carbon::today())
         ->count();
     }
+
+    public static function getPersonnelList($id) 
+    {   
+        return $personnelList =  DB::table('response_personnels')
+        ->join('response_teams', 'response_personnels.response_team_id', '=', 'response_teams.id')
+        ->join('personnels', 'response_personnels.personnel_id', '=', 'personnels.id')
+        ->where('response_teams.id', '=', $id)
+        ->whereDate('response_teams.created_at', Carbon::today())
+        ->orderBy('response_personnels.id', 'asc')
+        ->get();
+    }
 }

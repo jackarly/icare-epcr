@@ -32,7 +32,8 @@
                                                 <span class="text-danger fw-semibold">Unassigned</span>
                                             @endisset 
                                         </li>
-                                        <li class="text-capitalize"><span class="fw-semibold">Reported at: </span>{{ $incident->created_at->diffForHumans() }}</li>
+                                        <li class=""><span class="fw-semibold">Reported </span>{{ $incident->created_at->diffForHumans() }}</li>
+                                        <li class="text-capitalize">{{ $incident->created_at->format('M d, Y g:i:s A') }}</li>
                                         
                                     </ul>
                                 </div>
@@ -97,21 +98,25 @@
                                                 @if ($incident->timing_enroute)
                                                     <small>{{$incident->timing_enroute }}</small>
                                                 @else
-                                                    
-                                                    <!-- Only show to user_type Admin or Ambulance -->
-                                                    @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
-                                                        <form method="POST" action="{{route('incident.only.enroute',  $incident->id)}}">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <div class="d-grid">
-                                                                <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
-                                                                    Add Time
-                                                                </button>
-                                                            </div>
-                                                        </form>
+                                                    @if ($incident->timing_dispatch)
+                                                        <!-- Only show to user_type Admin or Ambulance -->
+                                                        @if ( (auth()->user()->user_type == 'ambulance') || (auth()->user()->user_type == 'admin') )
+                                                            <form method="POST" action="{{route('incident.only.enroute',  $incident->id)}}">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <div class="d-grid">
+                                                                    <button type="submit" class="btn btn-primary btn-sm custom-rounded-btn">
+                                                                        Add Time
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        @else
+                                                            <small class="text-secondary fst-italic">(not set)</small>
+                                                        @endif
                                                     @else
                                                         <small class="text-secondary fst-italic">(not set)</small>
                                                     @endif
+
                                                 @endif
                                             </td>
                                             <td>
@@ -181,7 +186,7 @@
                                     <ul class="list-group list-group-flush text-start custom-list">
                                         <li class="text-capitalize"><span class="fw-semibold">Ambulance: </span> {{$incident->response_team->user_ambulance->plate_no}}</li>
                                         @foreach ($medics as $medic)
-                                            <li class="text-capitalize"><span class="fw-semibold">Medic: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
+                                            <li class="text-capitalize"><span class="fw-semibold">{{ $medic->personnel_type }}: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
                                         @endforeach
                                         <li class="text-capitalize"><span class="fw-semibold"></span> </li>
                                     </ul>
@@ -250,6 +255,9 @@
                             @endisset 
                         </div>
                     </div>
+                </div>
+                <div class="text-start my-2">
+                    <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Go Back</a>
                 </div>
             </div>
         </div>

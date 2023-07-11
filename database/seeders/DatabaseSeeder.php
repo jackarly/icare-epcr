@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MedicSeeder::class,
             IncidentSeeder::class,
+            HotlineSeeder::class,
         ]);
     }
 }

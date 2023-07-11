@@ -2,7 +2,6 @@
     <hr>
     <h5 class="fw-semibold text-secondary">Incidents Today</h5>
     <div class="row mb-3">
-
         <!-- Count new incidents today -->
         <div class="col-md-4 mb-2" style="height: 10rem;">
             <div class="text-center border border-success rounded bg-success text-light opacity-75" style="height: 100%; width: 100%">
@@ -68,7 +67,6 @@
     <hr>
     <h5 class="fw-semibold text-secondary mt-3">Overall</h5>
     <div class="row">
-
         <!-- Count all availble ambulances -->
         <div class="col-md-4 mb-2" style="height: 10rem;">
             <div class="text-center border border-3 rounded bg-white" style="height: 100%; width: 100%">
@@ -99,5 +97,4 @@
             </div>
         </div>
     </div>
-    <hr>
 </div>

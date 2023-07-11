@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('sex')->nullable();
             $table->string('contact_no')->nullable();
             $table->string('address')->nullable();
+            $table->string('patient_refused_at')->nullable();
+            $table->string('patient_refusal_witness')->nullable();
+            $table->string('hospital_refused_at')->nullable();
             $table->dateTime('completed_at')->nullable();
             $table->foreignId('incident_id')->constrained()->onDelete('cascade');
             $table->timestamps();

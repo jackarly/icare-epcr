@@ -17,71 +17,217 @@ class IncidentController extends Controller
         $this->middleware('auth');
     }
 
-    public function index($status = null)
+    public function index(Request $request, $status = null)
     {
-        // Only show hospital and ambulance their assigned incidents 
-        if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
-            // Get all assigned incidents for hospital
-            if (Auth::user()->user_type == 'hospital'){
-                $assignedIncidents = DB::table('incidents')
-                ->join('patients', 'incidents.id', '=', 'patients.incident_id')
-                ->join('patient_managements', 'patients.id', '=', 'patient_managements.patient_id')
-                ->where('patient_managements.user_hospital_id', '=', Auth::user()->user_hospital->id)
-                ->pluck('incidents.id');
+        $searchKeyword = null;
+        $searchDate = null;
+
+        // Check if form search query
+        if ($request->searchedQuery) {
+            
+            // Set search keywords & status
+            $searchKeyword = $request->search_name;
+            $status = $request->status;
+            $searchDate = $request->search_date;
+
+            // Only show hospital and ambulance their assigned incidents 
+            if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+                // Get all assigned incidents for hospital
+                if (Auth::user()->user_type == 'hospital'){
+                    $assignedIncidents = DB::table('incidents')
+                    ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+                    ->join('patient_managements', 'patients.id', '=', 'patient_managements.patient_id')
+                    ->where('patient_managements.user_hospital_id', '=', Auth::user()->user_hospital->id)
+                    ->pluck('incidents.id');
+                }
+                // Get all assigned incidents for ambulance
+                elseif(Auth::user()->user_type == 'ambulance'){
+                    $assignedIncidents = DB::table('incidents')
+                    ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+                    ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
+                    ->pluck('incidents.id');
+                }
+                else{
+                    return view('errors.404');
+                }
+
+                // Show assigned incidents by status
+                switch($status) {
+                    case('unassigned today'):
+                        $incidents = Incident::where('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())
+                            ->where('caller_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+                        break;
+
+                    case('assigned today'):
+                        $incidents = Incident::whereNot('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())
+                            ->where('caller_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+                        break;
+
+                    case('all incidents'):
+                        
+                        // Set date and default if null
+                        if ($request->search_date){
+                            $tempDate = $request->search_date;
+                        }
+                        else{
+                            $tempDate = Carbon::today();
+                        }
+
+                        $incidents = Incident::whereIn('id', $assignedIncidents)
+                            ->whereDate('created_at', $tempDate)
+                            ->where('caller_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+
+                            if (!$request->search_date){
+                                $status = 'incidents today';
+                            }
+                        break;
+
+                    default:
+                        $incidents = Incident::whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())
+                            ->where('caller_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+                        $status = 'incidents today';
+                }
             }
-            // Get all assigned incidents for ambulance
-            elseif(Auth::user()->user_type == 'ambulance'){
-                $assignedIncidents = DB::table('incidents')
-                ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
-                ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
-                ->pluck('incidents.id');
-            }
+            // Show all incident for comcen and admin accounts
             else{
-                return view('errors.404');
-            }
-            // Show assigned incidents by status
-            switch($status) {
-                case('unassigned today'):
-                    $incidents = Incident::where('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                    break;
+                // Show assigned incidents by status
+                switch($status) {
+                    case('unassigned today'):
+                        $incidents = Incident::where('response_team_id', null)->whereDate('created_at', Carbon::today())
+                            ->where('caller_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+                        break;
 
-                case('assigned today'):
-                    $incidents = Incident::whereNot('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                    break;
+                    case('assigned today'):
+                        $incidents = Incident::whereNot('response_team_id', null)->whereDate('created_at', Carbon::today())
+                            ->where('caller_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+                            break;
 
-                case('all incidents'):
-                    $incidents = Incident::whereIn('id', $assignedIncidents)->latest()->paginate(12);
-                    break;
+                    case('all incidents'):
 
-                default:
-                    $incidents = Incident::whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                    $status = 'incidents today';
+                        // Set date and default if null
+                        if ($request->search_date){
+                            $tempDate = $request->search_date;
+                        }
+                        else{
+                            $tempDate = Carbon::today();
+                        }
+
+                        $incidents = Incident::whereDate('created_at', $tempDate)
+                            ->where('caller_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+
+                            if (!$request->search_date){
+                                $status = 'incidents today';
+                            }
+                        break;
+
+                    default:
+                        $incidents = Incident::whereDate('created_at', Carbon::today())
+                            ->where('caller_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('caller_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+                        $status = 'incidents today';
+                }
             }
         }
-        // Show all incident for comcen and admin accounts
         else{
-            // Show assigned incidents by status
-            switch($status) {
-                case('unassigned today'):
-                    $incidents = Incident::where('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                    break;
+            // Only show hospital and ambulance their assigned incidents 
+            if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+                // Get all assigned incidents for hospital
+                if (Auth::user()->user_type == 'hospital'){
+                    $assignedIncidents = DB::table('incidents')
+                    ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+                    ->join('patient_managements', 'patients.id', '=', 'patient_managements.patient_id')
+                    ->where('patient_managements.user_hospital_id', '=', Auth::user()->user_hospital->id)
+                    ->pluck('incidents.id');
+                }
+                // Get all assigned incidents for ambulance
+                elseif(Auth::user()->user_type == 'ambulance'){
+                    $assignedIncidents = DB::table('incidents')
+                    ->join('response_teams', 'incidents.response_team_id', '=', 'response_teams.id')
+                    ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
+                    ->pluck('incidents.id');
+                }
+                else{
+                    return view('errors.404');
+                }
+                // Show assigned incidents by status
+                switch($status) {
+                    case('unassigned today'):
+                        $incidents = Incident::where('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                        break;
 
-                case('assigned today'):
-                    $incidents = Incident::whereNot('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                    break;
+                    case('assigned today'):
+                        $incidents = Incident::whereNot('response_team_id', null)->whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                        break;
 
-                case('all incidents'):
-                    $incidents = Incident::latest()->paginate(12);
-                    break;
+                    case('all incidents'):
+                        $incidents = Incident::whereIn('id', $assignedIncidents)->latest()->paginate(12);
+                        break;
 
-                default:
-                    $incidents = Incident::whereDate('created_at', Carbon::today())->latest()->paginate(12);
-                    $status = 'incidents today';
+                    default:
+                        $incidents = Incident::whereIn('id', $assignedIncidents)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                        $status = 'incidents today';
+                }
+            }
+            // Show all incident for comcen and admin accounts
+            else{
+                // Show assigned incidents by status
+                switch($status) {
+                    case('unassigned today'):
+                        $incidents = Incident::where('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                        break;
+
+                    case('assigned today'):
+                        $incidents = Incident::whereNot('response_team_id', null)->whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                        break;
+
+                    case('all incidents'):
+                        $incidents = Incident::latest()->paginate(12);
+                        break;
+
+                    default:
+                        $incidents = Incident::whereDate('created_at', Carbon::today())->latest()->paginate(12);
+                        $status = 'incidents today';
+                }
             }
         }
+        
+
         return view('incident.index', [
             'incidents' => $incidents,
             'status' => $status,
+            'searchKeyword' => $searchKeyword,
+            'searchDate' => $searchDate,
         ]);
     }
 
@@ -113,7 +259,21 @@ class IncidentController extends Controller
                 'incident_details'=> 'required|string',
                 'injuries_details'=> 'required|string',
             ]);
-    
+
+            // Set other incident
+            if ($request->incident_details == 'others') {
+                $incident_details = $request->other_incident_details;
+            } else {
+                $incident_details = $request->incident_details;
+            }
+
+            // Set other injuries
+            if ($request->incident_details == 'others') {
+                $injuries_details = $request->other_injuries_details;
+            } else {
+                $injuries_details = $request->injuries_details;
+            }
+
             Incident::create([
                 'nature_of_call'=> $request->nature_of_call,
                 'incident_type'=> $request->incident_type,
@@ -124,8 +284,8 @@ class IncidentController extends Controller
                 'caller_last_name'=> $request->caller_last_name,
                 'caller_number'=> $request->caller_number,
                 'no_of_persons_involved'=> $request->no_of_persons_involved,
-                'incident_details'=> $request->incident_details,
-                'injuries_details'=> $request->injuries_details,
+                'incident_details'=> $incident_details,
+                'injuries_details'=> $injuries_details,
             ]);
             return redirect()->route('incident')->with('success', 'New incident added successfully');
         }
@@ -275,7 +435,21 @@ class IncidentController extends Controller
                 'incident_details'=> 'required|string',
                 'injuries_details'=> 'required|string',
             ]);
-    
+
+            // Set other incident
+            if ($request->incident_details == 'others') {
+                $incident_details = $request->other_incident_details;
+            } else {
+                $incident_details = $request->incident_details;
+            }
+
+            // Set other injuries
+            if ($request->incident_details == 'others') {
+                $injuries_details = $request->other_injuries_details;
+            } else {
+                $injuries_details = $request->injuries_details;
+            }
+
             $incident->update([
                 'nature_of_call'=> $request->nature_of_call,
                 'incident_type'=> $request->incident_type,
@@ -286,8 +460,8 @@ class IncidentController extends Controller
                 'caller_last_name'=> $request->caller_last_name,
                 'caller_number'=> $request->caller_number,
                 'no_of_persons_involved'=> $request->no_of_persons_involved,
-                'incident_details'=> $request->incident_details,
-                'injuries_details'=> $request->injuries_details,
+                'incident_details'=> $incident_details,
+                'injuries_details'=> $injuries_details,
             ]);
             return redirect()->route('incident.show', $incident->id)->with('success', 'Incident updated successfully');
         }

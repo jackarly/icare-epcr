@@ -37,7 +37,7 @@
                         <a class="nav-link" href="{{ route('response') }}">Response Team</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('personnel') }}">Medic</a>
+                        <a class="nav-link" href="{{ route('personnel') }}">Personnel</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('account.overview') }}">Accounts</a>
@@ -72,6 +72,10 @@
                             <a class="dropdown-item" href="{{ route('account.own') }}">
                                 My Account
                             </a>
+                            <a class="dropdown-item" href="{{ route('hotline') }}">
+                                Hotline
+                            </a>
+                            <hr class="dropdown-divider">
                             <a class="dropdown-item" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();">

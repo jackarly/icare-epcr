@@ -21,6 +21,7 @@ class MedicSeeder extends Seeder
             'contact'=> '09123456789',
             'birthday'=> '1991-01-01',
             'sex'=> 'male',
+            'personnel_type'=> 'medic',
         ]);
         
         Personnel::create([
@@ -31,6 +32,7 @@ class MedicSeeder extends Seeder
             'contact'=> '09123456789',
             'birthday'=> '1991-01-01',
             'sex'=> 'male',
+            'personnel_type'=> 'medic',
         ]);
         
         Personnel::create([
@@ -41,6 +43,7 @@ class MedicSeeder extends Seeder
             'contact'=> '09123456789',
             'birthday'=> '1991-01-01',
             'sex'=> 'female',
+            'personnel_type'=> 'medic',
         ]);
         
         Personnel::create([
@@ -51,6 +54,7 @@ class MedicSeeder extends Seeder
             'contact'=> '09123456789',
             'birthday'=> '1991-01-01',
             'sex'=> 'male',
+            'personnel_type'=> 'medic',
         ]);
         
         Personnel::create([
@@ -61,6 +65,29 @@ class MedicSeeder extends Seeder
             'contact'=> '09123456789',
             'birthday'=> '1991-01-01',
             'sex'=> 'male',
+            'personnel_type'=> 'medic',
+        ]);
+        
+        Personnel::create([
+            'personnel_first_name'=> 'Dave',
+            'personnel_mid_name'=> 'Chua',
+            'personnel_last_name'=> 'Virtudes',
+            'personnel_other'=> null,
+            'contact'=> '09193456789',
+            'birthday'=> '1991-01-01',
+            'sex'=> 'male',
+            'personnel_type'=> 'driver',
+        ]);
+        
+        Personnel::create([
+            'personnel_first_name'=> 'Sammy Joe',
+            'personnel_mid_name'=> 'Karing',
+            'personnel_last_name'=> 'Tone',
+            'personnel_other'=> null,
+            'contact'=> '09193456789',
+            'birthday'=> '1991-01-01',
+            'sex'=> 'male',
+            'personnel_type'=> 'driver',
         ]);
     }
 }

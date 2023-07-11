@@ -16,10 +16,62 @@ class PersonnelController extends Controller
         $this->middleware('auth');
     }
 
-    public function index($status = null)
+    public function index(Request $request, $status = null)
     {
-        // Only show medics to comcen and admin accounts
-        if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+        $searchKeyword = null;
+        
+        // Check if form search query
+        if ($request->searchedQuery) {
+            
+            // Set search keywords & status
+            $searchKeyword = $request->search_name;
+            $status = $request->status;
+
+            // Only show medics to comcen and admin accounts
+            if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
+                // Show medics by status
+                switch($status) {
+                    case('available'):
+                        $responsePersonnels = ResponsePersonnel::whereDate('created_at', Carbon::today())->pluck('personnel_id');
+                        $personnels = Personnel::whereNotIn('id', $responsePersonnels)
+                            ->where('personnel_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('personnel_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('personnel_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+                        break;
+        
+                    case('assigned'):
+                        $responsePersonnels = ResponsePersonnel::whereDate('created_at', Carbon::today())->pluck('personnel_id');
+                        $personnels = Personnel::whereIn('id', $responsePersonnels)
+                            ->where('personnel_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('personnel_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('personnel_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()
+                            ->paginate(12);
+                        break;
+        
+                    default:
+                        $personnels = Personnel::where('personnel_first_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('personnel_mid_name', 'like', '%'.$searchKeyword.'%')
+                            ->orWhere('personnel_last_name', 'like', '%'.$searchKeyword.'%')
+                            ->latest()->paginate(12);
+                        $status = 'all personnel';
+                }
+        
+                return view('personnel.index', [
+                    'personnels' => $personnels,
+                    'status' => $status,
+                    'searchKeyword' => $searchKeyword,
+                ]);
+            }
+            else{
+                return view('errors.404');
+            }
+        } 
+        else {
+           // Only show medics to comcen and admin accounts
+            if ( (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             // Show medics by status
             switch($status) {
                 case('available'):
@@ -34,16 +86,18 @@ class PersonnelController extends Controller
     
                 default:
                     $personnels = Personnel::latest()->paginate(12);
-                    $status = 'all medics';
+                    $status = 'all personnel';
             }
     
             return view('personnel.index', [
                 'personnels' => $personnels,
                 'status' => $status,
+                'searchKeyword' => $searchKeyword,
             ]);
         }
         else{
             return view('errors.404');
+        }
         }
     }
 
@@ -71,7 +125,9 @@ class PersonnelController extends Controller
                 'contact'=> 'required|string',
                 'birthday'=> 'required|string',
                 'sex'=> 'required|string',
-                'personnel_img' => 'image|nullable'
+                'personnel_img' => 'image|nullable',
+                'personnel_type' => 'required'
+                
             ]);
             Personnel::create([
                 'personnel_first_name'=> $request->personnel_first_name,
@@ -82,6 +138,7 @@ class PersonnelController extends Controller
                 'birthday'=> $request->birthday,
                 'sex'=> $request->sex,
                 'personnel_img' => $request->personnel_img,
+                'personnel_type' => $request->personnel_type,
             ]);
             return redirect()->route('personnel')->with('success', 'New medic added successfully');
         }
@@ -128,7 +185,8 @@ class PersonnelController extends Controller
                 'contact'=> 'required|string',
                 'birthday'=> 'required|string',
                 'sex'=> 'required|string',
-                'personnel_img' => 'image|nullable'
+                'personnel_img' => 'image|nullable',
+                'personnel_type' => 'required'
             ]);
     
             $personnel->personnel_first_name = $request->personnel_first_name;
@@ -138,6 +196,7 @@ class PersonnelController extends Controller
             $personnel->contact = $request->contact;
             $personnel->birthday = $request->birthday;
             $personnel->sex = $request->sex;
+            $personnel->personnel_type = $request->personnel_type;
             $personnel->save();
     
             return redirect()->route('personnel.show', $personnel->id )->with('success', 'Medic updated successfully');

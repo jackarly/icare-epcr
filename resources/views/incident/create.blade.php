@@ -150,23 +150,34 @@
                             <label for="no_of_persons_involved" class="col-md-4 col-form-label text-md-end">No. of Persons Involved</label>
 
                             <div class="col-md-6">
-                                <input id="no_of_persons_involved" type="number" class="form-control @error('no_of_persons_involved') is-invalid @enderror" name="no_of_persons_involved" value="{{ old('no_of_persons_involved') }}" required autocomplete="no_of_persons_involved" autofocus>
-
-                                @error('no_of_persons_involved')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <select class="form-select text-capitalize" name="no_of_persons_involved" class="form-control @error('no_of_persons_involved') is-invalid @enderror">
+                                    <option class="text-start" value="1" selected>1</option>
+                                    @for ($i = 2; $i < 11; $i++)
+                                        <option class="text-start" value="{{$i}}">{{$i}}</option>
+                                    @endfor
+                                </select>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label for="incident_details" class="col-md-4 col-form-label text-md-end">Incident Details</label>
-
                             <div class="col-md-6">
-                                <textarea id="incident_details" class="form-control @error('incident_details') is-invalid @enderror" name="incident_details" value="{{ old('incident_details') }}" required autocomplete="incident_details" autofocus></textarea>
+                                <select class="form-select text-capitalize" id="incidentDetails" name="incident_details" class="form-control @error('incident_details') is-invalid @enderror" onchange="incidentOthers()"> 
+                                    <option class="text-center" value="" selected >--- Select One ---</option>
+                                    <option class="text-start" value="fire" >fire</option>
+                                    <option class="text-start" value="injury" >injury</option>
+                                    <option class="text-start" value="natural disaster" >natural disaster</option>
+                                    <option class="text-start" value="traffic collision">traffic collision</option>
+                                    <option class="text-start" value="others" >others</option>
+                                </select>
+                            </div>
+                        </div>
 
-                                @error('incident_details')
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-4">
+                                <textarea id="other_incident_details" class="form-control @error('other_incident_details') is-invalid @enderror" name="other_incident_details" value="{{ old('other_incident_details') }}" autocomplete="other_incident_details" placeholder="Incident Details - Other" disabled></textarea>
+
+                                @error('other_incident_details')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -178,9 +189,21 @@
                             <label for="injuries_details" class="col-md-4 col-form-label text-md-end">Nature & Extent of Injuries</label>
 
                             <div class="col-md-6">
-                                <textarea id="injuries_details" class="form-control @error('injuries_details') is-invalid @enderror" name="injuries_details" value="{{ old('injuries_details') }}" required autocomplete="injuries_details" autofocus></textarea>
+                                <select class="form-select text-capitalize" id="injuriesDetails" name="injuries_details" class="form-control @error('injuries_details') is-invalid @enderror" onchange="injuriesOthers()"> 
+                                    <option class="text-center" value="" selected >--- Select One ---</option>
+                                    <option class="text-start" value="minor" >minor</option>
+                                    <option class="text-start" value="moderate" >moderate</option>
+                                    <option class="text-start" value="critical" >critical</option>
+                                    <option class="text-start" value="others" >others</option>
+                                </select>
+                            </div>
+                        </div>
 
-                                @error('injuries_details')
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-4">
+                                <textarea id="other_injuries_details" class="form-control @error('other_injuries_details') is-invalid @enderror" name="other_injuries_details" value="{{ old('other_injuries_details') }}" required autocomplete="other_injuries_details" placeholder="Injury Details - Other" disabled></textarea>
+
+                                @error('other_injuries_details')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -198,7 +221,32 @@
                     </form>
                 </div>
             </div>
+            <div class="mt-2">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-arrow-left"></i> Go Back</a>
+            </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script type="text/javascript">
+        function incidentOthers() {
+            var x = document.getElementById('incidentDetails').value;
+            if((x == 'fire') || (x == 'injury') || (x == 'natural disaster') || (x == 'traffic collision')){
+                document.getElementById('other_incident_details').disabled = true;
+            }else{
+                document.getElementById('other_incident_details').disabled = false;
+            }
+        }
+
+        function injuriesOthers() {
+            var x = document.getElementById('injuriesDetails').value;
+            if((x == 'minor') || (x == 'moderate') || (x == 'critical')){
+                document.getElementById('other_injuries_details').disabled = true;
+            }else{
+                document.getElementById('other_injuries_details').disabled = false;
+            }
+        }
+    </script>
+@endpush

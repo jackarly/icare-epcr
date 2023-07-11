@@ -22,6 +22,7 @@ class Personnel extends Model
         'birthday',
         'sex', 
         'personnel_img',
+        'personnel_type',
     ];
 
     protected $appends = ['medicStatus', 'incidentsToday', 'incidentsCompletedToday', 'incidentsCompletedOverall'];

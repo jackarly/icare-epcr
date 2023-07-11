@@ -37,7 +37,7 @@
     <hr>
     <h5 class="fw-semibold text-secondary">Account Overview</h5> <span></span>
     <span class="text-secondary"> Ambulance Plate No:</span> <span class="fw-semibold text-secondary">{{auth()->user()->user_ambulance->plate_no}}</span> 
-    <div class="row justify-content-around my-4">
+    <div class="row justify-content-between my-4">
 
         <!-- Get assigned medics today -->
         @php $medics = App\Models\UserAmbulance::dashboardMedics() @endphp
@@ -45,12 +45,13 @@
         <!-- Show assigned medics details -->
         @if ($medics->count() > 0)
             @foreach ($medics as $medic)
-                <div class="card col-md-6 col-lg-5">
+                <div class="card col-md-6 col-lg-5 m-3">
                     <div class="row mb-3">
                         <div class="col-md-12 mt-3">
                             <img src="{{ asset('storage/default/avatar-default.png') }}" class="rounded-circle mx-auto d-block thumbnail" alt="default-avatar" height="100px" width="100px">
                             <ul class="list-group list-group-flush custom-list">
                                 <li class="text-center"><span class="fs-5 fw-bold">{{$medic->personnel_first_name}} {{$medic->personnel_mid_name}} {{$medic->personnel_last_name}}</span></li>
+                                <li class="text-capitalize"><span class="fw-semibold">{{$medic->personnel_type}}</span></li>
                                 <li class="text-capitalize"><span class="fw-semibold text-secondary">Sex: </span> {{$medic->sex}} </li>
                                 <li class="text-capitalize"><span class="fw-semibold text-secondary">Age: </span> <span>{{\Carbon\Carbon::parse($medic->birthday)->diff(\Carbon\Carbon::now())->format('%y')}}</span> </li>
                                 <li class="text-capitalize"><span class="fw-semibold text-secondary">Birthday: </span>

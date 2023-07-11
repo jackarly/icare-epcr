@@ -15,7 +15,7 @@
                                 <ul class="list-group list-group-flush custom-list">
                                     <li class="text-capitalize"><span class="fw-semibold text-secondary">Ambulance Plate: </span>{{ $response->user_ambulance->plate_no }}</li>
                                     @foreach ($medics as $medic)
-                                        <li class="text-capitalize"><span class="fw-semibold fw-semibold text-secondary">Medic: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
+                                        <li class="text-capitalize"><span class="fw-semibold fw-semibold text-secondary">{{ $medic->personnel_type }}: </span>{{ $medic->personnel_first_name }} {{ $medic->personnel_last_name }}</li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="text-start my-2">
-                    <a href="{{ url()->previous() }}" class="btn btn-primary">Go Back</a>
+                    <a href="{{ url()->previous() }}" class="btn btn-outline-primary">Go Back</a>
                 </div>
             </div>
         </div>

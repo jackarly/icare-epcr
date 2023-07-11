@@ -9,6 +9,7 @@ use App\Models\PatientAssessment;
 use App\Models\PatientManagement;
 use App\Models\PatientObservation;
 use Carbon\Carbon;
+use App\Models\PatientRefusal;
 
 class Patient extends Model
 {
@@ -26,7 +27,18 @@ class Patient extends Model
         'address',
         'completed_at',
         'incident_id',
+        'patient_refusal_witness',
+        'patient_refused_at',
+        'hospital_refused_at',
     ];
+
+    // protected $dates = [
+    //     'created_at',
+    //     'updated_at',
+    //     'completed_at',
+    //     'patient_refused_at',
+    //     'hospital_refused_at',
+    // ];
 
     // Set patient and patient assessment relationship
     public function patient_assessment()
@@ -62,5 +74,11 @@ class Patient extends Model
     public static function getCompletedPatients() 
     {
         return Patient::whereNotNull('completed_at')->count();
+    }
+
+    // Set patient and patient refusal relationship
+    public function patient_refusals()
+    {
+        return $this->hasMany(PatientRefusal::class);
     }
 }

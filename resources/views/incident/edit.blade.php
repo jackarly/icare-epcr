@@ -150,25 +150,33 @@
 
                         <div class="row mb-3">
                             <label for="no_of_persons_involved" class="col-md-4 col-form-label text-md-end">No. of Persons Involved</label>
-
                             <div class="col-md-6">
-                                <input id="no_of_persons_involved" type="number" class="form-control @error('no_of_persons_involved') is-invalid @enderror" name="no_of_persons_involved" value="{{ old('no_of_persons_involved') ?? $incident->no_of_persons_involved }}" required autocomplete="no_of_persons_involved" autofocus>
-
-                                @error('no_of_persons_involved')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <select class="form-select text-capitalize" name="no_of_persons_involved" class="form-control @error('no_of_persons_involved') is-invalid @enderror">
+                                    @for ($i = 1; $i < 11; $i++)
+                                        <option class="text-start" value="{{$i}}" {{ $incident->no_of_persons_involved == $i ? 'selected' : '' }}>{{$i}}</option>
+                                    @endfor
+                                </select>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label for="incident_details" class="col-md-4 col-form-label text-md-end">Incident Details</label>
-
                             <div class="col-md-6">
-                                <textarea id="incident_details" class="form-control @error('incident_details') is-invalid @enderror" name="incident_details" required autocomplete="incident_details" autofocus>{{ old('incident_details') ?? $incident->incident_details }}</textarea>
+                                <select class="form-select text-capitalize" id="incidentDetails" name="incident_details" class="form-control @error('incident_details') is-invalid @enderror" onchange="incidentOthers()">
+                                    <option class="text-start" value="fire" {{ $incident->incident_details == 'fire' ? 'selected' : '' }}>fire</option>
+                                    <option class="text-start" value="injury" {{ $incident->incident_details == 'injury' ? 'selected' : '' }}>injury</option>
+                                    <option class="text-start" value="natural disaster" {{ $incident->incident_details == 'natural disaster' ? 'selected' : '' }}>natural disaster</option>
+                                    <option class="text-start" value="traffic collision" {{ $incident->incident_details == 'traffic collision' ? 'selected' : '' }}>traffic collision</option>
+                                    <option class="text-start" value="others" {{ ($incident->incident_details != 'fire') && ($incident->incident_details != 'injury') && ($incident->incident_details != 'natural disaster') && ($incident->incident_details != 'traffic collision')? 'selected' : '' }}>others</option>
+                                </select>
+                            </div>
+                        </div>
 
-                                @error('incident_details')
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-4">
+                                <textarea id="other_incident_details" class="form-control @error('other_incident_details') is-invalid @enderror" name="other_incident_details" value="{{ old('other_incident_details') ?? $incident->incident_details }}" autocomplete="other_incident_details" placeholder="Incident Details - Other" {{ ($incident->incident_details != 'fire') && ($incident->incident_details != 'injury') && ($incident->incident_details != 'natural disaster') && ($incident->incident_details != 'traffic collision') ? '' : 'disabled' }}>{{ ($incident->incident_details != 'fire') && ($incident->incident_details != 'injury') && ($incident->incident_details != 'natural disaster') && ($incident->incident_details != 'traffic collision') ? $incident->incident_details : '' }}</textarea>
+
+                                @error('other_incident_details')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -180,9 +188,20 @@
                             <label for="injuries_details" class="col-md-4 col-form-label text-md-end">Nature & Extent of Injuries</label>
 
                             <div class="col-md-6">
-                                <textarea id="injuries_details" class="form-control @error('injuries_details') is-invalid @enderror" name="injuries_details" required autocomplete="injuries_details" autofocus>{{ old('injuries_details') ?? $incident->injuries_details }}</textarea>
+                                <select class="form-select text-capitalize" id="injuriesDetails" name="injuries_details" class="form-control @error('injuries_details') is-invalid @enderror" onchange="injuriesOthers()">
+                                    <option class="text-start" value="minor" {{ $incident->injuries_details == 'minor' ? 'selected' : '' }}>minor</option>
+                                    <option class="text-start" value="moderate" {{ $incident->injuries_details == 'moderate' ? 'selected' : '' }}>moderate</option>
+                                    <option class="text-start" value="critical" {{ $incident->injuries_details == 'critical' ? 'selected' : '' }}>critical</option>
+                                    <option class="text-start" value="others" {{ ($incident->injuries_details != 'minor') && ($incident->injuries_details != 'moderate') && ($incident->injuries_details != 'critical') ? 'selected' : '' }}>others</option>
+                                </select>
+                            </div>
+                        </div>
 
-                                @error('injuries_details')
+                        <div class="row mb-3">
+                            <div class="col-md-6 offset-md-4">
+                                <textarea id="other_injuries_details" class="form-control @error('other_injuries_details') is-invalid @enderror" name="other_injuries_details" value="{{ old('other_injuries_details') ?? $incident->injuries_details }}" required autocomplete="other_injuries_details" placeholder="Injury Details - Other" {{ ($incident->injuries_details != 'minor') && ($incident->injuries_details != 'moderate') && ($incident->injuries_details != 'critical') ? '' : 'disabled' }}>{{ ($incident->injuries_details != 'minor') && ($incident->injuries_details != 'moderate') && ($incident->injuries_details != 'critical') ? $incident->injuries_details : '' }}</textarea>
+
+                                @error('other_injuries_details')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -200,7 +219,36 @@
                     </form>
                 </div>
             </div>
+            <div class="mt-2">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-arrow-left"></i> Go Back</a>
+            </div>
         </div>
     </div>
 </div>
 @endsection
+
+
+
+@push('scripts')
+    <script type="text/javascript">
+        function incidentOthers() {
+            var x = document.getElementById('incidentDetails').value;
+            if((x == 'fire') || (x == 'injury') || (x == 'natural disaster') || (x == 'traffic collision')){
+                document.getElementById('other_incident_details').disabled = true;
+                document.getElementById('other_incident_details').value = '';
+            }else{
+                document.getElementById('other_incident_details').disabled = false;
+            }
+        }
+
+        function injuriesOthers() {
+            var x = document.getElementById('injuriesDetails').value;
+            if((x == 'minor') || (x == 'moderate') || (x == 'critical')){
+                document.getElementById('other_injuries_details').disabled = true;
+                document.getElementById('other_injuries_details').value = '';
+            }else{
+                document.getElementById('other_injuries_details').disabled = false;
+            }
+        }
+    </script>
+@endpush
