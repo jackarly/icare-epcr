@@ -10,7 +10,10 @@
                         <h5 class="fw-semibold text-secondary">Hotline Numbers</h5>
                     </ul>
 
-                    <a href="" class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Add Hotline</a>
+                    @if ((auth()->user()->user_type == 'comcen' || (auth()->user()->user_type == 'admin')))
+                        <a href="" class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Add Hotline</a>
+                    @endif
+                    
                     <button type="button" class="btn btn-outline-secondary text-decoration-none" data-bs-toggle="modal" data-bs-target="#searchModal">
                         <span><i class="fa-solid fa-magnifying-glass"></i></span>
                     </button>
