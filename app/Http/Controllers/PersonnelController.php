@@ -18,6 +18,7 @@ class PersonnelController extends Controller
 
     public function index(Request $request, $status = null)
     {
+        // Set search variable to null
         $searchKeyword = null;
         
         // Check if form search query

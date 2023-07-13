@@ -12,19 +12,20 @@ class HotlineController extends Controller
      */
     public function index(Request $request)
     {
+        // Set search keyword to null
         $keyword = null;
         
+        // Check if request is from search box
         if ($request->searchedQuery) {
             $keyword = $request->keyword;
             $order = $request->order;
 
+            // Set result order
             if ($order == 'alpahbetical') {
                 $hotlines = Hotline::where('facility', 'like', '%'.$keyword.'%')->orWhere('location', 'like', '%'.$keyword.'%')->orderBy('facility', 'asc')->paginate(15);
             } else {
                 $hotlines = Hotline::where('facility', 'like', '%'.$keyword.'%')->orWhere('location', 'like', '%'.$keyword.'%')->orderBy('id', 'asc')->paginate(15);
             }
-            
-            
         } else {
             $hotlines = Hotline::orderBy('id', 'asc')->paginate(15);
         }
@@ -32,53 +33,5 @@ class HotlineController extends Controller
             'hotlines' => $hotlines,
             'searchResults' => $keyword,
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Hotline $hotline)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Hotline $hotline)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Hotline $hotline)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Hotline $hotline)
-    {
-        //
     }
 }

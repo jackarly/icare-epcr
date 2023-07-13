@@ -53,8 +53,6 @@ class PatientController extends Controller
                 // Show patients by status
                 switch($status) {
                     case('ongoing'):
-                        // $patients = Patient::whereIn('id', $assignedPatients)->where('completed_at', null)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-
                         // Check if keyword is null
                         if ($searchKeyword) {
                             
@@ -91,8 +89,6 @@ class PatientController extends Controller
                         break;
 
                     case('completed'):
-                        // $patients = Patient::whereIn('id', $assignedPatients)->whereNot('completed_at', null)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        
                         // Set date and default if null
                         if ($request->search_date){
                             $tempDate = $request->search_date;
@@ -137,8 +133,6 @@ class PatientController extends Controller
                         break;
 
                     default:
-                        // $patients = Patient::whereIn('id', $assignedPatients)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        
                         // Set date and default if null
                         if ($request->search_date){
                             $tempDate = $request->search_date;
@@ -180,11 +174,6 @@ class PatientController extends Controller
                 // Show patients by status
                 switch($status) {
                     case('ongoing'):
-                        // $patients = Patient::where('completed_at', null)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        
-                        // dd( $searchKeyword);
-                        // dd( $request->search_name);
-                        
                         // Check if keyword is null
                         if ($searchKeyword) {
                             
@@ -219,8 +208,6 @@ class PatientController extends Controller
                         break;
 
                     case('completed'):
-                        // $patients = Patient::whereNot('completed_at', null)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        
                         // Set date and default if null
                         if ($request->search_date){
                             $tempDate = $request->search_date;
@@ -247,7 +234,6 @@ class PatientController extends Controller
                             ->latest('patients.created_at')
                             ->paginate(12);
                         } else {
-                            // dd('hello');
                             $patients = DB::table('patients')
                             ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
                             ->whereNotNull('patients.completed_at')
@@ -264,8 +250,6 @@ class PatientController extends Controller
                         break;
 
                     default:
-                        // $patients = Patient::latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        
                         // Set date and default if null
                         if ($request->search_date){
                             $tempDate = $request->search_date;

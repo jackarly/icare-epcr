@@ -206,24 +206,6 @@ class ResponseTeamController extends Controller
                 'medic3'=> 'nullable',
             ]);
 
-            // Check if medic is assigned twice
-            // if ($request->medic1 === $request->medic2){
-            //     return back()->with('error', 'Select medic only once');
-            // }
-            // else{
-            //     $responseTeam->user_ambulance_id = $request->ambulance;
-            //     $responseTeam->save();
-    
-            //     $oldMedics = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->pluck('personnel_id');
-            //     $newMedic1 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[0])->first();
-            //     $newMedic1->personnel_id = $request->medic1;
-            //     $newMedic1->save();
-                
-            //     $newMedic2 = ResponsePersonnel::where('response_team_id', '=', $responseTeam->id)->where('personnel_id', '=', $oldMedics[1])->first();
-            //     $newMedic2->personnel_id = $request->medic2;
-            //     $newMedic2->save();
-            // }
-
             // Check if medic is selected twice
             if ($request->medic1 === $request->medic2){
                 return back()->with('error', 'Select medic only once');

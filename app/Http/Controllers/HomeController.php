@@ -66,8 +66,7 @@ class HomeController extends Controller
                 ->paginate(12);
         }
         else {
-            // Get response team
-            // $responses = ResponseTeam::whereDate('created_at', Carbon::today())->latest()->with(['incidents', 'user_ambulance'])->paginate(12);
+            // Get response team created today
             $responses = DB::table('response_teams')
                 ->join('user_ambulances', 'response_teams.user_ambulance_id', '=', 'user_ambulances.id')
                 ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
@@ -79,7 +78,8 @@ class HomeController extends Controller
                 ->distinct('response_teams.id')
                 ->select('response_teams.*', 'user_ambulances.plate_no')
                 ->paginate(12);
-
+            
+            // Get incidents created today
             $incidents = DB::table('incidents')
                 ->leftJoin('patients', 'incidents.id', '=', 'patients.incident_id')
                 ->whereNot('incidents.response_team_id', null)

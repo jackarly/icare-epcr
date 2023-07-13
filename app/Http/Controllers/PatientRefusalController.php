@@ -10,20 +10,9 @@ use Carbon\Carbon;
 
 class PatientRefusalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(Patient $patient)
     {
-        // Only allow ambulance and admin to create patient observation
+        // Only allow ambulance and admin to create patient refusal
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             return view('patient-refusal.patient', [
                 'patient' => $patient,
@@ -34,12 +23,9 @@ class PatientRefusalController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request, Patient $patient)
     {
-        // Only allow ambulance and admin to create patient observation
+        // Only allow ambulance and admin to create patient refusal
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'admin') ){
             $this->validate($request, [
                 'patient_refusal_witness'=> 'required',
@@ -59,6 +45,7 @@ class PatientRefusalController extends Controller
 
     public function createHospital(Patient $patient)
     {
+        // Only allow ambulance, hospital, and admin to create patient refusal
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'admin') ){
             return view('patient-refusal.hospital-create', [
                 'patient' => $patient,
@@ -95,6 +82,7 @@ class PatientRefusalController extends Controller
 
     public function editHospital(PatientRefusal $patientRefusal)
     {
+        // Only allow hospital and admin to edit patient refusal
         if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'admin') ){
             return view('patient-refusal.hospital-edit', [
                 'patientRefusal' => $patientRefusal,
@@ -126,6 +114,7 @@ class PatientRefusalController extends Controller
 
     public function destroyHospital(PatientRefusal $patientRefusal)
     {
+        // Remove patient refusal
         $patientRefusal->delete();
         
         return redirect()->route('pcr.show', $patientRefusal->patient_id)->with('success', 'Hospital refusal updated successfully');

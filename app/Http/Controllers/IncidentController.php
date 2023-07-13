@@ -19,10 +19,11 @@ class IncidentController extends Controller
 
     public function index(Request $request, $status = null)
     {
+        // Set search variables to null
         $searchKeyword = null;
         $searchDate = null;
 
-        // Check if form search query
+        // Check if from search query
         if ($request->searchedQuery) {
             
             // Set search keywords & status
@@ -274,6 +275,7 @@ class IncidentController extends Controller
                 $injuries_details = $request->injuries_details;
             }
 
+            // Store incident to db
             Incident::create([
                 'nature_of_call'=> $request->nature_of_call,
                 'incident_type'=> $request->incident_type,

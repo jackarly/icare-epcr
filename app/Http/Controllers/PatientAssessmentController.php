@@ -231,6 +231,7 @@ class PatientAssessmentController extends Controller
         // Only allow ambulance, comcen admin to edit patient assessment
         if ( (Auth::user()->user_type == 'ambulance') || (Auth::user()->user_type == 'comcen') || (Auth::user()->user_type == 'admin') ){
             
+            // Check which row should be updated
             switch ($request->vitals_row) {
                 case 'vitals1':
                     if (!$patientAssessment->vital_time1) {
@@ -284,7 +285,6 @@ class PatientAssessmentController extends Controller
                     return view('errors.404');
                     break;
             }
-            
             $patientAssessment->update([
                 'vital_time1'=>Carbon::now()->format('g:i A'),	
                 'vital_bp1'=>$request->vital_bp1,		

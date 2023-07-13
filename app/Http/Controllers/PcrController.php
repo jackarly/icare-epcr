@@ -83,12 +83,14 @@ class PcrController extends Controller
         // Allow all PCR to be viewed by comcen and admin accounts
         // Get PCR details
         }else{
+            // Get details of patient
             $incident = Incident::find($patient->incident_id);
             $patient_assessment = PatientAssessment::where('patient_id',$patient->id)->first();
             $patient_management = PatientManagement::where('patient_id',$patient->id)->first();
             $patient_observation = PatientObservation::where('patient_id',$patient->id)->first();
             $patient_refusals = PatientRefusal::where('patient_id',$patient->id)->get();
             
+            // Get personnel assigned to patient
             $medics = DB::table('personnels')
                 ->join('response_personnels', 'personnels.id', '=', 'response_personnels.personnel_id')
                 ->join('response_teams', 'response_teams.id', '=', 'response_personnels.response_team_id')
