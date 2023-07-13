@@ -11,7 +11,7 @@
                     </ul>
 
                     @if ((auth()->user()->user_type == 'comcen' || (auth()->user()->user_type == 'admin')))
-                        <a href="" class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Add Hotline</a>
+                        <a href="{{ route('hotline.create') }}" class="btn btn-outline-secondary create-item"><i class="fa-solid fa-plus fa-2xs"></i> Add Hotline</a>
                     @endif
                     
                     <button type="button" class="btn btn-outline-secondary text-decoration-none" data-bs-toggle="modal" data-bs-target="#searchModal">
@@ -34,6 +34,7 @@
                         <th scope="col">Facility</th>
                         <th scope="col">Location</th>
                         <th scope="col">Contact</th>
+                        <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,7 +42,7 @@
                             <tr class="text-capitalize">
                                 <td>{{$hotline->facility }}</td>
                                 <td>{{$hotline->location}}</td>
-                                <td>{{$hotline->contact}}</td>
+                                <td>{{$hotline->contact}} <a href="{{ route('hotline.edit', $hotline->id) }}" class="btn btn-outline-success btn-sm custom-rounded-btn text-decoration-none float-end"><small>Update</small></a></td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -58,7 +59,8 @@
             @endif    
         </div>    
     </div> 
-    <!-- Modal -->
+    
+    <!-- Search Modal -->
     <div class="modal fade" id="searchModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

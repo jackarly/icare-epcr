@@ -115,6 +115,10 @@ Route::put('/response/{responseTeam}/update', [ResponseTeamController::class, 'u
 
 Route::get('/hotline', [HotlineController::class, 'index'])->name('hotline');
 Route::post('/hotline/search', [HotlineController::class, 'index'])->name('hotline.search');
+Route::get('/hotline/create', [HotlineController::class, 'create'])->name('hotline.create');
+Route::post('/hotline/store', [HotlineController::class, 'store'])->name('hotline.store');
+Route::get('/hotline/edit/{hotline}', [HotlineController::class, 'edit'])->name('hotline.edit');
+Route::put('/hotline/update/{hotline}', [HotlineController::class, 'update'])->name('hotline.update');
 
 Route::fallback(function () {
     view('errors.404');
