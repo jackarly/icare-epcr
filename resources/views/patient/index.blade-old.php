@@ -17,11 +17,11 @@
                         </ul>
                     </ul>
                     
-                    <button type="button" class="btn btn-outline-secondary text-decoration-none me-1" data-bs-toggle="modal" data-bs-target="#searchModal">
-                        <span><i class="fa-solid fa-magnifying-glass"></i></span>
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary text-decoration-none" data-bs-toggle="modal" data-bs-target="#reportModal">
+                    <button type="button" class="btn btn-outline-secondary text-decoration-none me-1" data-bs-toggle="modal" data-bs-target="#reportModal">
                         <span><i class="fa-regular fa-calendar"></i></span>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary text-decoration-none" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        <span><i class="fa-solid fa-magnifying-glass"></i></span>
                     </button>
                 </div>
             </div>
@@ -37,19 +37,19 @@
                     on "{{ \Carbon\Carbon::parse($searchDate)->format('m/d/Y') }}"
                 @endisset
             </span>
-        @endisset
+        @endisset 
 
-        <!-- Show searched repord -->
+        <!-- Show searched keywords -->
         @isset($reportDate)
             <span class="text-secondary fst-italic">Search results for "{{$reportDate}}"</span>
-        @endisset
+        @endisset 
         
         @if ($patients->count())
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Patient Name</th>
+                        <th scope="col">Name</th>
                         <th scope="col">Status</th>
                         <th scope="col">Conscious?</th>
                         <th scope="col">Sex</th>
@@ -62,18 +62,18 @@
                 <tbody>
                     @foreach ($patients as $patient)
                         <tr>
-                            <td scope="row">
+                            <th scope="row">
                                 <!-- Patient ID -->
                                 PATIENT{{$patient->id}}
-                            </td>
-                            <th>
+                            </th>
+                            <td>
                                 <!-- Patient Name -->
                                 @if($patient->patient_first_name || $patient->patient_last_name)
                                     {{$patient->patient_first_name}} {{$patient->patient_last_name}}
                                 @else
                                     <small class="fst-italic text-lowercase text-secondary">(Not set)</small>
                                 @endif
-                            </th>
+                            </td>
                             <td>
                                 <!-- Patient Status -->
                                 @isset($patient->patient_refusals)
@@ -155,14 +155,10 @@
                             </td>
                         </tr>
                     @endforeach
+                    <div class="d-flex">
+                        {{ $patients->links('pagination::simple-bootstrap-5') }}
+                    </div>
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan = 9>
-                            {{ $patients->links('pagination::simple-bootstrap-5') }}
-                        </td>
-                    </tr>
-                </tfoot>
             </table>
         @else
             <hr>
@@ -192,16 +188,27 @@
                                     value="{{ old('search_name') }}" autocomplete="search_name" autofocus placeholder="Patient or Caller">
                             </div>
                         </div>
+                        
+                        <div class="row mb-3">
+                            <label for="status" class="col-md-4 col-form-label text-md-end">Status</label>
+                            <div class="col-md-6">
+                                <select class="form-select text-capitalize" id="searchStatus" name="status" class="form-control @error('status') is-invalid @enderror" onchange="selectAll()">
+                                    <option class="text-capitalize" value="all patients" >all patients</option>
+                                    <option class="text-capitalize" value="ongoing" selected>ongoing</option>
+                                    <option class="text-capitalize" value="completed" >completed</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="row mb-3">
                             <label for="search_date" class="col-md-4 col-form-label text-md-end">Date</label>
                             <div class="col-md-6">
                                 <input id="search_date" type="date" class="form-control @error('search_date') is-invalid @enderror" name="search_date" 
-                                    value="{{ old('search_date') }}" autocomplete="search_date" autofocus>
+                                    value="{{ old('search_date') }}" autocomplete="search_date" autofocus disabled>
                             </div>
                         </div>
                     
-                        <input type="hidden" id="searchedQuery" name="searchQuery" value="true">
+                        <input type="hidden" id="searchedQuery" name="searchedQuery" value="true">
 
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
@@ -225,10 +232,10 @@
                         @csrf
                         
                         <div class="row mb-3">
-                            <label for="report_month" class="col-md-4 col-form-label text-md-end">Date: </label>
+                            <label for="search_month" class="col-md-4 col-form-label text-md-end">Date: </label>
                             <div class="col-md-6">
-                                <input id="report_month" type="month" class="form-control @error('report_month') is-invalid @enderror" name="report_month" 
-                                    value="{{ old('report_month') }}" autofocus required>
+                                <input id="search_month" type="month" class="form-control @error('search_month') is-invalid @enderror" name="search_month" 
+                                    value="{{ old('search_month') }}" autofocus required>
                             </div>
                         </div>
 
@@ -266,7 +273,7 @@
 </div>
 @endsection
 
-<!-- @push('scripts')
+@push('scripts')
     <script type="text/javascript">
         function selectAll() {
             var x = document.getElementById('searchStatus').value;
@@ -279,4 +286,4 @@
             }
         }
     </script>
-@endpush -->
+@endpush

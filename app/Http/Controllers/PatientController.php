@@ -20,331 +20,168 @@ class PatientController extends Controller
 
     public function index(Request $request, $status = null)
     {
+        // Set default search result values to null
         $searchKeyword = null;
         $searchDate = null;
+        $reportDate = null;
 
-        // Check if from search query
-        if ($request->searchedQuery) {
+        // Check if request if from search or report queries
+        if ($request->searchQuery || $request->reportQuery){
 
-            // Set search keywords & status
-            $searchKeyword = $request->search_name;
-            $status = $request->status;
-            $searchDate = $request->search_date;
+            if ($request->searchQuery ){
+                $searchKeyword = $request->search_name;
+                $searchDate = $request->search_date;
 
-            // Only show hospital and ambulance their assigned incidents 
-            if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
-
-                // Get patients assigned to current logged on hospital
-                if (Auth::user()->user_type == 'hospital'){
-                    $assignedPatients = PatientManagement::where('user_hospital_id', Auth::user()->user_hospital->id)->pluck('patient_id');
+                // Search for both name & date
+                if($searchKeyword && $searchDate){
+                    $patientList = DB::table('patients')
+                        ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
+                        ->where(DB::raw("CONCAT(COALESCE(patients.patient_first_name,''),' ',COALESCE(patients.patient_mid_name,''),' ',COALESCE(patients.patient_last_name,''),' ',COALESCE(incidents.caller_first_name,''),' ',COALESCE(incidents.caller_mid_name,''),' ',COALESCE(incidents.caller_last_name,''))"), 'LIKE', '%'.$searchKeyword.'%')
+                        ->whereDate('patients.created_at', '=', $searchDate)
+                        ->pluck('patients.id');
                 }
-                // Get patients assigned to current logged on ambulance
-                elseif(Auth::user()->user_type == 'ambulance'){
-                    $assignedPatients = DB::table('user_ambulances')
-                    ->join('response_teams', 'user_ambulances.id', '=', 'response_teams.user_ambulance_id')
-                    ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
-                    ->join('patients', 'incidents.id', '=', 'patients.incident_id')
-                    ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
-                    ->pluck('patients.id');
-                }
-                else{
-                    return view('errors.404');
-                }
-                // Show patients by status
-                switch($status) {
-                    case('ongoing'):
-                        // Check if keyword is null
-                        if ($searchKeyword) {
-                            
-                            $patients =  DB::table('patients')
-                                ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                                ->whereIn('patients.id', $assignedPatients)
-                                ->whereNull('patients.completed_at')
-                                ->whereNull('patients.patient_refused_at')
-                                ->whereNull('patients.hospital_refused_at')
-                                ->where('incidents.caller_first_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('incidents.caller_mid_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('incidents.caller_last_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_first_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_mid_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_last_name', 'like', '%'.$searchKeyword.'%')
-                                ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                                ->latest('patients.created_at')
-                                ->paginate(12);
-                        } 
-                        else {
-                            $patients =  DB::table('patients')
-                                ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                                ->whereIn('patients.id', $assignedPatients)
-                                ->whereNull('patients.completed_at')
-                                ->whereNull('patients.patient_refused_at')
-                                ->whereNull('patients.hospital_refused_at')
-                                ->whereNull('patients.patient_first_name')
-                                ->whereNull('patients.patient_mid_name')
-                                ->whereNull('patients.patient_last_name')
-                                ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                                ->latest('patients.created_at')
-                                ->paginate(12);
-                        }
-                        break;
-
-                    case('completed'):
-                        // Set date and default if null
-                        if ($request->search_date){
-                            $tempDate = $request->search_date;
-                        }
-                        else{
-                            $tempDate = Carbon::today();
-                        }
-
-                        // Check if keyword is null
-                        if ($searchKeyword) {
-                            $patients = DB::table('patients')
-                                ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                                ->whereIn('patients.id', $assignedPatients)
-                                ->whereDate('patients.created_at', $tempDate)
-                                ->whereNot('patients.completed_at', null)
-                                ->whereNot('patients.patient_refused_at', null)
-                                ->whereNot('patients.hospital_refused_at', null)
-                                ->where('incidents.caller_first_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('incidents.caller_mid_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('incidents.caller_last_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_first_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_mid_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_last_name', 'like', '%'.$searchKeyword.'%')
-                                ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                                ->latest('patients.created_at')
-                                ->paginate(12);
-                        } else {
-                            $patients = DB::table('patients')
-                                ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                                ->whereIn('patients.id', $assignedPatients)
-                                ->whereNot('patients.completed_at', null)
-                                ->whereNot('patients.patient_refused_at', null)
-                                ->whereNot('patients.hospital_refused_at', null)
-                                ->whereDate('patients.created_at', $tempDate)
-                                ->whereNull('patients.patient_first_name')
-                                ->whereNull('patients.patient_mid_name')
-                                ->whereNull('patients.patient_last_name')
-                                ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                                ->latest('patients.created_at')
-                                ->paginate(12);
-                        }
-                        break;
-
-                    default:
-                        // Set date and default if null
-                        if ($request->search_date){
-                            $tempDate = $request->search_date;
-                        }
-                        else{
-                            $tempDate = Carbon::today();
-                        }
-                        if ($searchKeyword) {
-                            $patients = DB::table('patients')
-                                ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                                ->whereIn('patients.id', $assignedPatients)
-                                ->whereDate('patients.created_at', $tempDate)
-                                ->where('incidents.caller_first_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('incidents.caller_mid_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('incidents.caller_last_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_first_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_mid_name', 'like', '%'.$searchKeyword.'%')
-                                ->orWhere('patients.patient_last_name', 'like', '%'.$searchKeyword.'%')
-                                ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                                ->latest('patients.created_at')
-                                ->paginate(12);
-                        } else {
-                            $patients = DB::table('patients')
-                                ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                                ->whereIn('patients.id', $assignedPatients)
-                                ->whereDate('patients.created_at', $tempDate)
-                                ->whereNull('patients.patient_first_name')
-                                ->whereNull('patients.patient_mid_name')
-                                ->whereNull('patients.patient_last_name')
-                                ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                                ->latest('patients.created_at')
-                                ->paginate(12);
-                        }
-                        $status = 'all patients';
+                // Search for either name or date
+                elseif($searchKeyword == null || $searchDate == null){
+                    // Search for keyword only
+                    if ($searchKeyword){
+                        $patientList = DB::table('patients')
+                            ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
+                            ->where(DB::raw("CONCAT(COALESCE(patients.patient_first_name,''),' ',COALESCE(patients.patient_mid_name,''),' ',COALESCE(patients.patient_last_name,''),' ',COALESCE(incidents.caller_first_name,''),' ',COALESCE(incidents.caller_mid_name,''),' ',COALESCE(incidents.caller_last_name,''))"), 'LIKE', '%'.$searchKeyword.'%')
+                            ->pluck('patients.id');
+                    }
+                    // Search for date only
+                    elseif($searchDate){
+                        $patientList = Patient::whereDate('created_at', '=', $searchDate)
+                            ->pluck('id');
+                    }
+                    // Search all "No Name"/Unconcious patient
+                    elseif ($searchKeyword == null){
+                        $patientList = Patient::whereNull('patient_first_name')
+                            ->pluck('id');
+                    }
                 }
             }
-            // Show comcen and admin all patients
+            elseif ($request->reportQuery){
+                // Set reportDate
+                $reportDate = $request->report_month;
+
+                // Explode reportDate for easier query
+                $yearMonth = explode("-", $reportDate);
+                $year = $yearMonth[0];
+                $month = $yearMonth[1];
+
+                // Select query based on month or year
+                switch($request->month_year) {
+                    case('year_month'):
+                        $patientList = Patient::whereYear('created_at', '=', $year)
+                            ->whereMonth('created_at', '=', $month)
+                            ->pluck('id');
+                        break;
+    
+                    case('year_only'):
+                        $patientList = Patient::whereYear('created_at', '=', $year)
+                            ->pluck('id');
+                        $reportDate = $year;
+                        break;
+    
+                    default:
+                        return view('errors.404');
+                }
+            }
+            // Set default status for search & report queries
+            $status = 'all patients';
+        }
+
+        // Show hospital and ambulance only their assigned patients
+        if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+
+            // Get patients assigned to current logged on hospital
+            if (Auth::user()->user_type == 'hospital'){
+                $assignedPatients = PatientManagement::where('user_hospital_id', Auth::user()->user_hospital->id)->pluck('patient_id');
+            }
+            // Get patients assigned to current logged on ambulance
+            elseif(Auth::user()->user_type == 'ambulance'){
+                $assignedPatients = DB::table('user_ambulances')
+                ->join('response_teams', 'user_ambulances.id', '=', 'response_teams.user_ambulance_id')
+                ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
+                ->join('patients', 'incidents.id', '=', 'patients.incident_id')
+                ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
+                ->pluck('patients.id');
+            }
             else{
-                // Show patients by status
-                switch($status) {
-                    case('ongoing'):
-                        // Check if keyword is null
-                        if ($searchKeyword) {
-                            
-                            $patients =  DB::table('patients')
-                            ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                            ->whereNull('patients.completed_at')
-                            ->whereNull('patients.patient_refused_at')
-                            ->whereNull('patients.hospital_refused_at')
-                            ->where('incidents.caller_first_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('incidents.caller_mid_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('incidents.caller_last_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_first_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_mid_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_last_name', 'like', '%'.$searchKeyword.'%')
-                            ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                            ->latest('patients.created_at')
-                            ->paginate(12);
-                        } else {
-
-                            $patients =  DB::table('patients')
-                            ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                            ->whereNull('patients.completed_at')
-                            ->whereNull('patients.patient_refused_at')
-                            ->whereNull('patients.hospital_refused_at')
-                            ->whereNull('patients.patient_first_name')
-                            ->whereNull('patients.patient_mid_name')
-                            ->whereNull('patients.patient_last_name')
-                            ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                            ->latest('patients.created_at')
-                            ->paginate(12);
-                        }
-                        break;
-
-                    case('completed'):
-                        // Set date and default if null
-                        if ($request->search_date){
-                            $tempDate = $request->search_date;
-                        }
-                        else{
-                            $tempDate = Carbon::today();
-                        }
-
-                        // Check if keyword is null
-                        if ($searchKeyword) {
-                            $patients = DB::table('patients')
-                            ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                            ->whereNot('patients.completed_at', null)
-                            ->whereNot('patients.patient_refused_at', null)
-                            ->whereNot('patients.hospital_refused_at', null)
-                            ->whereDate('patients.created_at', $tempDate)
-                            ->where('incidents.caller_first_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('incidents.caller_mid_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('incidents.caller_last_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_first_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_mid_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_last_name', 'like', '%'.$searchKeyword.'%')
-                            ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                            ->latest('patients.created_at')
-                            ->paginate(12);
-                        } else {
-                            $patients = DB::table('patients')
-                            ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                            ->whereNotNull('patients.completed_at')
-                            ->orWhereNotNull('patients.patient_refused_at')
-                            ->orWhereNotNull('patients.hospital_refused_at')
-                            ->whereDate('patients.created_at', $tempDate)
-                            ->whereNull('patients.patient_first_name')
-                            ->whereNull('patients.patient_mid_name')
-                            ->whereNull('patients.patient_last_name')
-                            ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                            ->latest('patients.created_at')
-                            ->paginate(12);
-                        }
-                        break;
-
-                    default:
-                        // Set date and default if null
-                        if ($request->search_date){
-                            $tempDate = $request->search_date;
-                        }
-                        else{
-                            $tempDate = Carbon::today();
-                        }
-
-                        // Check if keyword is null
-                        if ($searchKeyword) {
-                            $patients = DB::table('patients')
-                            ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                            ->whereDate('patients.created_at', $tempDate)
-                            ->where('incidents.caller_first_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('incidents.caller_mid_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('incidents.caller_last_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_first_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_mid_name', 'like', '%'.$searchKeyword.'%')
-                            ->orWhere('patients.patient_last_name', 'like', '%'.$searchKeyword.'%')
-                            ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                            ->latest('patients.created_at')
-                            ->paginate(12);
-                        } else {
-                            $patients = DB::table('patients')
-                            ->join('incidents', 'patients.incident_id', '=', 'incidents.id')
-                            ->whereDate('patients.created_at', $tempDate)
-                            ->whereNull('patients.patient_first_name')
-                            ->whereNull('patients.patient_mid_name')
-                            ->whereNull('patients.patient_last_name')
-                            ->select('patients.*', 'incidents.caller_first_name', 'incidents.caller_mid_name', 'incidents.caller_last_name', 'incidents.caller_number')
-                            ->latest('patients.created_at')
-                            ->paginate(12);
-                        }
-                        $status = 'all patients';
-                }
+                return view('errors.404');
             }
-        }else{
-            // Show hospital and ambulance only their assigned patients
-            if ( (Auth::user()->user_type == 'hospital') || (Auth::user()->user_type == 'ambulance') ){
+            // Show patients by status
+            switch($status) {
+                case('ongoing'):
+                    $patients = Patient::whereIn('id', $assignedPatients)
+                        ->where('completed_at', null)
+                        ->latest()
+                        ->with(['incident', 'patient_management', 'patient_refusals'])
+                        ->paginate(12);
+                    break;
 
-                // Get patients assigned to current logged on hospital
-                if (Auth::user()->user_type == 'hospital'){
-                    $assignedPatients = PatientManagement::where('user_hospital_id', Auth::user()->user_hospital->id)->pluck('patient_id');
-                }
-                // Get patients assigned to current logged on ambulance
-                elseif(Auth::user()->user_type == 'ambulance'){
-                    $assignedPatients = DB::table('user_ambulances')
-                    ->join('response_teams', 'user_ambulances.id', '=', 'response_teams.user_ambulance_id')
-                    ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
-                    ->join('patients', 'incidents.id', '=', 'patients.incident_id')
-                    ->where('response_teams.user_ambulance_id', '=', Auth::user()->user_ambulance->id)
-                    ->pluck('patients.id');
-                }
-                else{
-                    return view('errors.404');
-                }
-                // Show patients by status
-                switch($status) {
-                    case('ongoing'):
-                        $patients = Patient::whereIn('id', $assignedPatients)->where('completed_at', null)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        break;
+                case('completed'):
+                    $patients = Patient::whereIn('id', $assignedPatients)
+                        ->whereNot('completed_at', null)
+                        ->latest()->with(['incident', 'patient_management', 'patient_refusals'])
+                        ->paginate(12);
+                    break;
 
-                    case('completed'):
-                        $patients = Patient::whereIn('id', $assignedPatients)->whereNot('completed_at', null)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        break;
-
-                    default:
-                        $patients = Patient::whereIn('id', $assignedPatients)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        $status = 'all patients';
-                }
-            }
-            // Show comcen and admin all patients
-            else{
-                // Show patients by status
-                switch($status) {
-                    case('ongoing'):
-                        $patients = Patient::where('completed_at', null)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        break;
-
-                    case('completed'):
-                        $patients = Patient::whereNot('completed_at', null)->latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        break;
-
-                    default:
-                        $patients = Patient::latest()->with(['incident', 'patient_management', 'patient_refusals'])->paginate(12);
-                        $status = 'all patients';
-                }
-
+                default:
+                    
+                    // Update assignedPatients if from search or report queries
+                    if ($request->searchQuery || $request->reportQuery){
+                        $assignedPatients=array_intersect($patientList,$assignedPatients);
+                    }
+                    $patients = Patient::whereIn('id', $assignedPatients)
+                        ->latest()->with(['incident', 'patient_management', 'patient_refusals'])
+                        ->paginate(12);
+                    $status = 'all patients';
             }
         }
+        // Show comcen and admin all patients
+        else{
+
+            // Show patients by status
+            switch($status) {
+                case('ongoing'):
+                    $patients = Patient::where('completed_at', null)
+                        ->latest()
+                        ->with(['incident', 'patient_management', 'patient_refusals'])
+                        ->paginate(12);
+                    break;
+
+                case('completed'):
+                    $patients = Patient::whereNot('completed_at', null)
+                        ->latest()
+                        ->with(['incident', 'patient_management', 'patient_refusals'])
+                        ->paginate(12);
+                    break;
+
+                default:
+                    // Check if from search or report queries
+                    if ($request->searchQuery || $request->reportQuery){
+                        $patients = Patient::whereIn('id', $patientList)
+                            ->latest()
+                            ->with(['incident', 'patient_management', 'patient_refusals'])
+                            ->paginate(12);
+                    }
+                    else{
+                        $patients = Patient::latest()
+                            ->with(['incident', 'patient_management', 'patient_refusals'])
+                            ->paginate(12);
+                    }
+                    $status = 'all patients';
+            }
+        }
+
         return view('patient.index', [
             'patients' => $patients,
             'status' => $status,
             'searchKeyword' => $searchKeyword,
             'searchDate' => $searchDate,
+            'reportDate' => $reportDate,
         ]);
     }
 

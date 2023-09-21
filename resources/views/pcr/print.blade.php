@@ -129,23 +129,23 @@
                                     <span class="fw-semibold">Area Type</span>
                                 </li>
                                 <li class="list-inline-item">
-                                    <i class="fa-regular fa-square{{ ($incident->incident_type === 'residential')? '-check' : ''}}"></i>
+                                    <i class="fa-regular fa-square{{ ($incident->area_type === 'residential')? '-check' : ''}}"></i>
                                     <span class="text-capitalize">residential</span>
                                 </li>
                                 <li class="list-inline-item">
-                                    <i class="fa-regular fa-square{{ ($incident->incident_type === 'commercial')? '-check' : ''}}"></i>
+                                    <i class="fa-regular fa-square{{ ($incident->area_type === 'commercial')? '-check' : ''}}"></i>
                                     <span class="text-capitalize">commercial</span>
                                 </li>
                                 <li class="list-inline-item">
-                                    <i class="fa-regular fa-square{{ ($incident->incident_type === 'recreation')? '-check' : ''}}"></i>
+                                    <i class="fa-regular fa-square{{ ($incident->area_type === 'recreation')? '-check' : ''}}"></i>
                                     <span class="text-capitalize">recreation</span>
                                 </li>
                                 <li class="list-inline-item">
-                                    <i class="fa-regular fa-square{{ ($incident->incident_type === 'road/street')? '-check' : ''}}"></i>
+                                    <i class="fa-regular fa-square{{ ($incident->area_type === 'road/street')? '-check' : ''}}"></i>
                                     <span class="text-capitalize">road/street</span>
                                 </li>
                                 <li class="list-inline-item">
-                                    <i class="fa-regular fa-square{{ ($incident->incident_type === 'other')? '-check' : ''}}"></i>
+                                    <i class="fa-regular fa-square{{ ($incident->area_type === 'other')? '-check' : ''}}"></i>
                                     <span class="text-capitalize">other</span>
                                 </li>
                                 <li class="list-inline-item">

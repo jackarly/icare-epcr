@@ -65,21 +65,7 @@ class Incident extends Model
 
     // Count reponse teams that are deployed today
     public static function getDeployedToday() 
-    {
-        // return Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())->distinct()->count('response_team_id');
-        
-        // $responses = DB::table('response_teams')
-        //         ->join('user_ambulances', 'response_teams.user_ambulance_id', '=', 'user_ambulances.id')
-        //         ->join('incidents', 'response_teams.id', '=', 'incidents.response_team_id')
-        //         ->leftJoin('patients', 'incidents.id', '=', 'patients.incident_id')
-        //         ->whereDate('incidents.created_at', Carbon::today())
-        //         ->whereNull('patients.completed_at')
-        //         ->whereNull('patients.patient_refused_at')
-        //         ->whereNull('patients.hospital_refused_at')
-        //         ->distinct('incidents.response_team_id')
-        //         ->count('incidents.response_team_id');
-
-        
+    {        
         return DB::table('incidents')
             ->leftJoin('patients', 'incidents.id', '=', 'patients.incident_id')
             ->whereDate('incidents.created_at', Carbon::today())
@@ -93,7 +79,6 @@ class Incident extends Model
     // Count available response team today
     public static function getAvailableToday() 
     {
-        // $teamsDeployed = Incident::whereNotNull('response_team_id')->whereDate('created_at', Carbon::today())-
         $teamsDeployed = DB::table('incidents')
             ->leftJoin('patients', 'incidents.id', '=', 'patients.incident_id')
             ->whereDate('incidents.created_at', Carbon::today())
