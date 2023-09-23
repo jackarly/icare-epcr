@@ -231,13 +231,21 @@ class PatientController extends Controller
             else{
                 return view('errors.404');
             }
-    
+
+            // Calculate age based on known birthday
+            if ($request->birthday) {
+                $tempAge = Carbon::parse($request->birthday)->age;;
+            }
+            else{
+                $tempAge = $request->age;
+            }
+
             $patient = $incident->patients()->create([
                 'ppcr_color'=> $request->ppcr_color,
                 'patient_first_name'=> $request->patient_first_name,
                 'patient_mid_name'=> $request->patient_mid_name,
                 'patient_last_name'=> $request->patient_last_name,
-                'age'=> $request->age,
+                'age'=> $tempAge,
                 'birthday'=> $request->birthday,
                 'sex'=> $request->sex,
                 'contact_no'=> $request->contact_no,
@@ -280,12 +288,20 @@ class PatientController extends Controller
                 'address'=> 'nullable|string',
             ]);
     
+            // Calculate age based on known birthday
+            if ($request->birthday) {
+                $tempAge = Carbon::parse($request->birthday)->age;;
+            }
+            else{
+                $tempAge = $request->age;
+            }
+
             $patient->update([
                 'ppcr_color'=> $request->ppcr_color,
                 'patient_first_name'=> $request->patient_first_name,
                 'patient_mid_name'=> $request->patient_mid_name,
                 'patient_last_name'=> $request->patient_last_name,
-                'age'=> $request->age,
+                'age'=> $tempAge,
                 'birthday'=> $request->birthday,
                 'sex'=> $request->sex,
                 'contact_no'=> $request->contact_no,
