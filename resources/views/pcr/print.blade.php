@@ -176,7 +176,7 @@
                                 </li>
                                 <li class="">
                                     <span class="fw-semibold">Address: </span>
-                                    <span class="text-capitalize">{{$patient->patient_first_name}} {{$patient->patient_mid_name}} {{$patient->patient_last_name}}</span>
+                                    <span class="text-capitalize">{{$patient->address}}</span>
                                 </li>
                                 <li class="">
                                     <span class="fw-semibold">Patient No: </span>
@@ -190,7 +190,7 @@
                             <ul class="list-group list-group-flush custom-list fs-7 custom-list-print">
                                 <li class="">
                                     <span class="fw-semibold">Chief Complaint: </span>
-                                    <span class="text-capitalize">{{$patient_assessment->airway}}</span>
+                                    <span class="text-capitalize">{{$patient_assessment->chief_complaint}}</span>
                                 </li>
                                 <li class="">
                                     <span class="fw-semibold">History: </span>
@@ -735,7 +735,7 @@
                                 <li>
                                     <ul class="list-inline fs-7 mb-1 text-end">
                                         <li class="list-inline-item">
-                                            <span class="fw-semibold border-top border-dark px-3">Nurse on duty/Physicin on duty </span>
+                                            <span class="fw-semibold border-top border-dark px-3">Nurse on duty/Physician on duty </span>
                                         </li>
                                     </ul>
                                 </li>
